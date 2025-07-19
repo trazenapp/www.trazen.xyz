@@ -1,0 +1,12 @@
+import Image from "next/image";
+import Hero from "@/layouts/Hero";
+import Partners from "@/layouts/Partners";
+
+export default function Home() {
+  return (
+    <main className="w-full h-full flex flex-col items-center justify-center text-white">
+      <Hero />
+      <Partners />
+    </main>
+  );
+}

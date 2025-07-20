@@ -2,7 +2,6 @@ import React from "react";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { users_solutions, project_pioneers } from "@/constants/solutions";
-
 import Heading from "@/components/heading";
 import Badge from "@/components/badge";
 import Card from "@/components/card";

@@ -3,6 +3,7 @@ import Hero from "@/layouts/Hero";
 import Partners from "@/layouts/Partners";
 import Features from "@/layouts/Features";
 import Solutions from "@/layouts/Solutions";
+import Cta from "@/layouts/Cta";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <Partners />
       <Features />
       <Solutions />
+      <Cta />
     </main>
   );
 }

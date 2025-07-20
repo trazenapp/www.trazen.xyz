@@ -4,6 +4,7 @@ import Partners from "@/layouts/Partners";
 import Features from "@/layouts/Features";
 import Solutions from "@/layouts/Solutions";
 import Cta from "@/layouts/Cta";
+import Faq from "@/layouts/Faq";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
       <Features />
       <Solutions />
       <Cta />
+      <Faq />
     </main>
   );
 }

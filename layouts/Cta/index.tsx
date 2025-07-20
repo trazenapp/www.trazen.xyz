@@ -11,10 +11,10 @@ const Cta = () => {
     <section className="w-11/12 md:w-10/12 mt-[120px]">
       <Card className="flex px-4 md:!px-[60px] md:!py-[76px] relative">
         <div className={`w-full lg:w-7/12 flex flex-col gap-y-6`}>
-          <h4 className="font-semibold text-[32px] md:text-4xl">
+          <h4 className="font-sans font-semibold text-[32px] md:text-4xl">
             Stay Ahead of the Curve in Web3
           </h4>
-          <p className="text-base font-normal">
+          <p className="font-sans text-base font-normal">
             Don’t just catch up, stay ahead. Get personalized updates, real-time
             project drops, and meaningful community insights delivered straight
             to your feed
@@ -27,7 +27,7 @@ const Cta = () => {
             </Button>
           </Link>
         </div>
-        <Image src={img} alt="svg logo" className="md:flex hidden absolute top-7/12 -translate-y-1/2 -right-20" />
+        <Image src={img} alt="svg logo" className="lg:flex hidden absolute top-7/12 -translate-y-1/2 -right-20" />
       </Card>
     </section>
   );

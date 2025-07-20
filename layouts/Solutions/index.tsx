@@ -49,8 +49,8 @@ const Solutions = () => {
                 <div className="w-14 h-14 rounded-[10px] border border-[#434343] flex justify-center items-center font-sans text-white">
                   <Image src={item.image} alt={item.title} className="" />
                 </div>
-                <h6 className="text-xl font-semibold">{item.title}</h6>
-                <p className="text-base font-normal leading-7">
+                <h6 className="text-xl font-semibold font-sans">{item.title}</h6>
+                <p className="text-base font-normal leading-7 font-sans">
                   {item.subtitle}
                 </p>
               </Card>
@@ -70,8 +70,8 @@ const Solutions = () => {
                 <div className="w-14 h-14 rounded-[10px] border border-[#434343] flex justify-center items-center font-sans text-white">
                   <Image src={item.image} alt={item.title} className="" />
                 </div>
-                <h6 className="text-xl font-semibold">{item.title}</h6>
-                <p className="text-base font-normal leading-7">
+                <h6 className="text-xl font-semibold font-sans">{item.title}</h6>
+                <p className="text-base font-normal leading-7 font-sans">
                   {item.subtitle}
                 </p>
               </Card>

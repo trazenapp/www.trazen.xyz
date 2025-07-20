@@ -6,6 +6,7 @@ import Solutions from "@/layouts/Solutions";
 import Cta from "@/layouts/Cta";
 import Faq from "@/layouts/Faq";
 import Newsletter from "@/layouts/Newsletter";
+import Footer from "@/layouts/Footer";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       <Cta />
       <Faq />
       <Newsletter />
+      <Footer />
     </main>
   );
 }

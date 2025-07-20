@@ -5,6 +5,7 @@ import Features from "@/layouts/Features";
 import Solutions from "@/layouts/Solutions";
 import Cta from "@/layouts/Cta";
 import Faq from "@/layouts/Faq";
+import Newsletter from "@/layouts/Newsletter";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
       <Solutions />
       <Cta />
       <Faq />
+      <Newsletter />
     </main>
   );
 }

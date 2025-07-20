@@ -31,9 +31,9 @@ const Features = () => {
                 {item.title}
               </h4>
               <p className="text-base font-normal">{item.subtitle}</p>
-              <Link href={item.href}>
-                <Button className="relative p-[1px] rounded-full bg-gradient-to-br from-[#C83BE5] to-[#2C05334D] hover:from-[#9218E1] hover:to-[#BF66FA] transition">
-                  <div className="bg-[#161616] rounded-full px-6 py-4 text-white flex items-center justify-center gap-x-3.5">
+              <Link href={item.href} className="flex">
+                <Button className="relative p-[1px] rounded-full bg-gradient-to-br from-[#C83BE5] to-[#2C05334D] hover:from-[#9218E1] hover:to-[#BF66FA] transition w-full lg:w-fit">
+                  <div className="bg-[#161616] rounded-full px-6 py-4 text-white flex items-center justify-center gap-x-3.5 w-full">
                     Learn more <ArrowRight />
                   </div>
                 </Button>

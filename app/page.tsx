@@ -2,6 +2,7 @@ import Image from "next/image";
 import Hero from "@/layouts/Hero";
 import Partners from "@/layouts/Partners";
 import Features from "@/layouts/Features";
+import Solutions from "@/layouts/Solutions";
 
 export default function Home() {
   return (
@@ -9,6 +10,7 @@ export default function Home() {
       <Hero />
       <Partners />
       <Features />
+      <Solutions />
     </main>
   );
 }

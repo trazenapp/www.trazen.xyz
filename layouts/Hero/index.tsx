@@ -48,11 +48,7 @@ const Hero = () => {
         </div>
       </div>
       <div className="w-10/12 md:w-9/12 relative z-10">
-        <Image
-          src={bgDashboard}
-          alt="Header background image"
-          className=""
-        />
+        <Image src={bgDashboard} alt="Header background image" className="" />
       </div>
     </header>
   );

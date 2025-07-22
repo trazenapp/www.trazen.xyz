@@ -1,7 +1,12 @@
 import React from "react";
 
-const AuthLayout = () => {
-  return <div>AuthLayout</div>;
+interface AuthLayoutProps {
+  children: React.ReactNode;
+}
+
+const AuthLayout = ({ children }: AuthLayoutProps) => {
+
+  return <main>{children}</main>;
 };
 
 export default AuthLayout;

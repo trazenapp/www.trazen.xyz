@@ -38,7 +38,7 @@ const Solutions = () => {
         </TabsList>
         <TabsContent className="relative" value="users">
           <div
-            className={`w-[250px] md:w-[600px] h-[250px] md:h-[600px] rounded-full bg-radial/decreasing from-[#7212AF] to-transparent to-58% absolute top-1/2 left-1/2 -translate-1/2`}
+            className={`w-[400px] md:w-[600px] h-[400px] md:h-[600px] rounded-full bg-radial/decreasing from-[#7212AF] to-transparent to-58% absolute top-1/2 left-1/2 -translate-1/2`}
           ></div>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
             {users_solutions.map((item, index) => (
@@ -59,7 +59,7 @@ const Solutions = () => {
         </TabsContent>
         <TabsContent className="relative" value="pioneers">
           <div
-            className={`w-[250px] md:w-[600px] h-[250px] md:h-[600px] rounded-full bg-radial/decreasing from-[#7212AF] to-transparent to-58% absolute top-1/2 left-1/2 -translate-1/2`}
+            className={`w-[400px] md:w-[600px] h-[400px] md:h-[600px] rounded-full bg-radial/decreasing from-[#7212AF] to-transparent to-58% absolute top-1/2 left-1/2 -translate-1/2`}
           ></div>
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
             {project_pioneers.map((item, index) => (

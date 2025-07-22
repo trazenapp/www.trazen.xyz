@@ -29,7 +29,7 @@ const MobileNav = () => {
             <Image src={hamburger} alt="Trazen Logo" width={30} height={40} />
           </SheetTrigger>
         </div>
-        <SheetContent className="bg-[#161616] border-0 rounded-8">
+        <SheetContent className="bg-[#161616] border-0 rounded-8 md:w-3/4 w-full">
           <SheetHeader>
             <SheetTitle></SheetTitle>
             <SheetDescription className="flex flex-col gap-y-7">

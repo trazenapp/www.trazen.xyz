@@ -18,12 +18,12 @@ const Hero = () => {
       <Image
         src={imgLeft}
         alt="Header background image"
-        className="absolute top-1/2 -translate-1/2 lg:left-[7%] md:left-[4%] -left-[17%]"
+        className="absolute top-1/2 -translate-1/2 lg:left-[7%] md:left-[4%] left-[3%] w-[18%]"
       />
       <Image
         src={imgRight}
         alt="Header background image"
-        className="absolute top-1/2 -translate-1/2 lg:-right-[17%] md:-right-[34%] -right-[88%]"
+        className="absolute top-1/2 -translate-1/2 lg:-right-[12%] md:-right-[12%] -right-[16%] w-[18%]"
       />
       <div className="mt-[118px] flex flex-col items-center text-center relative z-10">
         <h1 className="text-[48px] md:text-[54px] lg:text-6xl font-clash-display font-semibold w-10/12 md:w-[79%] lg:w-8/12 mb-6">

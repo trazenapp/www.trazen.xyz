@@ -11,7 +11,7 @@ import { Faqs } from "@/constants/faq";
 
 const Faq = () => {
   return (
-    <section className="w-full mt-[120px] flex flex-col justify-center items-center relative overflow-hidden">
+    <section id="faq" className="w-full mt-[120px] flex flex-col justify-center items-center relative overflow-hidden">
       <div
         className={`md:w-[800px] md:h-[800px] rounded-full bg-radial/decreasing from-[#7212AF] to-transparent to-58% absolute top-7/12 right-[75%] -translate-y-1/2 hidden md:flex`}
       ></div>

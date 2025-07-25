@@ -35,7 +35,7 @@ const Hero = () => {
         </p>
         <div className="flex flex-col md:flex-row gap-y-6 md:gap-x-6 items-center ">
           <Button
-            onClick={() => router.push("/login")}
+            onClick={() => router.push("/sign-up")}
             className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#9218E1] border border-[#D9D9D9]"
           >
             Get started

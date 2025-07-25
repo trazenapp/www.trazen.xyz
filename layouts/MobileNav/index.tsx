@@ -46,12 +46,12 @@ const MobileNav = () => {
               </div>
               <div className="flex flex-col gap-y-7 items-center">
                 <Link
-                  href="/"
+                  href="/sign-up"
                   className="font-sans font-semibold text-base text-white hover:bg-gradient-to-b hover:from-[#BF66FA] hover:to-[#9218E1] hover:bg-clip-text hover:text-transparent transition-all duration-300 ease-in-out"
                 >
                   Login
                 </Link>
-                <Button onClick={() => router.push('/login')} className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#9218E1] border border-[#D9D9D9]">Get started</Button>
+                <Button onClick={() => router.push('/sign-in')} className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#9218E1] border border-[#D9D9D9]">Get started</Button>
               </div>
             </SheetDescription>
           </SheetHeader>

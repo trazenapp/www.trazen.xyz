@@ -10,7 +10,7 @@ import { ArrowRight } from "lucide-react";
 
 const Features = () => {
   return (
-    <section className="w-11/12 md:w-10/12 relative overflow-hidden mt-[120px] flex flex-col justify-center items-center">
+    <section id="features" className="w-11/12 md:w-10/12 relative overflow-hidden mt-[120px] flex flex-col justify-center items-center">
       <div className="w-full md:w-6/12 flex flex-col gap-y-6 mb-[60px]">
         <Badge>Core features</Badge>
         <Heading

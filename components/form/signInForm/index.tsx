@@ -36,11 +36,11 @@ const SignInForm = () => {
             Forgot password?
           </Link>
         </div>
-        <div className="relative border">
+        <div className="relative">
           <Input
             type={passwordType}
             id="password"
-            placeholder="example@email.com"
+            placeholder="Password"
             className="border-[#434343] rounded-[8px] py-[19px] px-4 pr-14"
           />
           <Button onClick={togglePassword} className="p-0 bg-transparent absolute top-1/2 right-4 -translate-y-1/2">

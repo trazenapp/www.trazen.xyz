@@ -138,3 +138,39 @@ body {
 .hero-bg-right {
   background-image: url(/public/header-bg.png);
 }
+
+div.select__control, .css-13cymwt-control, div.select__control, div.select__control.select__control--is-focused, div.select__control.select__control--menu-is-open {
+  border: 1px solid #434343 !important;
+  background-color: #171717 !important;
+  border-radius: 8px;
+  box-shadow: unset !important;
+}
+.css-13cymwt-control:active {
+  border-color: #430B68;
+}
+
+.select__multi-value,.css-1p3m7a8-multiValue, div.select__multi-value.css-1p3m7a8-multiValue {
+  background-color: #383838;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.select__multi-value__label,.css-9jq23d, div.select__multi-value__label.css-9jq23d {
+  color: #BCBCBC;
+}
+
+div.select__menu {
+  background-color: #161616;
+  border: 1px solid #303030;
+  border-radius: 6px;
+  border-top-left-radius: 0px;
+  border-top-right-radius: 0px;
+  padding: 3px 8px;
+}
+
+div.select__menu div.select__option--is-focused {
+  background-color: #383838;
+  padding: 6px 10px;
+  color: #fff;
+  border-radius: 4px;
+}

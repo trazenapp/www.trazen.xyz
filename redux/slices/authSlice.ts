@@ -2,12 +2,29 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { SignUpResponse, SignUpState, SignUpData, User } from "@/types/auth.types";
 
+const formData: SignUpData = {
+  role: "user",
+  email: "",
+  password: "",
+  confirmPassword: "", 
+  emailCode: "",
+  username: "",
+  skills: [],
+  hearAboutUs: "",
+  chains: [],
+  niche: "",
+  projects: "",
+}
+
 const initialState: SignUpState = {
   user: null,
   loading: false,
   error: null,
   isAuthenticated: false,
+  steps: 1,
+  data: formData,
 }  
+
 
 export const signUp = createAsyncThunk<SignUpResponse, SignUpData>(
   "sign-up",
@@ -44,6 +61,16 @@ const authSlice = createSlice({
       state.user = action.payload;
       state.isAuthenticated = true;
     },
+    updateFormData: (state, action: PayloadAction<SignUpData>) => {
+      state.data = { ...state.data, ...action.payload };
+    },
+    setSteps: (state, action: PayloadAction<number>) => {
+      state.steps = action.payload;
+    },
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    }
+
   },
   extraReducers: (builder) => {
     builder
@@ -65,5 +92,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, logout, setUser } = authSlice.actions;
+export const { clearError, logout, setUser, updateFormData, setSteps, setLoading } = authSlice.actions;
+
 export default authSlice.reducer;

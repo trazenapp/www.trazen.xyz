@@ -16,7 +16,7 @@ const UserLayout = ({
     <DashboardNav />
     <div className="flex gap-x-4 md:p-5 p-4">
       <DashboardSidebar />
-      <div className="flex-1 border">
+      <div className="flex-1">
         {children}
       </div>
       {pathname !== "/gigs" && pathname !== "/settings" && <DashboardAside />}

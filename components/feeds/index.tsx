@@ -1,8 +1,12 @@
 import React from 'react'
+import Feedscard from "@/components/feedsCard";
+
 
 const Feeds = () => {
   return (
-    <div>Feeds</div>
+    <>
+      <Feedscard />
+    </>
   )
 }
 

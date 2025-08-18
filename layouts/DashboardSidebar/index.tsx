@@ -6,7 +6,7 @@ import Image from "next/image";
 import logo from "@/public/trazen-logo-white.svg";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AiOutlinePlus } from "react-icons/ai";
-import { userSidebarMenu } from "@/constants/nav-menu";
+import { userSidebarMenu } from "@/constants/dashboard-sidebar";
 import { Button } from "@/components/ui/button";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import { setShow } from "@/redux/slices/dashboardSidebarSlice";
@@ -37,7 +37,7 @@ const DashboardSidebar = () => {
   }, [show])
 
   return (
-    <div ref={sidebarRef} className={`lg:sticky lg:top-[90px] lg:self-start lg:border lg:border-[#303030] lg:rounded-2xl lg:p-6 p-4 bg-[#0B0B0B] lg:bg-[#161616] w-9/12 lg:w-[22%] md:w-4/12 h-screen fixed top-0 left-0 z-20 transition-all duration-200 ${show ? "tranlate-x-0" : "-translate-x-full"}`}>
+    <div ref={sidebarRef} className={`lg:sticky lg:top-[90px] lg:self-start lg:border lg:border-[#303030] lg:rounded-2xl lg:p-6 p-4 bg-[#0B0B0B] lg:bg-[#161616] w-9/12 lg:w-[22%] md:w-4/12 h-screen fixed top-0 left-0 z-20 lg:z-0 transition-all duration-200 ${show ? "tranlate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
       <Link href="/" className="flex lg:hidden mb-5">
         <Image src={logo} alt="logo" width={100} />
       </Link>
@@ -57,7 +57,7 @@ const DashboardSidebar = () => {
           </div>
         </div>
 
-        <Button className="!p-0 !bg-white border w-[26px] h-[26px] rounded-full">
+        <Button className="!p-0 !bg-white border w-[26px] h-[26px] rounded-full block lg:hidden">
           <AiOutlinePlus size={20} color="#272727" />
         </Button>
       </div>

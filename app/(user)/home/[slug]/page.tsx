@@ -12,8 +12,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MdMoreHoriz } from "react-icons/md";
 import AvatarProfile from "@/components/avatarProfile";
-import FeedsMedia from "../feedsMedia";
-import FeedsComment from "../feedsComment";
+import FeedsMedia from "@/components/feedsMedia";
+import FeedsComment from "@/components/feedsComment";
 import { media } from "@/constants/feedsMedia";
 import {
   PiArrowFatUp,
@@ -23,16 +23,24 @@ import {
 import { IoChatbubbleOutline } from "react-icons/io5";
 import { TbShare3 } from "react-icons/tb";
 import { CgFlagAlt } from "react-icons/cg";
+import { FaArrowLeft } from "react-icons/fa6";
+import FeedsCommentItem from "@/components/feedsCommentItem";
 
-const FeedsCard = () => {
+const Page = ({ params }: { params: { slug: string } }) => {
+  const { slug } = params;
   const router = useRouter();
-
-  const handlePageClick = (slug: string) => {
-    router.push(`/home/${slug}`);
-  };
 
   return (
     <>
+      <div className="w-full flex items-center gap-x-6 font-sans mb-4">
+        <Button onClick={router.back} className="border-0 bg-transparent">
+          <FaArrowLeft />
+        </Button>
+        <div className="flex gap-x-2.5">
+          <p className="text-[#f4f4f4] text-xl font-medium">Post</p>
+          <p className="text-[#7F7F7F] text-xl font-light">1.2k views</p>
+        </div>
+      </div>
       <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0">
         <div className="flex justify-between items-start">
           <div className="flex items-start gap-x-2.5 font-sans">
@@ -59,18 +67,18 @@ const FeedsCard = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <p
-          onClick={() => handlePageClick("test")}
-          className="cursor-pointer text-[#F4F4F4F4] text-base font-normal font-sans line-clamp-2"
-        >
+        <p className="cursor-pointer text-[#F4F4F4F4] text-base font-normal font-sans">
           Big news: We’ve officially opened our first office in New Orleans!
-          ⚜️ We’re excited to build the future of Web3 with this vibrant,
-          creative community. Let’s grow together
+          ⚜️We’re excited to build the future of Web3 with this vibrant,
+          creative community.Let’s grow together
         </p>
-        <div className="overflow-hidden rounded-[12px] w-full">
+        <div className="overflow-hidden rounded-[12px]">
           <FeedsMedia media={media} maxVisible={4} />
         </div>
-        <div className="flex justify-between gap-x-2.5 overflow-x-scroll md:overflow-x-hidden" style={{scrollbarWidth: "none"}}>
+        <div
+          className="flex justify-between gap-x-2.5 overflow-x-scroll"
+          style={{ scrollbarWidth: "none" }}
+        >
           <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <PiArrowFatUp />
             276
@@ -92,10 +100,13 @@ const FeedsCard = () => {
             276
           </Button>
         </div>
-        <FeedsComment />
+        <FeedsComment isComment={true} />
+        <div className="flex flex-col gap-y-5">
+          <FeedsCommentItem />
+        </div>
       </Card>
     </>
   );
 };
 
-export default FeedsCard;
+export default Page;

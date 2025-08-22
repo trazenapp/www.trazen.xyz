@@ -7,7 +7,9 @@ const AvatarProfile = () => {
     <>
       <Avatar>
         <AvatarImage src="https://github.com/shadcn.png" />
-        <AvatarFallback>CN</AvatarFallback>
+        <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
+          CN
+        </AvatarFallback>
       </Avatar>
       <div>
         <p className="flex gap-x-1 items-center">

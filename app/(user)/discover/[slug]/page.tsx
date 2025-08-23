@@ -45,6 +45,7 @@ const page = ({ params }: { params: { slug: string } }) => {
               height={40}
             />
           </div>
+            <p className="text-[#f4f4f4] text-base font-medium">World of Women (WoW)</p>
         </Link>
       </div>
       <Pagination className="font-sans mt-11">

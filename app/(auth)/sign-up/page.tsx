@@ -30,10 +30,9 @@ const SignUp = () => {
           title="Your account is ready"
           subtitle="You’ve completed the onboarding process, your news feed is ready for you. Engage your favorite projects and grow in the community "
           buttonText="Go to News feed"
-          url="/home"
+          url="/dashboard"
         />
       )}
-
     </div>
   );
 };

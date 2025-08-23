@@ -38,8 +38,8 @@ const EventCard = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex justify-between items-center">
-        <div className="w-8/12 flex flex-wrap gap-2.5">
+      <div className="flex flex-col gap-4 justify-between ">
+        <div className="flex flex-wrap gap-2.5">
           <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
             <MdOutlineCalendarMonth /> 14 Jan 2023
           </div>

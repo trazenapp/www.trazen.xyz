@@ -10,6 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
+import Select from "react-select";
+import { options, hearOptions, OptionType } from "@/constants/options";
 import FormCheckbox from "@/components/form/formCheckbox";
 import ResetPasswordForm from "@/components/form/resetPasswordForm";
 
@@ -17,7 +19,7 @@ const Settings = () => {
   const [tab, setTab] = useState<"account" | "security">("security");
 
   return (
-    <div className="min-h-screen text-white p-6">
+    <div className="min-h-screen text-white p-6 font-sans">
       {/* Header */}
       <h1 className="text-xl font-medium mb-8">Settings</h1>
 
@@ -32,7 +34,8 @@ const Settings = () => {
                   ? "bg-[#272727] text-white"
                   : "text-gray-400 hover:bg-[#272727]"
               }`}
-              onClick={() => setTab("account")}>
+              onClick={() => setTab("account")}
+            >
               Account management
             </button>
             <button
@@ -41,7 +44,8 @@ const Settings = () => {
                 tab === "security"
                   ? "bg-[#272727] text-white"
                   : "text-gray-400 hover:bg-[#272727]"
-              }`}>
+              }`}
+            >
               Security
             </button>
           </div>
@@ -97,7 +101,8 @@ function SecurityTab() {
       </label>
       <button
         id="wallet"
-        className="flex justify-center gap-3 border border-[#303030] py-3.5 px-4 rounded-[100px] cursor-pointer w-full ">
+        className="flex justify-center gap-3 border border-[#303030] py-3.5 px-4 rounded-[100px] cursor-pointer w-full "
+      >
         <Image src={wallet} alt="linked wallet" />
         Connect Wallet
       </button>
@@ -120,7 +125,8 @@ function SecurityTab() {
             <Button
               type="button"
               onClick={togglePassword}
-              className="p-0 bg-transparent absolute top-1/2 right-4 -translate-y-1/2">
+              className="p-0 bg-transparent absolute top-1/2 right-4 -translate-y-1/2"
+            >
               {showPassword ? <EyeIcon /> : <EyeOffIcon />}
             </Button>
           </div>
@@ -141,7 +147,8 @@ function SecurityTab() {
             <Button
               type="button"
               onClick={togglePassword}
-              className="p-0 bg-transparent absolute top-1/2 right-4 -translate-y-1/2">
+              className="p-0 bg-transparent absolute top-1/2 right-4 -translate-y-1/2"
+            >
               {showPassword ? <EyeIcon /> : <EyeOffIcon />}
             </Button>
           </div>
@@ -162,7 +169,8 @@ function SecurityTab() {
             <Button
               type="button"
               onClick={togglePassword}
-              className="p-0 bg-transparent absolute top-1/2 right-4 -translate-y-1/2">
+              className="p-0 bg-transparent absolute top-1/2 right-4 -translate-y-1/2"
+            >
               {showPassword ? <EyeIcon /> : <EyeOffIcon />}
             </Button>
           </div>
@@ -171,7 +179,8 @@ function SecurityTab() {
         <Button
           type="button"
           onClick={() => router.push("/reset-password")}
-          className="bg-[#430B68] max-w-40 hover:bg-[#430B68] rounded-full font-semibold">
+          className="bg-[#430B68] max-w-40 hover:bg-[#430B68] rounded-full font-semibold"
+        >
           Save Changes
         </Button>
       </form>
@@ -241,7 +250,8 @@ function AccountTab() {
       <div className="mb-8">
         <label
           htmlFor="username"
-          className="block text-sm text-[#F4F4F4F4] mb-3">
+          className="block text-sm text-[#F4F4F4F4] mb-3"
+        >
           Username
         </label>
         <div className="bg-[#171717] border border-[#434343] rounded-lg py-3 px-4 ">
@@ -259,44 +269,21 @@ function AccountTab() {
         <label className="block text-sm text-gray-300 mb-3">
           Select your skills
         </label>
-        <div className="bg-[#171717] border border-[#430B68] rounded-[8px] p-5">
+        <div className="bg-[#171717]">
           {/* First row */}
-          <div className="flex items-center gap-2 mb-3">
-            {tags.map((tag) => (
-              <TagItem key={tag.id} tag={tag} onRemove={removeTag} />
-            ))}
-            <div className="relative ml-auto">
-              <button type="button" onClick={toggleDropdown} className="p-1">
-                <Image
-                  src={arrowDown}
-                  alt="dropdown toggle"
-                  className={`transform cursor-pointer transition-transform ${
-                    dropdownOpen ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
-
-          {/* Second row */}
-          {dropdownOpen && (
-            <div className="flex items-center gap-2">
-              {secondRowTags.map((tag) => (
-                <TagItem
-                  key={tag.id}
-                  tag={tag}
-                  onRemove={removeTag}
-                  isSecondRow={true}
-                />
-              ))}
-            </div>
-          )}
+          <Select<OptionType, true>
+            isMulti
+            options={options as OptionType[]}
+            className="basic-multi-select font-sans !bg-[#171717] !border-[#434343]"
+            classNamePrefix="select"
+            // isOptionDisabled={() => field.value?.length >= 5}
+          />
         </div>
       </div>
 
-      <button className="bg-[#430B68] text-white py-3.5 px-4.5 max-w-40 rounded-[100px] cursor-pointer transition-colors font-medium">
+      <Button className="bg-[#430B68] hover:bg-[#430B68] text-white py-3.5 px-4.5 max-w-40 rounded-[100px] cursor-pointer transition-colors font-medium">
         Save changes
-      </button>
+      </Button>
     </div>
   );
 }

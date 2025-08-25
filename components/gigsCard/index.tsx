@@ -1,42 +1,45 @@
 import React from "react";
-import Image from "next/image";
+import Link from "next/link";
 import Card from "@/components/card";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@radix-ui/react-dropdown-menu";
-import { Link } from "lucide-react";
-import { CgFlagAlt } from "react-icons/cg";
-import { MdMoreHoriz, MdOutlineCalendarMonth } from "react-icons/md";
+import { MdOutlineCalendarMonth } from "react-icons/md";
 import { FaRegClock } from "react-icons/fa6";
 import { IoIosTimer } from "react-icons/io";
-import AvatarProfile from "@/components/avatarProfile";
+import { FiBookmark } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
+import { BsPatchCheckFill } from "react-icons/bs";
 
-const EventCard = () => {
+const GigsCard = () => {
   return (
     <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0">
       <div className="flex justify-between items-start">
         <div className="flex items-start gap-x-2.5 font-sans">
-          <AvatarProfile />
+          <Avatar className="h-10 w-10 rounded-full overflow-hidden">
+            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
+              CN
+            </AvatarFallback>
+          </Avatar>
+          <div>
+            <p className="font-medium text-sm md:text-base text-[#f4f4f4]">
+              Senior Backend Developer
+            </p>
+            <p className="flex gap-x-1 items-center">
+              <span className="text-[#A6A6A6] text-xs font-light">
+                CyptoMachine
+              </span>
+              <BsPatchCheckFill size={12} color="#B348F9" />
+            </p>
+          </div>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button className="!w-fit !h-fit p-0">
-              <MdMoreHoriz size={36} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="bg-[#272727] !min-w-0 !p-0 border-0"
-            align="start"
-          >
-            <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-fit flex items-center gap-x-2.5 py-2.5 px-4">
-              <CgFlagAlt color="#ddd" /> Report
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-x-2">
+          <Button className="!w-fit !h-fit p-0">
+            <FiBookmark size={36} />
+          </Button>
+          <p className="text-base font-light font-sans text-[#A6A6A6]">
+            1 day ago
+          </p>
+        </div>
       </div>
       <div className="flex flex-col gap-4 justify-between ">
         <div className="flex flex-wrap gap-2.5">
@@ -59,20 +62,11 @@ const EventCard = () => {
         ⚜️We’re excited to build the future of Web3 with this vibrant, creative
         community.Let’s grow together
       </p>
-      <div className="flex justify-center items-center">
-        <Image
-          src="https://github.com/shadcn.png"
-          width={350}
-          height={350}
-          alt="event poster"
-          className="rounded-[12px]"
-        />
-      </div>
-      <Button className="bg-[#430B68] hover:bg-[#430B68] rounded-full py-2 px-4 text-sm font-sans font-medium">
-        Add to calendar
-      </Button>
+      <Link href="#" className="bg-[#430B68] hover:bg-[#430B68] rounded-full py-2 px-4 text-sm text-center font-sans font-medium">
+        View Details
+      </Link>
     </Card>
   );
 };
 
-export default EventCard;
+export default GigsCard;

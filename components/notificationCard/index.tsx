@@ -29,7 +29,7 @@ const NotificationCard = () => {
                 CN
               </AvatarFallback>
             </Avatar>
-            <div className="flex gap-x-2.5">
+            <div className="flex flex-col md:flex-row gap-x-2.5">
               <p className="flex gap-x-1 items-center">
                 <span className="font-medium text-sm md:text-base">
                   CyptoMachine
@@ -56,7 +56,7 @@ const NotificationCard = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className="bg-[#272727] !min-w-0 !p-0 border-0 rounded-[6px]"
-              align="start"
+              align="end"
             >
               <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-fit flex items-center gap-x-2.5 py-2.5 px-4 hover:outline-0">
                 <LuVolumeX color="#ddd" /> Mute

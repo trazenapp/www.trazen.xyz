@@ -67,7 +67,7 @@ const Page = ({ params }: { params: { slug: string } }) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <p className="cursor-pointer text-[#F4F4F4F4] text-base font-normal font-sans">
+        <p className="cursor-pointer text-[#F4F4F4F4] text-sm lg:text-base  font-normal font-sans">
           Big news: We’ve officially opened our first office in New Orleans!
           ⚜️We’re excited to build the future of Web3 with this vibrant,
           creative community.Let’s grow together

@@ -51,7 +51,7 @@ const FeedsCard = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               className="bg-[#272727] !min-w-0 !p-0 border-0"
-              align="start"
+              align="end"
             >
               <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-fit flex items-center gap-x-2.5 py-2.5 px-4">
                 <CgFlagAlt color="#ddd" /> Report
@@ -61,11 +61,11 @@ const FeedsCard = () => {
         </div>
         <p
           onClick={() => handlePageClick("test")}
-          className="cursor-pointer text-[#F4F4F4F4] text-base font-normal font-sans line-clamp-2"
+          className="cursor-pointer text-[#F4F4F4F4] text-sm lg:text-base font-normal font-sans line-clamp-2"
         >
           Big news: We’ve officially opened our first office in New Orleans!
-          ⚜️ We’re excited to build the future of Web3 with this vibrant,
-          creative community. Let’s grow together
+          ⚜️We’re excited to build the future of Web3 with this vibrant,
+          creative community.Let’s grow together
         </p>
         <div className="overflow-hidden rounded-[12px] w-full">
           <FeedsMedia media={media} maxVisible={4} />

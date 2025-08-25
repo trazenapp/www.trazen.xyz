@@ -7,6 +7,7 @@ import logo from "@/public/trazen-logo-white.svg";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Search } from "lucide-react";
+import { IoIosMenu } from "react-icons/io";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import { setShow } from "@/redux/slices/dashboardSidebarSlice";
@@ -22,7 +23,7 @@ const DashboardNav = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-10 lg:bg-[#161616] md:bg-[#0B0B0B] px-5 py-[18px] flex items-center justify-between lg:border-b lg:border-b-[#303030]">
+    <nav className="sticky top-0 z-10 lg:bg-[#161616] md:bg-[#0B0B0B]/[50%] backdrop-blur-md lg:backdrop-blur-none px-5 py-[18px] flex items-center justify-between lg:border-b lg:border-b-[#303030]">
       {/* desktop view */}
       <Link href="/" className="hidden lg:flex">
         <Image src={logo} alt="logo" width={120} />
@@ -43,20 +44,15 @@ const DashboardNav = () => {
       </div>
 
       {/* tablet and mobile view */}
-      <Button onClick={handleToggleSidebar} className="lg:hidden !p-0">
-        <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
-            CN
-          </AvatarFallback>
-        </Avatar>
+      <Button onClick={handleToggleSidebar} className="lg:hidden !p-0 bg-transparent">
+        <IoIosMenu className="text-3xl" />
       </Button>
 
       <h3 className="lg:hidden text-[#F4F4F4F4] font-sans font-medium text-base capitalize">
         {title}
       </h3>
 
-      <Button className="lg:hidden !p-0">
+      <Button className="lg:hidden !p-0 bg-transparent">
         <Search className="text-[#F4F4F4F4] text-xl" size={20} />
       </Button>
     </nav>

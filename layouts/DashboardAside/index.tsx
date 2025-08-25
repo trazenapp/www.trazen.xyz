@@ -14,7 +14,7 @@ import { ArrowRight } from "@solar-icons/react";
 
 const DashboardAside = () => {
   return (
-    <div className="w-3/12 border border-[#303030] bg-[#161616] hidden lg:flex flex-col gap-2.5 rounded-2xl p-6">
+    <div className="w-3/12 fixed top-[90px] right-3 h-[84vh] overflow-y-scroll border border-[#303030] bg-[#161616] hidden lg:flex flex-col gap-2.5 rounded-2xl p-6" style={{scrollbarWidth: "none"}}>
       <AsideCard title="Top chain" items={topChains} />
       <AsideCard title="Top niche" items={topNiche} />
       <AsideCard title="Popular projects" items={popularProjects} />

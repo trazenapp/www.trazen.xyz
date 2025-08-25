@@ -14,12 +14,12 @@ const UserLayout = ({
 
   return <main className="relative min-h-screen">
     <DashboardNav />
-    <div className="flex gap-x-4 md:p-5 p-4">
+    <div className="flex justify-center items-center md:p-5 p-4 relative">
       <DashboardSidebar />
-      <div className="w-full lg:w-6/12">
+      <div className={`${pathname === "/settings" ? "w-full xl:w-[75%] lg:ml-[240px] xl:ml-[280px]" : "w-full lg:w-1/2 lg:mr-9"}`}>
         {children}
       </div>
-      {pathname !== "/gigs" && pathname !== "/settings" && <DashboardAside />}
+      {pathname !== "/settings" && <DashboardAside />}
     </div>
   </main>;
 };

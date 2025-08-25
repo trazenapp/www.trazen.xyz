@@ -19,17 +19,17 @@ const Settings = () => {
   const [tab, setTab] = useState<"account" | "security">("security");
 
   return (
-    <div className="min-h-screen text-white p-6 font-sans">
+    <div className="min-h-screen text-white font-sans w-full">
       {/* Header */}
-      <h1 className="text-xl font-medium mb-8">Settings</h1>
+      <h1 className="text-xl font-medium mb-4 hidden lg:flex">Settings</h1>
 
       {/* Main Container */}
-      <div className="flex gap-0 bg-[#161616] w-[991px] h-[779px] relative rounded-lg overflow-hidden">
+      <div className="flex flex-col md:flex-row gap-0 bg-transparent md:bg-[#161616] h-full w-full relative rounded-lg overflow-hidden">
         {/* Left Sidebar */}
-        <div className="w-64 bg-[#161616] p-6">
-          <div className="space-y-2">
+        <div className="w-full md:w-3/12 bg-transparent md:bg-[#161616] p-6">
+          <div className="space-y-2 flex flex-row items-center md:flex-col">
             <button
-              className={`w-full text-left py-3 px-4 cursor-pointer rounded-lg font-medium transition-colors ${
+              className={`w-full text-center md:text-left py-3 px-4 cursor-pointer rounded-lg font-medium transition-colors text-xs md:text-base ${
                 tab === "account"
                   ? "bg-[#272727] text-white"
                   : "text-gray-400 hover:bg-[#272727]"
@@ -40,7 +40,7 @@ const Settings = () => {
             </button>
             <button
               onClick={() => setTab("security")}
-              className={`w-full text-left py-3 px-4 cursor-pointer rounded-lg font-medium transition-colors ${
+              className={`w-full text-center md:text-left py-3 px-4 cursor-pointer rounded-lg font-medium transition-colors text-xs md:text-base ${
                 tab === "security"
                   ? "bg-[#272727] text-white"
                   : "text-gray-400 hover:bg-[#272727]"
@@ -51,7 +51,7 @@ const Settings = () => {
           </div>
         </div>
 
-        <div className="absolute left-[27%] border-l top-0 bottom-0 h-[97%] border-[#303030]"></div>
+        <div className="absolute left-0 top-0 bottom-0 h-[97%] border-l-0 md:border-l md:border-[#303030]"></div>
         {tab === "account" ? <AccountTab /> : <SecurityTab />}
       </div>
     </div>
@@ -84,7 +84,7 @@ function SecurityTab() {
   const passwordType = showPassword ? "text" : "password";
 
   return (
-    <div className="flex-1 p-8 bg-[#161616] ml-4 ">
+    <div className="flex-1 p-8 bg-transparent md:bg-[#161616] ml-0 md:ml-4">
       <h2 className="text-white mb-6">Security</h2>
       <label htmlFor="email">Email</label>
       <div className="bg-[#171717] border border-[#434343] rounded-lg py-3 px-4 my-5 ">
@@ -229,7 +229,7 @@ function AccountTab() {
   );
 
   return (
-    <div className="flex-1 p-8 bg-[#161616] ml-4">
+    <div className="p-8 bg-transparent md:bg-[#161616] flex-1">
       <h2 className="text-lg font-medium mb-8">Account management</h2>
 
       {/* Profile Picture */}

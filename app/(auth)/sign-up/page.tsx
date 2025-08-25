@@ -33,7 +33,6 @@ const SignUp = () => {
           url="/home"
         />
       )}
-
     </div>
   );
 };

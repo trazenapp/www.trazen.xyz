@@ -143,9 +143,7 @@ const FeedsMedia = ({ media = [], maxVisible = 4 }) => {
         })}
       </div>
       {fullScreenMedia && (
-        <div
-          className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
-        >
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4">
           <div className="relative max-w-4xl max-h-full">
             <button
               onClick={closeFullScreen}
@@ -198,7 +196,7 @@ const FeedsMedia = ({ media = [], maxVisible = 4 }) => {
                         />
                       )}
                     </CarouselItem>
-                  )
+                  );
                 })}
               </CarouselContent>
               <CarouselPrevious className="bg-[#1C1C1C] border-0 text-[#A6A6A6]" />

@@ -70,7 +70,10 @@ const FeedsCard = () => {
         <div className="overflow-hidden rounded-[12px] w-full">
           <FeedsMedia media={media} maxVisible={4} />
         </div>
-        <div className="flex justify-between gap-x-2.5 overflow-x-scroll md:overflow-x-hidden" style={{scrollbarWidth: "none"}}>
+        <div
+          className="flex justify-between gap-x-2.5 overflow-x-scroll md:overflow-x-hidden"
+          style={{ scrollbarWidth: "none" }}
+        >
           <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <PiArrowFatUp />
             276

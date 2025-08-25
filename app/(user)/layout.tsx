@@ -1,15 +1,11 @@
-"use client"
+"use client";
 import React from "react";
 import { usePathname } from "next/navigation";
 import DashboardNav from "@/layouts/DashboardNav";
 import DashboardSidebar from "@/layouts/DashboardSidebar";
 import DashboardAside from "@/layouts/DashboardAside";
 
-const UserLayout = ({
-  children,
-}: {
-  children: React.ReactNode
-}) => {
+const UserLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
 
   return <main className="relative min-h-screen">

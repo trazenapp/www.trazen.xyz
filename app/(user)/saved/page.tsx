@@ -1,10 +1,12 @@
-import React from 'react'
+import React from "react";
 import Feedscard from "@/components/feedsCard";
 
 const Saved = () => {
   return (
-    <><Feedscard /></>
-  )
-}
+    <>
+      <Feedscard />
+    </>
+  );
+};
 
-export default Saved
+export default Saved;

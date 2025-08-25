@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import { setShow } from "@/redux/slices/dashboardSidebarSlice";
 
-const DashboardSidebar = () => {
+const DashboardSidebar = ({ pioneer = false }) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -52,9 +52,7 @@ const DashboardSidebar = () => {
         <div className="flex gap-2.5">
           <Avatar>
             <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
-              CN
-            </AvatarFallback>
+            <AvatarFallback>CN</AvatarFallback>
           </Avatar>
           <div className="font-sans">
             <div className="text-white text-sm md:text-base font-bold">

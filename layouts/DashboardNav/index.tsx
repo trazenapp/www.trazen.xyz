@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import { setShow } from "@/redux/slices/dashboardSidebarSlice";
 
-const DashboardNav = () => {
+const DashboardNav = ({ pioneer = false }) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const { show } = useAppSelector((state: RootState) => state.dashboardSidebar);
@@ -29,19 +29,21 @@ const DashboardNav = () => {
         <Image src={logo} alt="logo" width={120} />
       </Link>
 
-      <div className="hidden lg:flex items-center gap-x-2.5 w-5/12">
-        <div className="w-full border border-[#303030] relative h-full rounded-full flex items-center px-5 py-1">
-          <Search className="text-[#9F9F9F]" />
-          <Input
-            type="text"
-            placeholder="Search"
-            className="font-sans border-0 focus-visible:border-0 focus-visible:ring-0 text-[#9F9F9F]"
-          />
+      {!pioneer && (
+        <div className="hidden lg:flex items-center gap-x-2.5 w-5/12">
+          <div className="w-full border border-[#303030] relative h-full rounded-full flex items-center px-5 py-1">
+            <Search className="text-[#9F9F9F]" />
+            <Input
+              type="text"
+              placeholder="Search"
+              className="font-sans border-0 focus-visible:border-0 focus-visible:ring-0 text-[#9F9F9F]"
+            />
+          </div>
+          <Button className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8">
+            Create Project <ArrowRight />
+          </Button>
         </div>
-        <Button className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8">
-          Create Project <ArrowRight />
-        </Button>
-      </div>
+      )}
 
       {/* tablet and mobile view */}
       <Button onClick={handleToggleSidebar} className="lg:hidden !p-0 bg-transparent">
@@ -52,9 +54,11 @@ const DashboardNav = () => {
         {title}
       </h3>
 
-      <Button className="lg:hidden !p-0 bg-transparent">
-        <Search className="text-[#F4F4F4F4] text-xl" size={20} />
-      </Button>
+      {!pioneer && (
+        <Button className="lg:hidden !p-0">
+          <Search className="text-[#F4F4F4F4] text-xl" size={20} />
+        </Button>
+      )}
     </nav>
   );
 };

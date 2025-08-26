@@ -62,7 +62,10 @@ const GigsCard = () => {
         ⚜️We’re excited to build the future of Web3 with this vibrant, creative
         community.Let’s grow together
       </p>
-      <Link href="#" className="bg-[#430B68] hover:bg-[#430B68] rounded-full py-2 px-4 text-sm text-center font-sans font-medium">
+      <Link
+        href="/gigs/senior-backend-development"
+        className="bg-[#430B68] hover:bg-[#430B68] rounded-full py-2 px-4 text-sm text-center font-sans font-medium"
+      >
         View Details
       </Link>
     </Card>

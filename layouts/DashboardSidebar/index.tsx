@@ -42,7 +42,7 @@ const DashboardSidebar = ({ pioneer = false }) => {
       ref={sidebarRef}
       className={`lg:top-[90px] lg:left-3 lg:border lg:border-[#303030] lg:rounded-2xl lg:p-6 p-4 bg-[#0B0B0B] lg:bg-[#161616] lg:h-[84vh] overflow-y-scroll w-9/12 lg:w-[22%] md:w-4/12 h-screen fixed top-0 left-0 z-20 lg:z-0 transition-all duration-200 ${
         show ? "tranlate-x-0" : "-translate-x-full lg:translate-x-0"
-      }`}
+      } ${pioneer ? "xl:!w-[19%]" : ""}`}
        style={{scrollbarWidth: "none"}}
     >
       <Link href="/" className="flex lg:hidden mb-5">

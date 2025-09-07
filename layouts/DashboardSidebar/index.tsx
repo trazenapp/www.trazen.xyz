@@ -40,7 +40,7 @@ const DashboardSidebar = ({ pioneer = false }) => {
   return (
     <div
       ref={sidebarRef}
-      className={`lg:sticky lg:top-[90px] lg:self-start lg:border lg:border-[#303030] lg:rounded-2xl xl:p-6 px-4 py-6 bg-[#0B0B0B] lg:bg-[#161616] w-9/12 lg:w-[22%] md:w-4/12 h-screen fixed top-0 left-0 z-20 lg:z-0 transition-all duration-200 ${show ? "tranlate-x-0" : "-translate-x-full lg:translate-x-0"} ${pioneer ? "xl:!w-[19%]" : ""} `}
+      className={`lg:top-[90px] lg:self-start lg:border lg:border-[#303030] lg:rounded-2xl xl:p-6 px-4 py-6 bg-[#0B0B0B] lg:bg-[#161616] w-9/12 lg:w-[22%] md:w-4/12 h-screen fixed top-0 left-0 z-20 lg:z-0 transition-all duration-200 ${show ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} ${pioneer ? "xl:!w-[19%]" : ""} `}
     >
       <Link href="/" className="flex lg:hidden mb-5">
         <Image src={logo} alt="logo" width={100} />

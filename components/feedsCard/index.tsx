@@ -22,9 +22,10 @@ import {
 } from "react-icons/pi";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import { TbShare3 } from "react-icons/tb";
-import { CgFlagAlt } from "react-icons/cg";
+import { Edit } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
-const FeedsCard = () => {
+const FeedsCard = ({ pioneer = false }) => {
   const router = useRouter();
 
   const handlePageClick = (slug: string) => {
@@ -50,17 +51,20 @@ const FeedsCard = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="bg-[#272727] !min-w-0 !p-0 border-0"
+              className="bg-[#272727] !min-w-0 !p-0 border-0 w-32"
               align="end"
             >
-              <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-fit flex items-center gap-x-2.5 py-2.5 px-4">
-                <CgFlagAlt color="#ddd" /> Report
+              <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3">
+                <Edit /> Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3">
+                <Trash2 color="red" /> Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
         <p
-          onClick={() => handlePageClick("test")}
+          onClick={() => !pioneer && handlePageClick("test")}
           className="cursor-pointer text-[#F4F4F4F4] text-sm lg:text-base font-normal font-sans line-clamp-2"
         >
           Big news: We’ve officially opened our first office in New Orleans!

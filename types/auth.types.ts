@@ -13,7 +13,7 @@ export interface SignUpData {
   role: "user" | "pioneer";
   email: string;
   password: string;
-  confirmPassword: string;  
+  confirmPassword: string;
   emailCode: string;
   username: string;
   skills: OptionType[];
@@ -22,6 +22,14 @@ export interface SignUpData {
   niche: string;
   projects: string;
 }
+
+// export interface EditProjectData {
+//   projectName: string;
+//   skills: OptionType[];
+//   chains: string[];
+//   niche: string;
+//   projects: string;
+// }
 
 export interface SignUpState {
   user: User | null;
@@ -37,7 +45,6 @@ export interface SignUpResponse {
   token: string;
   message: string;
 }
-
 
 export interface SignInState {
   email: string;

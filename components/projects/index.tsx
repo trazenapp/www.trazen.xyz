@@ -6,6 +6,7 @@ import ProjectCard from "../projectCard";
 import { ChevronRightIcon } from "@heroicons/react/24/solid";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Options from "../ui/options";
+import Link from "next/link";
 
 const tempProjectsList = [
   { logo: "https://github.com/shadcn.png", name: "CryptoMachine" },
@@ -46,10 +47,13 @@ export function Projects() {
             )}
           </div>
 
-          <button className="w-full flex items-center space-x-2 justify-between hover:cursor-pointer">
+          <Link
+            href="/pioneerProfile"
+            className="w-full flex items-center space-x-2 justify-between hover:cursor-pointer"
+          >
             <span className="text-[15px] text-[#f4f4f4]">{project.name}</span>
             <ChevronRightIcon className="h-4 w-4 text-[#ddd]-600" />
-          </button>
+          </Link>
         </ProjectCard>
       ))}
     </ul>
@@ -84,12 +88,15 @@ export function ProjectsPartial() {
                 <Options className="rounded-sm border-none md:!px-2 md:!py-1.5 h-14 w-26 bg-[#272727] absolute top-8.5 right-2 text-[10px] text-[#ddd] flex flex-col gap-0.5 justify-center font-extralight " />
               )}
             </div>
-            <button className="w-full flex items-center space-x-2 justify-between hover:cursor-pointer ">
+            <Link
+              href="/Profile"
+              className="w-full flex items-center space-x-2 justify-between hover:cursor-pointer "
+            >
               <span className="xl:text-[13px] md:text-[11px] text-[16px] text-[#f4f4f4]">
                 {project.name}
               </span>
               <ChevronRightIcon className="h-3 w-3 text-[#ddd]-600" />
-            </button>
+            </Link>
           </ProjectCard>
         ))}
     </ul>

@@ -14,7 +14,7 @@ const Dashboard = () => {
   const [tabValue, setTabValue] = useState("overview");
 
   return (
-    <div className=" font-[Geist] relative">
+    <div className="xl:w-[82.3%] lg:w-[79.3%] ml-auto font-[Geist] relative">
       <h2 className="hidden lg:block pl-6 pr-6 mb-5">Dashboard</h2>
       {tabValue === "project" ? (
         <Button className="hidden md:flex md:!gap-x-2.5 gap-x-7 rounded-full font-sans bg-[#430B68] lg:!py-3 lg:!px-5 py-2 px-3 absolute lg:top-[18px] lg:right-[40px] md:right-[18px] md:top-[-3px] z-10 text-sm top-[40px] ">

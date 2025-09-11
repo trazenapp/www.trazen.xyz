@@ -71,8 +71,8 @@ const settingUpForm = () => {
               />
             )}
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
+          {errors.username && (
+            <p className="text-red-500 text-sm">{errors.username.message}</p>
           )}
         </div>
         <div className="flex flex-col gap-y-2 w-full">

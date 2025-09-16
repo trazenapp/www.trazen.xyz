@@ -29,7 +29,7 @@ export const FeedPostsMain = forwardRef<HTMLInputElement, MainProps>(
           onChange={(e) => {
             onChange(e.target.value);
           }}
-          className="border-none focus-visible:!ring-[0] !text-[15px] font-normal outline-none"
+          className="border-none focus-visible:!ring-[0] sm:!text-[15px] max-sm:text-[13px] font-normal outline-none max-sm:mt-3 "
           placeholder="Share your thoughts..."
         />
       </div>
@@ -142,7 +142,7 @@ export function FeedPostsFooter({
   }
 
   return (
-    <div className="w-full flex flex-col gap-4">
+    <div className="w-full max-sm:w-max flex flex-col gap-4">
       {images.length > 0 && (
         <div className="h-max grid grid-cols-2 gap-2 mt-2">
           {images.map((img, index) => (
@@ -164,7 +164,7 @@ export function FeedPostsFooter({
         </div>
       )}
 
-      <div className="flex-1 flex items-center justify-between">
+      <div className="sm:flex-1 flex sm:flex-row flex-col items-start gap-7 sm:items-center sm:justify-between">
         <div className="flex gap-3 items-center">
           <Input
             type="file"
@@ -196,8 +196,10 @@ export function FeedPostsFooter({
 
         <div className="flex gap-5">
           <Button className="bg-transparent !p-0 hover:bg-transparent">
-            <MdDoneAll style={{ width: 22, height: 22, color: "#a6a6a6" }} />
-            <p className="text-[#a6a6a6]">Mark as announcement</p>
+            <MdDoneAll style={{ width: 20, height: 20, color: "#a6a6a6" }} />
+            <p className="text-[#a6a6a6] max-sm:text-[13px]">
+              Mark as announcement
+            </p>
           </Button>
         </div>
       </div>

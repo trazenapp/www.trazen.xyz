@@ -48,7 +48,7 @@ export function Projects() {
           </div>
 
           <Link
-            href="/pioneerProfile"
+            href="/Profile"
             className="w-full flex items-center space-x-2 justify-between hover:cursor-pointer"
           >
             <span className="text-[15px] text-[#f4f4f4]">{project.name}</span>

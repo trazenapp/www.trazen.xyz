@@ -3,10 +3,14 @@ import React from "react";
 import OverviewInfo from "../OverviewInfo";
 import FollowersChart from "../FollowersChart";
 
-function Overview() {
+type OverviewProps = {
+  setTabValue: (value: string) => void;
+};
+
+function Overview({ setTabValue }: OverviewProps) {
   return (
     <div className="flex flex-col gap-5 ">
-      <OverviewInfo />
+      <OverviewInfo setTabValue={setTabValue} />
       <FollowersChart />
     </div>
   );

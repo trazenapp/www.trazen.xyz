@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import ReduxProvider from "@/redux/ReduxProvider";
-import { Web3AuthProvider } from "@web3auth/modal/react";
-import web3AuthContextConfig from "@/lib/web3authContext";
+import ClientProvider from "@/utils/clientProvider";
+import favicon from "@/public/favicon.svg"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,11 +56,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${clashDisplay.className} antialiased`}
       >
-        <ReduxProvider>
-          <Web3AuthProvider config={web3AuthContextConfig}>
-            {children}
-          </Web3AuthProvider>
-        </ReduxProvider>
+        <ClientProvider>
+          {children}
+        </ClientProvider>
       </body>
     </html>
   );

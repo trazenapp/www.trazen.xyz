@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const CreateFirstProjectForm = () => {
-  return (
-    <div>CreateFirstProjectForm</div>
-  )
-}
+  return <div>CreateFirstProjectForm</div>;
+};
 
-export default CreateFirstProjectForm
+export default CreateFirstProjectForm;

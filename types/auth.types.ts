@@ -1,7 +1,8 @@
 export interface User {
-  id: string;
+  uuid: string;
   email: string;
-  name: string;
+  username: string;
+  role: string;
 }
 
 type OptionType = {
@@ -10,17 +11,42 @@ type OptionType = {
 };
 
 export interface SignUpData {
-  role: "user" | "pioneer";
+  role: "USER" | "PIONEER";
   email: string;
   password: string;
-  confirmPassword: string;
-  emailCode: string;
+  cPassword?: string;
+}
+
+export interface OnboardingData {
   username: string;
+  xHandle?: string;
+  title?: string;
   skills: OptionType[];
   hearAboutUs: string;
   chains: string[];
   niche: string;
   projects: string;
+}
+
+export interface SignInData {
+  email: string;
+  password: string;
+}
+
+export interface VerifyEmailData {
+  email: string;
+  token: string;
+}
+
+export interface ForgotPasswordData {
+  email: string;
+}
+
+export interface ResetPasswordData {
+  email: string;
+  token: string;
+  password: string;
+  cPassword?: string;
 }
 
 // export interface EditProjectData {
@@ -31,24 +57,68 @@ export interface SignUpData {
 //   projects: string;
 // }
 
-export interface SignUpState {
+export interface AuthState {
   user: User | null;
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
+  steps?: number;
+  data: SignUpData | OnboardingData | SignInData | VerifyEmailData | ForgotPasswordData | ResetPasswordData;
+}
+
+export interface SignUpState {
+  loading: boolean;
+  error: string | null;
+  formData: SignUpData;
+  isAuthenticated: boolean;
   steps: number;
-  data: SignUpData;
+  user: User | null;
 }
 
 export interface SignUpResponse {
   user: User;
-  token: string;
-  message: string;
 }
 
 export interface SignInState {
-  email: string;
-  password: string;
   loading: boolean;
   error: string | null;
+  data: SignInData;
+  isAuthenticated: boolean;
+  user: User | null;
 }
+
+export interface ForgotPasswordState {
+  loading: boolean;
+  error: string | null;
+  data: ForgotPasswordData;
+}
+
+export interface EmailVerificationState {
+  loading: boolean;
+  resendLoading: boolean;
+  error: string | null;
+  data: VerifyEmailData;
+}
+
+export interface ResetPasswordState {
+  loading: boolean;
+  error: string | null;
+  data: ResetPasswordData;
+}
+
+export interface OnboardingState {
+  loading: boolean;
+  error: string | null;
+  data: OnboardingData;
+  steps: number;
+}
+
+export interface SignInResponse {
+  user: User;
+  token: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+}
+

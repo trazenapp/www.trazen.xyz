@@ -2,11 +2,23 @@ import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import authReducer from "@/redux/slices/authSlice"; 
 import dashboardSidebarReducer from "@/redux/slices/dashboardSidebarSlice";
+import registerReducer from "@/redux/slices/registerSlice";
+import loginReducer from "@/redux/slices/loginSlice";
+import forgotPasswordReducer from "@/redux/slices/forgotPasswordSlice";
+import resetPasswordReducer from "@/redux/slices/resetPasswordSlice";
+import verifyEmailReducer from "@/redux/slices/verifyEmailSlice";
+import onboardingReducer from "@/redux/slices/onboardingSlice";
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     dashboardSidebar: dashboardSidebarReducer,
+    register: registerReducer,
+    login: loginReducer,
+    forgotPassword: forgotPasswordReducer,
+    resetPassword: resetPasswordReducer,
+    verifyEmail: verifyEmailReducer,
+    onboarding: onboardingReducer,
   }
 });
 

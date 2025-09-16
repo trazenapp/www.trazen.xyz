@@ -2,7 +2,7 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
-  timeout: 10000
+  timeout: 10000,
 });
 
 axiosInstance.interceptors.request.use(
@@ -11,7 +11,7 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    return config
+    return config;
   },
   (error) => {
     return Promise.reject(error);
@@ -19,14 +19,14 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(
-  response => response,
+  (response) => response,
   (error) => {
     if (error.response.status === 401) {
       localStorage.removeItem("token");
-      window.location.href = "/sign-in"
+      window.location.href = "/sign-in";
     }
     return Promise.reject(error);
   }
 );
 
-export default axiosInstance
+export default axiosInstance;

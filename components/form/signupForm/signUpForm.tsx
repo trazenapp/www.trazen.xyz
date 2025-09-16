@@ -2,7 +2,13 @@
 import React, { useState } from "react";
 import { RootState } from "@/redux/store";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { updateFormData, setSteps, setLoading } from "@/redux/slices/authSlice";
+import {
+  updateFormData,
+  setSteps,
+  setLoading,
+  signUp,
+  resetForm
+} from "@/redux/slices/registerSlice";
 import { useForm, Controller } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
 import { Label } from "@/components/ui/label";
@@ -16,12 +22,13 @@ import Card from "@/components/card";
 import FormHeading from "@/components/formHeading";
 import { SignUpData } from "@/types/auth.types";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useAppDispatch();
-  const { data, loading, steps } = useAppSelector(
-    (state: RootState) => state.auth
+  const { formData, loading, steps, error } = useAppSelector(
+    (state: RootState) => state.register
   );
 
   const {
@@ -31,7 +38,7 @@ const SignUpForm = () => {
     formState: { errors },
   } = useForm<SignUpData>({
     mode: "all",
-    defaultValues: data,
+    defaultValues: formData,
   });
 
   const watchPassword = watch("password");
@@ -41,21 +48,33 @@ const SignUpForm = () => {
     dispatch(setSteps(steps + 2));
   };
 
-
   const togglePassword = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setShowPassword(!showPassword);
   };
   const passwordType = showPassword ? "text" : "password";
 
-  const onSubmit = (data: SignUpData) => {
-    console.log(data);
-    dispatch(updateFormData({...data}));
-    dispatch(setLoading(true));
-    setTimeout(() => {
+  const onSubmit = async (data: SignUpData) => {
+    try {
+      dispatch(setLoading(true));
+      dispatch(updateFormData(data));
+      console.log(data);
+      await dispatch(signUp(data)).unwrap();
+      toast(<div>Account Created</div>, {
+        theme: "dark",
+        type: "success"
+      });
       dispatch(setLoading(false));
+      dispatch(resetForm());
       dispatch(setSteps(steps + 1));
-    }, 500);
+    } catch (err: any) {
+      console.log(err);
+      toast(<div>{err}</div>, {
+        theme: "dark",
+        type: "error",
+      });
+      dispatch(setLoading(false));
+    }
   };
   return (
     <Card className="w-11/12 md:w-9/12 lg:w-5/12 mx-auto border-0 md:border md:border-[#303030] py-10 bg-transparent md:bg-[#161616] flex flex-col items-center justify-center">
@@ -93,7 +112,9 @@ const SignUpForm = () => {
               />
             )}
           />
-          {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
+          {errors.email && (
+            <p className="text-red-500 text-sm">{errors.email.message || "Enter a valid email"}</p>
+          )}
         </div>
         <div className="flex flex-col gap-y-2 w-full">
           <div className="flex justify-between items-center">
@@ -126,7 +147,9 @@ const SignUpForm = () => {
               {showPassword ? <EyeIcon /> : <EyeOffIcon />}
             </Button>
           </div>
-          {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+          {errors.password && (
+            <p className="text-red-500 text-sm">{errors.password.message || "Enter a valid password"}</p>
+          )}
         </div>
         <div className="flex flex-col gap-y-2 w-full">
           <div className="flex justify-between items-center">
@@ -136,11 +159,13 @@ const SignUpForm = () => {
           </div>
           <div className="relative">
             <Controller
-              name="confirmPassword"
+              name="cPassword"
               control={control}
-              rules={{ required: true, validate: (value) => value === watchPassword || "Passwords do not match" }}
-
-
+              rules={{
+                required: true,
+                validate: (value) =>
+                  value === watchPassword || "Passwords do not match",
+              }}
               render={({ field }) => (
                 <Input
                   type={passwordType}
@@ -148,7 +173,6 @@ const SignUpForm = () => {
                   placeholder="Password"
                   className="border-[#434343] rounded-[8px] py-[19px] px-4 pr-14"
                   {...field}
-
                 />
               )}
             />
@@ -159,11 +183,14 @@ const SignUpForm = () => {
               {showPassword ? <EyeIcon /> : <EyeOffIcon />}
             </Button>
           </div>
-          {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}  
+          {errors.cPassword && (
+            <p className="text-red-500 text-sm">{errors.cPassword.message || "Passwords do not match"}</p>
+          )}
         </div>
         <Button
           type="submit"
           className="bg-[#430B68] hover:bg-[#430B68] rounded-full font-semibold"
+          disabled={loading}
         >
           {loading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Sign Up"}
         </Button>

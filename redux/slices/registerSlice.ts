@@ -2,11 +2,8 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import {
   SignUpResponse,
-  AuthState,
+  SignUpState,
   SignUpData,
-  SignInResponse,
-  OnboardingData,
-  SignInData,
   User,
 } from "@/types/auth.types";
 
@@ -14,15 +11,16 @@ const formData: SignUpData = {
   role: "USER",
   email: "",
   password: "",
+  cPassword: ""
 };
 
-const initialState: AuthState = {
+const initialState: SignUpState = {
   user: null,
   loading: false,
   error: null,
   isAuthenticated: false,
   steps: 1,
-  data: formData,
+  formData: formData,
 };
 
 export const signUp = createAsyncThunk<SignUpResponse, SignUpData>(
@@ -40,68 +38,36 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpData>(
         }
       );
 
-      // if (response.data.token) {
-      //   localStorage.setItem("token", response.data.token);
-      // }
-
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Sign Up Failed");
+      console.log(error.response?.statusText)
+      return rejectWithValue("Sign Up Failed");
     }
   }
 );
 
-export const signIn = createAsyncThunk<SignInResponse, SignInData>(
-  "sign-in",
-  async (SignInData, { rejectWithValue }) => {
-    try {
-      const response = await axios.post<SignInResponse>(
-        "/v1/auth/login",
-        SignInData,
-        {
-          headers: {
-            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
-            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-            "x-device-token": "1"
-          },
-        }
-      );
-
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
-      }
-
-      return response.data;
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Sign Up Failed");
-    }
-  }
-);
-
-const authSlice = createSlice({
-  name: "signUp",
+const registerSlice = createSlice({
+  name: "register",
   initialState,
   reducers: {
     clearError: (state) => {
       state.error = null;
-    },
-    logout: (state) => {
-      state.user = null;
-      state.isAuthenticated = false;
-      localStorage.removeItem("token");
     },
     setUser: (state, action: PayloadAction<User>) => {
       state.user = action.payload;
       state.isAuthenticated = true;
     },
     updateFormData: (state, action: PayloadAction<SignUpData>) => {
-      state.data = { ...state.data, ...action.payload };
+      state.formData = { ...state.formData, ...action.payload };
     },
     setSteps: (state, action: PayloadAction<number>) => {
       state.steps = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
+    },
+    resetForm: (state) => {
+      state.formData = formData;
     },
   },
   extraReducers: (builder) => {
@@ -126,11 +92,11 @@ const authSlice = createSlice({
 
 export const {
   clearError,
-  logout,
   setUser,
   updateFormData,
   setSteps,
   setLoading,
-} = authSlice.actions;
+  resetForm,
+} = registerSlice.actions;
 
-export default authSlice.reducer;
+export default registerSlice.reducer;

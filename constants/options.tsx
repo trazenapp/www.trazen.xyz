@@ -50,12 +50,12 @@ export const options: OptionType[] = [
   { value: "Problem Solving", label: "Problem Solving" },
   { value: "Unit Testing", label: "Unit Testing" },
   { value: "Version Control", label: "Version Control" },
+  { value: "Other", label: "Other" },
 ];
 
 export const hearOptions = [
   { value: "Google", label: "Google" },
-  { value: "Friend", label: "Friend" },
-  { value: "Other", label: "Other" },
+  { value: "Twitter", label: "Twitter" },
   { value: "Discord", label: "Discord" },
   { value: "Word of Mouth", label: "Word of Mouth" },
   { value: "Other SearchEngines", label: "Other SearchEngines" },
@@ -64,37 +64,37 @@ export const hearOptions = [
 export const chainOptions = [
   { value: "Ethereum", label: "Ethereum" },
   { value: "Polygon", label: "Polygon" },
-  { value: "Binance Smart Chain", label: "Binance Smart Chain" },
-  { value: "Avalanche", label: "Avalanche" },
-  { value: "Fantom", label: "Fantom" },
+  { value: "Solana", label: "Solana" },
   { value: "Polkadot", label: "Polkadot" },
+  { value: "Binance Smart Chain", label: "Binance Smart Chain" },
   { value: "Sui", label: "Sui" },
   { value: "Cosmos", label: "Cosmos" },
-  { value: "Tezos", label: "Tezos" },
+  { value: "Avalanche", label: "Avalanche" },
   { value: "Arbitrum", label: "Arbitrum" },
+  { value: "zkSync", label: "zkSync" },
   { value: "Cardano", label: "Cardano" },
-  { value: "Solana", label: "Solana" },
+  { value: "Tezos", label: "Tezos" },
 ];
 
 export const nicheOptions = [
-  { value: "DeFi", label: "DeFi" },
   { value: "NFT", label: "NFT" },
-  { value: "Gaming", label: "Gaming" },
-  { value: "Metaverse", label: "Metaverse" },
+  { value: "DeFi", label: "DeFi" },
   { value: "DAOs", label: "DAOs" },
+  { value: "Metaverse", label: "Metaverse" },
   { value: "SocialFi", label: "SocialFi" },
+  { value: "Gaming", label: "Gaming" },
   { value: "Decentralized Identity", label: "Decentralized Identity" },
-  { value: "Decentralized Infrastructure", label: "Decentralized Infrastructure" },
   { value: "RWAs", label: "RWAs" },
+  { value: "Decentralized Infrastructure", label: "Decentralized Infrastructure" },
 ];
 
 export const projectOptions = [
   { value: "Uniswap", label: "Uniswap" },
-  { value: "Sushiswap", label: "Sushiswap" },
-  { value: "Pancakeswap", label: "Pancakeswap" },
   { value: "Zerion", label: "Zerion" },
   { value: "Sonic", label: "Sonic" },
   { value: "Opensea", label: "Opensea" },
+  { value: "Sushiswap", label: "Sushiswap" },
   { value: "Polygon", label: "Polygon" },
+  { value: "Pancakeswap", label: "Pancakeswap" },
   { value: "Base", label: "Base" },
 ];

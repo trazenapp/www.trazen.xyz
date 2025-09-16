@@ -1,12 +1,17 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { RootState } from "@/redux/store";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { updateFormData, setSteps, setLoading } from "@/redux/slices/authSlice";
+import { updateFormData } from "@/redux/slices/verifyEmailSlice";
+import {
+  setSteps,
+  setLoading,
+  signUp,
+  resetForm,
+} from "@/redux/slices/registerSlice";
 import { useForm, Controller } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import {
   InputOTP,
   InputOTPGroup,
@@ -15,43 +20,102 @@ import {
 import { Button } from "@/components/ui/button";
 import Card from "@/components/card";
 import FormHeading from "@/components/formHeading";
-import { SignUpData } from "@/types/auth.types";
+import {
+  verifyEmail,
+  resendEmailVerification,
+  setResendLoading,
+} from "@/redux/slices/verifyEmailSlice";
+import { VerifyEmailData } from "@/types/auth.types";
+import { toast } from "react-toastify";
 
 const VerifyEmailForm = () => {
   const dispatch = useAppDispatch();
-  const { data, loading, steps } = useAppSelector(
-    (state: RootState) => state.auth
+  const router = useRouter();
+  const [timeLeft, setTimeLeft] = useState(300);
+  const [timerExpired, setTimerExpired] = useState(false);
+  const { formData, loading, steps, user } = useAppSelector(
+    (state: RootState) => state.register
   );
+  const { data, resendLoading } = useAppSelector(
+    (state: RootState) => state.verifyEmail
+  );
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setTimerExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignUpData>({
+  } = useForm<VerifyEmailData>({
     mode: "all",
     defaultValues: data,
   });
 
-  const getEmail = data.email;
+  const getEmail = user?.email;
   console.log(getEmail);
 
   const emailSubtitle = `We've sent a code to ${getEmail}`;
 
-  const onSubmit = (data: SignUpData) => {
-    console.log(data);
-    dispatch(updateFormData({ ...data }));
-    dispatch(setLoading(true));
-    setTimeout(() => {
+  const onSubmit = async (data: VerifyEmailData) => {
+    try {
+      dispatch(setLoading(true));
+      dispatch(updateFormData({ ...data, email: getEmail as string }));
+      await dispatch(verifyEmail(data)).unwrap();
+      toast(<div>Email verified successfully</div>, {
+        theme: "dark",
+        type: "success",
+      });
       dispatch(setLoading(false));
-      dispatch(setSteps(steps + 1));
-    }, 500);
+      dispatch(resetForm());
+      router.push("/on-boarding");
+    } catch (err: any) {
+      console.log(err);
+      toast(<div>{err}</div>, {
+        theme: "dark",
+        type: "error",
+      });
+      dispatch(setLoading(false));
+    }
   };
 
-  const resendCode = () => {
-    dispatch(setLoading(true));
-    setTimeout(() => {
-      dispatch(setLoading(false));
-    }, 500);
+  const handleResend = async (data: string) => {
+    try {
+      dispatch(setResendLoading(true));
+      setTimeLeft(300);
+      setTimerExpired(false);
+      await dispatch(resendEmailVerification(data)).unwrap();
+      toast(<div>Email verification token resent</div>, {
+        theme: "dark",
+        type: "success",
+      });
+      dispatch(setResendLoading(false));
+    } catch (err: any) {
+      console.log(err);
+      toast(<div>{err}</div>, {
+        theme: "dark",
+        type: "error",
+      });
+      dispatch(setResendLoading(false));
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
   return (
@@ -65,7 +129,7 @@ const VerifyEmailForm = () => {
       >
         <div className="flex flex-col gap-y-2 w-full">
           <Controller
-            name="emailCode"
+            name="token"
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
@@ -81,8 +145,8 @@ const VerifyEmailForm = () => {
               </InputOTP>
             )}
           />
-          {errors.emailCode && (
-            <p className="text-red-500 text-sm">{errors.emailCode.message}</p>
+          {errors.token && (
+            <p className="text-red-500 text-sm">{errors.token.message}</p>
           )}
         </div>
         <Button
@@ -94,12 +158,17 @@ const VerifyEmailForm = () => {
         <p className="text-center font-light text-base">
           Did not receive the email?{" "}
           <Button
-            // onClick={skipStep}
-            className="font-medium p-0"
+            className="p-0 bg-transparent"
+            onClick={() => handleResend(getEmail as string)}
+            disabled={resendLoading}
           >
-            Resend
-          </Button>
-          {" "}In 59s
+            {resendLoading ? (
+              <ClipLoader color="#F4F4F4F4" size={10} />
+            ) : (
+              "Resend"
+            )}
+          </Button>{" "}
+          In {formatTime(timeLeft)}
         </p>
       </form>
     </Card>

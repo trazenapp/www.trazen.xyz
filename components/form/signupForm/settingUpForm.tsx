@@ -18,9 +18,11 @@ import { FaCheck } from "react-icons/fa6";
 
 const settingUpForm = () => {
   const dispatch = useAppDispatch();
-  const { data, loading, steps } = useAppSelector(
+  const { data, loading, steps, user } = useAppSelector(
     (state: RootState) => state.auth
   );
+
+  console.log(data?.role)
 
   const {
     control,
@@ -54,6 +56,48 @@ const settingUpForm = () => {
         className="font-sans text-[#F4F4F4F4] w-full mt-8 flex flex-col gap-y-8"
         onSubmit={handleSubmit(onSubmit)}
       >
+        <div className="flex flex-col gap-y-2 w-full">
+          <Label htmlFor="username" className="font-medium text-sm">
+            Username
+          </Label>
+          <Controller
+            name="username"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Input
+                type="text"
+                id="username"
+                className="border-[#434343] rounded-[8px] py-[19px] px-4"
+                {...field}
+              />
+            )}
+          />
+          {errors.username && (
+            <p className="text-red-500 text-sm">{errors.username.message}</p>
+          )}
+        </div>
+        <div className="flex flex-col gap-y-2 w-full">
+          <Label htmlFor="username" className="font-medium text-sm">
+            Username
+          </Label>
+          <Controller
+            name="username"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Input
+                type="text"
+                id="username"
+                className="border-[#434343] rounded-[8px] py-[19px] px-4"
+                {...field}
+              />
+            )}
+          />
+          {errors.username && (
+            <p className="text-red-500 text-sm">{errors.username.message}</p>
+          )}
+        </div>
         <div className="flex flex-col gap-y-2 w-full">
           <Label htmlFor="username" className="font-medium text-sm">
             Username

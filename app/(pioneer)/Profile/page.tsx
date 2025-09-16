@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -57,6 +57,14 @@ import Drafts from "@/components/drafts";
 import { useLocalStorageState } from "@/components/localStorage";
 import { Descendant, Node } from "slate";
 import { Element as SlateElement } from "slate";
+import { createEditor } from "slate";
+import { withReact } from "slate-react";
+import { withHistory } from "slate-history";
+import { Transforms } from "slate";
+import { ReactEditor } from "slate-react";
+import { set } from "date-fns";
+import { withLists } from "@/lib/withLists";
+// import { getActiveFromValue } from "@/components/richTextEditor";
 
 const tempProjectsList = [
   { logo: "https://github.com/shadcn.png", name: "CryptoMachine" },
@@ -72,35 +80,68 @@ const Profile = () => {
     id: string;
     text?: string;
     image?: string[];
-    description?: Descendant[];
+    eventDescription?: Descendant[];
     date?: string;
     time?: string;
     location?: string;
     eventType?: string;
+    jobTitle?: string;
+    jobType?: string;
+    jobExperienceLevel?: string;
+    jobConvenience?: string;
+    jobLocation?: string;
+    jobPayment?: string;
+    jobApplicationLink?: string;
+    jobDescription?: Descendant[];
+    bountyTitle?: string;
+    bountyDuration?: string;
+    bountyReward?: string;
+    bountyLink?: string;
   };
 
   const [text, setText] = useState<string>("");
   const [images, setImages] = useState<string[]>([]);
-  const [description, setDescription] = useState<Descendant[]>([
+  const [eventDescription, setEventDescription] = useState<Descendant[]>([
     { type: "paragraph", children: [{ text: "" }] },
   ]);
   const [date, setDate] = useState<string>("");
   const [time, setTime] = useState<string>("");
   const [location, setLocation] = useState<string>("");
   const [eventType, setEventType] = useState<string>("");
-
-  const plainText = description.map((n) => Node.string(n)).join("\n");
-
+  const [jobDescription, setJobDescription] = useState<Descendant[]>([
+    { type: "paragraph", children: [{ text: "" }] },
+  ]);
+  const [jobTitle, setJobTitle] = useState<string>("");
+  const [jobType, setJobType] = useState<string>("");
+  const [jobExperienceLevel, setJobExperienceLevel] = useState<string>("");
+  const [jobLocation, setJobLocation] = useState<string>("");
+  const [jobConvenience, setJobConvenience] = useState<string>("");
+  const [jobPayment, setJobPayment] = useState<string>("");
+  const [jobApplicationLink, setJobApplicationLink] = useState<string>("");
+  const [bountyTitle, setBountyTitle] = useState<string>("");
+  const [bountyDuration, setBountyDuration] = useState<string>("");
+  const [bountyReward, setBountyReward] = useState<string>("");
+  const [bountyLink, setBountyLink] = useState<string>("");
   const [savedMsg, setSavedMsg] = useState<string | null>(null);
-
   const [draftItems, setDraftItems] = useLocalStorageState<DraftItem[]>(
     [],
     "drafts"
   );
-  const inputRef = useRef<HTMLInputElement>(null);
   const [postType, setPostType] = useState("feed-post");
   const [showDrafts, setShowDrafts] = useState(false);
+
+  const editor = useMemo(
+    () => withLists(withHistory(withReact(createEditor()))),
+    []
+  );
+
+  // const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const router = useRouter();
+
+  // const plainText = eventDescription.map((n) => Node.string(n)).join("\n");
 
   function handleSelectEmoji(emoji: string) {
     const el = inputRef.current;
@@ -147,11 +188,34 @@ const Profile = () => {
     }
 
     if (postType === "events") {
-      const descriptionValidity = description.at(0);
+      const eventDescriptionValidity = eventDescription.at(0);
+
       if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
+        !eventDescriptionValidity ||
+        !SlateElement.isElement(eventDescriptionValidity)
+      ) {
+        return;
+      }
+
+      const hasText = Boolean(eventDescriptionValidity.children[0]?.text);
+      const hasOrderedList = Boolean(eventDescriptionValidity.type === "ol");
+      const hasUnorderedList = Boolean(eventDescriptionValidity.type === "ul");
+      const draft: any = {
+        id: crypto.randomUUID(),
+        postType,
+      };
+
+      if (hasText || hasOrderedList || hasUnorderedList)
+        draft.eventDescription = eventDescription;
+      if (date) draft.date = date;
+      if (time) draft.time = time;
+      if (location) draft.location = location;
+      if (eventType) draft.eventType = eventType;
+
+      if (
+        !hasText &&
+        !hasOrderedList &&
+        !hasUnorderedList &&
         !date &&
         !time &&
         !location &&
@@ -160,690 +224,111 @@ const Profile = () => {
         return;
       }
 
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        date &&
-        time &&
-        location &&
-        eventType
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          {
-            id: crypto.randomUUID(),
-            postType,
-            date,
-            time,
-            location,
-            eventType,
-          },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            {
-              id: crypto.randomUUID(),
-              postType,
-              date,
-              time,
-              location,
-              eventType,
-            },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
+      setDraftItems((drafts) => [...drafts, draft]);
+
+      localStorage.setItem("drafts", JSON.stringify([...draftItems, draft]));
+
+      setSavedMsg("Draft saved");
+      setTimeout(() => setSavedMsg(null), 3000);
+    }
+
+    if (postType === "hiring") {
+      const jobDescriptionValidity = jobDescription.at(0);
 
       if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        date &&
-        time &&
-        location &&
-        !eventType
+        !jobDescriptionValidity ||
+        !SlateElement.isElement(jobDescriptionValidity)
       ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, date, time, location },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, date, time, location },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        date &&
-        time &&
-        eventType &&
-        !location
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, date, time, eventType },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, date, time, eventType },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        location &&
-        time &&
-        eventType &&
-        !date
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, location, time, eventType },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, location, time, eventType },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        location &&
-        date &&
-        eventType &&
-        !time
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, location, date, eventType },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, location, date, eventType },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        location &&
-        date &&
-        !time &&
-        !eventType
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, location, date },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, location, date },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        time &&
-        date &&
-        !location &&
-        !eventType
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, time, date },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, time, date },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        eventType &&
-        date &&
-        !location &&
-        !time
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, eventType, date },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, eventType, date },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        eventType &&
-        time &&
-        !date &&
-        !location
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, eventType, time },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, eventType, time },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        eventType &&
-        location &&
-        !date &&
-        !time
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, eventType, location },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, eventType, location },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        time &&
-        location &&
-        !date &&
-        !eventType
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, time, location },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, time, location },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        time &&
-        !location &&
-        !date &&
-        !eventType
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, time },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, time },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        !time &&
-        location &&
-        !date &&
-        !eventType
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, location },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, location },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        !time &&
-        !location &&
-        date &&
-        !eventType
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, date },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, date },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (
-        descriptionValidity &&
-        SlateElement.isElement(descriptionValidity) &&
-        !descriptionValidity.children[0].text &&
-        !time &&
-        !location &&
-        !date &&
-        eventType
-      ) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, eventType },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, eventType },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (!description && !date && !time && !location && !eventType) {
         return;
       }
 
-      if (!description && date && time && location && eventType) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          {
-            id: crypto.randomUUID(),
-            postType,
-            date,
-            time,
-            location,
-            eventType,
-          },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            {
-              id: crypto.randomUUID(),
-              postType,
-              date,
-              time,
-              location,
-              eventType,
-            },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
+      const hasText = Boolean(jobDescriptionValidity.children[0]?.text);
+      const hasOrderedList = Boolean(jobDescriptionValidity.type === "ol");
+      const hasUnorderedList = Boolean(jobDescriptionValidity.type === "ul");
+      const draft: any = {
+        id: crypto.randomUUID(),
+        postType,
+      };
+
+      if (hasText || hasOrderedList || hasUnorderedList)
+        draft.jobDescription = jobDescription;
+      if (jobTitle) draft.jobTitle = jobTitle;
+      if (jobType) draft.jobType = jobType;
+      if (jobExperienceLevel) draft.jobExperienceLevel = jobExperienceLevel;
+      if (jobLocation) draft.jobLocation = jobLocation;
+      if (jobConvenience) draft.jobConvenience = jobConvenience;
+      if (jobPayment) draft.jobPayment = jobPayment;
+      if (jobApplicationLink) draft.jobApplicationLink = jobApplicationLink;
+
+      if (
+        !hasText &&
+        !hasOrderedList &&
+        !hasUnorderedList &&
+        !jobTitle &&
+        !jobType &&
+        !jobExperienceLevel &&
+        !jobLocation &&
+        !jobConvenience &&
+        !jobPayment &&
+        !jobApplicationLink
+      ) {
+        return;
       }
 
-      if (!description && date && time && location && !eventType) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, date, time, location },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, date, time, location },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
+      setDraftItems((drafts) => [...drafts, draft]);
+
+      localStorage.setItem("drafts", JSON.stringify([...draftItems, draft]));
+
+      setSavedMsg("Draft saved");
+      setTimeout(() => setSavedMsg(null), 3000);
+    }
+
+    if (postType === "bounties") {
+      const draft: any = {
+        id: crypto.randomUUID(),
+        postType,
+      };
+
+      if (bountyTitle) draft.bountyTitle = bountyTitle;
+      if (bountyDuration) draft.bountyDuration = bountyDuration;
+      if (bountyReward) draft.bountyReward = bountyReward;
+      if (bountyLink) draft.bountyLink = bountyLink;
+
+      if (!bountyTitle && !bountyDuration && !bountyReward && !bountyLink) {
+        return;
       }
 
-      if (!description && date && time && eventType && !location) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, date, time, eventType },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, date, time, eventType },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
+      setDraftItems((drafts) => [...drafts, draft]);
 
-      if (!description && location && time && eventType && !date) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, location, time, eventType },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, location, time, eventType },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
+      localStorage.setItem("drafts", JSON.stringify([...draftItems, draft]));
 
-      if (!description && location && date && eventType && !time) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, location, date, eventType },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, location, date, eventType },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
+      setSavedMsg("Draft saved");
+      setTimeout(() => setSavedMsg(null), 3000);
+    }
+  }
 
-      if (!description && location && date && !time && !eventType) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, location, date },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, location, date },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
+  function serialize(node: Descendant): string {
+    if ("text" in node) {
+      let text = node.text;
+      if ((node as any).bold) text = `<strong>${text}</strong>`;
+      if ((node as any).italic) text = `<em>${text}</em>`;
+      if ((node as any).underline) text = `<u>${text}</u>`;
+      return text;
+    }
 
-      if (!description && time && date && !location && !eventType) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, time, date },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, time, date },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
+    const children = node.children.map((n) => serialize(n)).join("");
 
-      if (!description && eventType && date && !location && !time) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, eventType, date },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, eventType, date },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (!description && eventType && time && !date && !location) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, eventType, time },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, eventType, time },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (!description && eventType && location && !date && !time) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, eventType, location },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, eventType, location },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (!description && time && location && !date && !eventType) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, time, location },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, time, location },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (!description && time && !location && !date && !eventType) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, time },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, time },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (!description && !time && location && !date && !eventType) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, location },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, location },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (!description && !time && !location && date && !eventType) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, date },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, date },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-
-      if (!description && !time && !location && !date && eventType) {
-        setDraftItems((drafts) => [
-          ...drafts,
-          { id: crypto.randomUUID(), postType, eventType },
-        ]);
-        localStorage.setItem(
-          "drafts",
-          JSON.stringify([
-            ...draftItems,
-            { id: crypto.randomUUID(), postType, eventType },
-          ])
-        );
-        setSavedMsg("Draft saved");
-        setTimeout(() => setSavedMsg(null), 3000);
-      }
-      // const newDraft =
-      //   descriptionValidity.children[0].text &&
-      //   date &&
-      //   time &&
-      //   location &&
-      //   eventType
-      //     ? {
-      //         id: crypto.randomUUID(),
-      //         postType,
-      //         description,
-      //         date,
-      //         time,
-      //         location,
-      //         eventType,
-      //       }
-      //     : descriptionValidity.children[0].text && date && time && location
-      //       ? {
-      //           id: crypto.randomUUID(),
-      //           postType,
-      //           description,
-      //           date,
-      //           time,
-      //           location,
-      //         }
-      //       : descriptionValidity.children[0].text && date && time
-      //         ? { id: crypto.randomUUID(), postType, description, date, time }
-      //         : descriptionValidity.children[0].text && date
-      //           ? { id: crypto.randomUUID(), postType, description, date }
-      //           : { id: crypto.randomUUID(), postType, description };
-
-      // if (
-      //   !descriptionValidity.children[0].text &&
-      //   !date &&
-      //   !time &&
-      //   !location &&
-      //   !eventType
-      // )
-      //   return;
-
-      // setDraftItems((drafts) => [...drafts, newDraft]);
-      // localStorage.setItem(
-      //   "drafts",
-      //   JSON.stringify([...draftItems, newDraft])
-      // );
-
-      // setDescription([]);
-      // setDate("");
-      // setTime("");
-      // setLocation("");
-      // setEventType("");
-
-      // setSavedMsg("Draft saved");
-      // setTimeout(() => setSavedMsg(null), 3000);
+    switch ((node as any).type) {
+      case "paragraph":
+        return `<p class="mb-1">${children}</p>`;
+      case "ol":
+        return `<ol class="mb-1 list-decimal pl-6">${children}</ol>`;
+      case "ul":
+        return `<ul class="mb-1 list-disc pl-6">${children}</ul>`;
+      case "li":
+        return `<li key=${crypto.randomUUID()} >${children}</li>`;
+      default:
+        return children;
     }
   }
 
@@ -851,17 +336,29 @@ const Profile = () => {
     setPostType(draft.postType);
     draft.text && setText(draft.text);
     draft.image && setImages(draft.image);
-    draft.description && setDescription(draft.description);
+    draft.eventDescription && setEventDescription(draft.eventDescription);
     draft.date && setDate(draft.date);
-    draft.time && setDate(draft.time);
-    draft.location && setDate(draft.location);
-    draft.eventType && setDate(draft.eventType);
+    draft.time && setTime(draft.time);
+    draft.location && setLocation(draft.location);
+    draft.eventType && setEventType(draft.eventType);
+    draft.jobDescription && setJobDescription(draft.jobDescription);
+    draft.jobTitle && setJobTitle(draft.jobTitle);
+    draft.jobType && setJobType(draft.jobType);
+    draft.jobExperienceLevel && setJobExperienceLevel(draft.jobExperienceLevel);
+    draft.jobLocation && setJobLocation(draft.jobLocation);
+    draft.jobConvenience && setJobConvenience(draft.jobConvenience);
+    draft.jobPayment && setJobPayment(draft.jobPayment);
+    draft.jobApplicationLink && setJobApplicationLink(draft.jobApplicationL);
+    draft.bountyTitle && setBountyTitle(draft.bountyTitle);
+    draft.bountyDuration && setBountyDuration(draft.bountyDuration);
+    draft.bountyReward && setBountyReward(draft.bountyReward);
+    draft.bountyLink && setBountyLink(draft.bountyLink);
     setShowDrafts(false);
   }
 
   return (
     <>
-      <div className="xl:w-[81%] lg:w-[78%] ml-auto flex filter">
+      <div className="xl:w-[81%] lg:w-[78%] lg:ml-auto lg:flex filter">
         <div className="xl:w-[66.2%] lg:w-[64.6%] max-lg:px-4">
           <div className="w-full flex items-center gap-x-6 font-sans mb-4">
             <Button onClick={router.back} className="border-0 bg-transparent">
@@ -875,32 +372,32 @@ const Profile = () => {
           </div>
           <div className="flex flex-col gap-y-6">
             <div className="flex flex-col md:flex-row md:items-center gap-x-5">
-              <Avatar className="w-[120px] h-[120px]">
+              <Avatar className="lg:w-[120px] lg:h-[120px] sm:w-[100px] sm:h-[100px] w-[80px] h-[80px] ">
                 <AvatarImage src="https://github.com/shadcn.png" className="" />
                 <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
                   CN
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 font-sans">
-                <p className="text-[#f4f4f4] text-[28px] font-medium flex items-center gap-x-2 mb-4">
+                <p className="text-[#f4f4f4] sm:text-[28px] text-[20px] font-medium flex items-center gap-x-2 mb-4">
                   CryptoMachine <BsPatchCheckFill size={24} color="#B348F9" />
                 </p>
-                <p className="text-base font-normal text-[#BCBCBC]">
+                <p className="sm:text-base text-[12px] font-normal text-[#BCBCBC]">
                   CryptoMachine is a high-speed DeFi and NFT platform built on
                   Solana, designed to power automated trading tools, digital
                   collectibles, and on-chain utilities—fast, low-cost.
                 </p>
               </div>
             </div>
-            <div className="flex flex-wrap md:flex-nowrap gap-y-4 items-center gap-x-3 font-sans">
-              <div className="flex flex-row items-center gap-x-2">
+            <div className="flex flex-wrap md:flex-nowrap gap-y-4 items-center gap-x-4 font-sans">
+              <div className="flex flex-row items-center gap-x-1.5">
                 <IoPeopleOutline color="#7f7f7f" className="text-[1.04rem]" />
                 <p className="text-[#f4f4f4] font-medium text-[0.73rem] flex gap-x-1">
                   <span>19.3K</span>
                   <span className="text-[#7f7f7f] font-normal">Followers</span>
                 </p>
               </div>
-              <div className="flex flex-row items-center gap-x-2">
+              <div className="flex flex-row items-center gap-x-1.5">
                 <FaSquareXTwitter color="#7f7f7f" className="text-[1.04rem]" />
                 <p className="text-[#f4f4f4] font-medium text-[0.73rem] flex gap-x-1">
                   <Link
@@ -911,7 +408,7 @@ const Profile = () => {
                   </Link>
                 </p>
               </div>
-              <div className="flex flex-row items-center gap-x-2">
+              <div className="flex flex-row items-center gap-x-1.5">
                 <HiOutlineCube color="#7f7f7f" className="text-[1.04rem]" />
                 <p className="text-[#f4f4f4] font-medium text-[0.73rem] flex gap-x-1">
                   <span className="text-[#BCBCBC] font-normal">
@@ -919,7 +416,7 @@ const Profile = () => {
                   </span>
                 </p>
               </div>
-              <div className="flex flex-row items-center gap-x-2">
+              <div className="flex flex-row items-center gap-x-1.5">
                 <RxDashboard color="#7f7f7f" className="text-[1.04rem]" />
                 <p className="text-[#f4f4f4] font-medium text-[0.73rem] flex gap-x-1">
                   <span className="text-[#BCBCBC] font-normal">NFTs</span>
@@ -931,46 +428,85 @@ const Profile = () => {
                 <Dialog
                   onOpenChange={(isOpen) => {
                     if (!isOpen) {
+                      Transforms.deselect(editor);
                       setShowDrafts(false);
                       setPostType("feed-post");
                       setText("");
+                      setImages([]);
+                      setEventDescription([
+                        { type: "paragraph", children: [{ text: "" }] },
+                      ]);
+                      setJobDescription([
+                        { type: "paragraph", children: [{ text: "" }] },
+                      ]);
+                      setDate("");
+                      setTime("");
+                      setLocation("");
+                      setEventType("");
+                      setJobTitle("");
+                      setJobType("");
+                      setJobExperienceLevel("");
+                      setJobConvenience("");
+                      setJobLocation("");
+                      setJobPayment("");
+                      setJobApplicationLink("");
+                      setBountyTitle("");
+                      setBountyDuration("");
+                      setBountyReward("");
+                      setBountyLink("");
                     }
                   }}
                 >
                   <form>
                     <DialogTrigger asChild>
-                      <Button className="w-full font-sans bg-white hover:bg-black hover:text-white text-black rounded-full py-3 mb-4">
+                      <Button className="w-full font-sans bg-white hover:bg-black hover:text-white text-black rounded-full py-3 mb-4 max-sm:text-[13px] max-sm:font-semibold">
                         <PlusIcon />
                         <span>New Post</span>
                       </Button>
                     </DialogTrigger>
                     <DialogContent
-                      className=" font-sans gap-2 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[47vw] lg:max-w-[65vw] md:max-w-[80vw] sm:max-w-[87vw] max-w-[98vw]  max-h-[95vh] overflow-auto"
+                      className=" font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[50vw] lg:max-w-[65vw] md:max-w-[85vw] max-md:!max-w-[95vw]  md:max-h-[95vh] max-h-[98vh] min-h-[45vh] overflow-auto"
                       style={{ scrollbarWidth: "none" }}
                     >
-                      <DialogHeader className="py-4 px-7 border-b-[1px] border-b-[#383838]">
+                      <DialogHeader className="py-4 sm:px-7 p-4 border-b-[1px] border-b-[#383838]">
                         <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4] ">
-                          {showDrafts ? "Drafts" : "New post"}
-                          {savedMsg && !showDrafts && (
-                            <div className=" font-sans ml-32 text-[#21a80f] text-[14px] font-bold animate-fade">
-                              {savedMsg}
+                          {showDrafts ? (
+                            <div className="flex gap-5 items-center">
+                              <Button
+                                className="bg-transparent hover:bg-transparent"
+                                onClick={() => setShowDrafts(false)}
+                              >
+                                <FaArrowLeft />
+                              </Button>
+                              <p className="max-sm:text-[16px]"> Drafts</p>
                             </div>
+                          ) : (
+                            <p className="max-sm:text-[16px]">New post</p>
                           )}
                           {!showDrafts && (
-                            <div className="flex gap-6">
-                              <Button
-                                className="bg-transparent !p-0 hover:bg-transparent"
-                                onClick={handleSaveDrafts}
-                              >
-                                <LuFilePenLine style={{ color: "#a6a6a6" }} />
-                                <p className="text-[#a6a6a6]">Save as draft</p>
-                              </Button>
+                            <div className=" max-sm:mr-6 flex sm:gap-6 gap-3 sm:flex-row flex-col-reverse max-sm:items-end">
+                              {savedMsg ? (
+                                <div className=" flex gap-1 items-center font-sans text-[#21a80f] sm:text-[14px] text-[12px] font-bold animate-fade">
+                                  <FaCheck />
+                                  {savedMsg}
+                                </div>
+                              ) : (
+                                <Button
+                                  className="bg-transparent !p-0 hover:bg-transparent max-sm:gap-1"
+                                  onClick={handleSaveDrafts}
+                                >
+                                  <LuFilePenLine style={{ color: "#a6a6a6" }} />
+                                  <p className="text-[#a6a6a6] sm:text-[14px] text-[12px]">
+                                    Save as draft
+                                  </p>
+                                </Button>
+                              )}
                               <Button
                                 onClick={() => {
                                   setShowDrafts(true);
                                   setSavedMsg("");
                                 }}
-                                className="mr-9 rounded-full border-[#303030] border-[1px] py-1.5 gap-1 font-light text-[14px] text-[#f4f4f4]  "
+                                className="w-max sm:mr-9 rounded-full border-[#303030] border-[1px] py-1.5 sm:!px-5 max-sm:!px-4 max-sm:gap-1 font-light sm:text-[14px] text-[12px] text-[#f4f4f4]"
                               >
                                 <LuFilePenLine className="text-[#f4f4f4] " />
                                 <span>Drafts</span>
@@ -979,21 +515,27 @@ const Profile = () => {
                           )}
                         </DialogTitle>
                       </DialogHeader>
-                      <div className="grid gap-2 py-2 px-7">
+                      <div className="grid sm:gap-2 gap-3 py-2 sm:px-7 px-3">
                         {!showDrafts && (
                           <Select
                             value={postType}
                             onValueChange={(val) => {
                               setShowDrafts(false);
                               setPostType(val);
+                              setEventDescription([
+                                { type: "paragraph", children: [{ text: "" }] },
+                              ]);
+                              setJobDescription([
+                                { type: "paragraph", children: [{ text: "" }] },
+                              ]);
                             }}
                           >
-                            <SelectTrigger className="font-sans w-max py-5 px-4  border-[#434343] text-[#f4f4f4] rounded-full ">
+                            <SelectTrigger className="font-sans w-max py-5 px-4 border-[#434343] text-[#f4f4f4] rounded-full max-sm:text-[14px] ">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="font-sans bg-[#161616] border-[#303030] rounded-2xl">
                               <SelectGroup className="w-[200px]">
-                                <SelectLabel className="text-[#f4f4f4] text-[16px] ">
+                                <SelectLabel className="text-[#f4f4f4] sm:text-[16px] text-[13px] ">
                                   Chooose post type
                                 </SelectLabel>
                                 <SelectItem
@@ -1015,7 +557,7 @@ const Profile = () => {
                                   Hiring
                                 </SelectItem>
                                 <SelectItem
-                                  className="text-[#bcbcbc] text-[14px] focus:bg-[#303030] focus:text-[#fff]"
+                                  className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
                                   value="bounties"
                                 >
                                   Bounties
@@ -1034,8 +576,8 @@ const Profile = () => {
                         {!showDrafts && postType === "events" && (
                           <>
                             <EventsPost
-                              description={description}
-                              setDescription={setDescription}
+                              description={eventDescription}
+                              setDescription={setEventDescription}
                               date={date}
                               setDate={setDate}
                               time={time}
@@ -1044,25 +586,55 @@ const Profile = () => {
                               setLocation={setLocation}
                               eventType={eventType}
                               setEventType={setEventType}
+                              editor={editor}
                             />
                           </>
                         )}
-                        {!showDrafts && postType === "hiring" && <HiringPost />}
+                        {!showDrafts && postType === "hiring" && (
+                          <HiringPost
+                            jobTitle={jobTitle}
+                            setJobTitle={setJobTitle}
+                            jobType={jobType}
+                            setJobType={setJobType}
+                            jobExperienceLevel={jobExperienceLevel}
+                            setJobExperienceLevel={setJobExperienceLevel}
+                            jobLocation={jobLocation}
+                            setJobLocation={setJobLocation}
+                            jobConvenience={jobConvenience}
+                            setJobConvenience={setJobConvenience}
+                            jobPayment={jobPayment}
+                            setJobPayment={setJobPayment}
+                            jobApplicationLink={jobApplicationLink}
+                            setJobApplicationLink={setJobApplicationLink}
+                            description={jobDescription}
+                            setDescription={setJobDescription}
+                            editor={editor}
+                          />
+                        )}
                         {!showDrafts && postType === "bounties" && (
-                          <BountyPost />
+                          <BountyPost
+                            bountyTitle={bountyTitle}
+                            setBountyTitle={setBountyTitle}
+                            bountyDuration={bountyDuration}
+                            setBountyDuration={setBountyDuration}
+                            bountyReward={bountyReward}
+                            setBountyReward={setBountyReward}
+                            bountyLink={bountyLink}
+                            setBountyLink={setBountyLink}
+                          />
                         )}
                         {showDrafts && draftItems.length < 1 && (
                           <Drafts>
                             <div className="flex flex-col items-center gap-3 min-h-[50vh] justify-center pb-4">
                               <LuFilePenLine
                                 className="text-[#a6a6a6]"
-                                size={100}
+                                size={95}
                                 strokeWidth={1}
                               />
-                              <p className="text-[#dddddd] text-xl ">
+                              <p className="text-[#dddddd] sm:text-xl text-lg ">
                                 Your drafts is empty
                               </p>
-                              <p className="text-[#7f7f7f] text-sm ">
+                              <p className="text-[#7f7f7f] sm:text-sm text-[12px] ">
                                 Your drafts will appear here
                               </p>
                             </div>
@@ -1073,7 +645,7 @@ const Profile = () => {
                             <div className="flex flex-col gap-3 min-h-[50vh] pb-4">
                               {draftItems.map((draft) => (
                                 <div className="pb-2 border-b-1 border-b-[#303030]">
-                                  <div className="flex w-max gap-7 justify-end ml-auto">
+                                  <div className="flex w-max gap-7 justify-end ml-auto mb-2">
                                     <Button
                                       className="bg-transparent !p-0 hover:bg-transparent ml-auto"
                                       onClick={() => {
@@ -1109,9 +681,14 @@ const Profile = () => {
                                       />
                                     </Button>
                                   </div>
-                                  {draft.text && <p>{draft.text}</p>}{" "}
+                                  {draft.text && (
+                                    <p className="mb-1.5">
+                                      Feed post: {draft.text}
+                                    </p>
+                                  )}{" "}
                                   {draft.image && (
-                                    <div className="h-max grid grid-cols-2 gap-2 mt-2">
+                                    <div className="h-max grid grid-cols-2 gap-2 mb-1.5">
+                                      Images:
                                       {draft.image.map((img, index) => (
                                         <div className="w-full h-[170px]">
                                           <img
@@ -1123,10 +700,111 @@ const Profile = () => {
                                       ))}
                                     </div>
                                   )}
-                                  {draft.date && <p>{draft.date}</p>}
-                                  {draft.time && <p>{draft.time}</p>}
-                                  {draft.location && <p>{draft.location}</p>}
-                                  {draft.eventType && <p>{draft.eventType}</p>}
+                                  {draft.eventDescription && (
+                                    <div>
+                                      Event description:
+                                      <div
+                                        className="mb-1.5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6"
+                                        dangerouslySetInnerHTML={{
+                                          __html: draft.eventDescription
+                                            .map((n) => serialize(n))
+                                            .join(""),
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                  {draft.date && (
+                                    <p className="mb-1.5">
+                                      Event date: {draft.date}
+                                    </p>
+                                  )}
+                                  {draft.time && (
+                                    <p className="mb-1.5">
+                                      Event time: {draft.time}
+                                    </p>
+                                  )}
+                                  {draft.location && (
+                                    <p className="mb-1.5">
+                                      Event location: {draft.location}
+                                    </p>
+                                  )}
+                                  {draft.eventType && (
+                                    <p className="mb-1.5">
+                                      Event type: {draft.eventType}
+                                    </p>
+                                  )}
+                                  {draft.jobTitle && (
+                                    <p className="mb-1.5">
+                                      Job title: {draft.jobTitle}
+                                    </p>
+                                  )}
+                                  {draft.jobDescription && (
+                                    <div>
+                                      Job description:
+                                      <div
+                                        className="mb-1.5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6"
+                                        dangerouslySetInnerHTML={{
+                                          __html: draft.jobDescription
+                                            .map((n) => serialize(n))
+                                            .join(""),
+                                        }}
+                                      />
+                                    </div>
+                                  )}
+                                  {draft.jobType && (
+                                    <p className="mb-1.5">
+                                      Job type: {draft.jobType}
+                                    </p>
+                                  )}
+                                  {draft.jobExperienceLevel && (
+                                    <p className="mb-1.5">
+                                      Job experience level
+                                      {draft.jobExperienceLevel}
+                                    </p>
+                                  )}
+                                  {draft.jobLocation && (
+                                    <p className="mb-1.5">
+                                      Job location: {draft.jobLocation}
+                                    </p>
+                                  )}
+                                  {draft.jobConvenience && (
+                                    <p className="mb-1.5">
+                                      Job convenience
+                                      {draft.jobConvenience}
+                                    </p>
+                                  )}
+                                  {draft.jobPayment && (
+                                    <p className="mb-1.5">
+                                      Job payment: {draft.jobPayment}
+                                    </p>
+                                  )}
+                                  {draft.jobApplicationLink && (
+                                    <p className="mb-1.5">
+                                      Job application link:
+                                      {draft.jobApplicationLink}
+                                    </p>
+                                  )}
+                                  {draft.bountyTitle && (
+                                    <p className="mb-1.5">
+                                      Bounty title: {draft.bountyTitle}
+                                    </p>
+                                  )}
+                                  {draft.bountyDuration && (
+                                    <p className="mb-1.5">
+                                      Bounty duration:
+                                      {draft.bountyDuration}
+                                    </p>
+                                  )}
+                                  {draft.bountyReward && (
+                                    <p className="mb-1.5">
+                                      Bounty reward: {draft.bountyReward}
+                                    </p>
+                                  )}
+                                  {draft.bountyLink && (
+                                    <p className="mb-1.5">
+                                      Bounty link: {draft.bountyLink}
+                                    </p>
+                                  )}
                                 </div>
                               ))}
                             </div>
@@ -1134,7 +812,7 @@ const Profile = () => {
                         )}
                       </div>
                       {!showDrafts && (
-                        <div className="mt-3 mb-6 px-7 flex gap-3 items-center">
+                        <div className="mt-3 mb-6 sm:px-7 px-3 flex sm:flex-row max-sm:flex-col max-sm:items-start gap-3 items-center">
                           {postType === "feed-post" && (
                             <FeedPostsFooter
                               onSelect={handleSelectEmoji}
@@ -1147,7 +825,7 @@ const Profile = () => {
                               setSavedMsg={setSavedMsg}
                             />
                           )}
-                          <DialogFooter className="self-end">
+                          <DialogFooter className="sm:self-end">
                             <Button
                               className="bg-[#430b68] hover:bg-[#430b68] rounded-full py-2 "
                               type="submit"
@@ -1166,7 +844,7 @@ const Profile = () => {
                 <Dialog>
                   <form>
                     <DialogTrigger asChild>
-                      <Button className="w-full font-sans bg-black hover:bg-white hover:text-black text-white rounded-full py-3 mb-4">
+                      <Button className="w-full font-sans bg-black hover:bg-white hover:text-black text-white rounded-full py-3 mb-4 max-sm:text-[13px] max-sm:font-semibold">
                         Edit Project
                       </Button>
                     </DialogTrigger>
@@ -1292,34 +970,34 @@ const Profile = () => {
             className="w-full flex flex-col items-center"
           >
             <div className="w-full flex flex-row gap-x-5">
-              <TabsList className="bg-transparent border-b border-b-[#303030] py-0 h-fit flex-1 rounded-none w-full mb-8 md:mb-8 font-sans justify-between">
+              <TabsList className="bg-transparent border-b border-b-[#303030] py-0 h-fit rounded-none w-full mb-8 md:mb-8 font-sans justify-between">
                 <TabsTrigger
                   value="feed-post"
-                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white"
+                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white max-sm:!text-[2.5vw]"
                 >
                   Feed Post
                 </TabsTrigger>
                 <TabsTrigger
                   value="events"
-                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white"
+                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white max-sm:!text-[2.5vw]"
                 >
                   Events
                 </TabsTrigger>
                 <TabsTrigger
                   value="hiring"
-                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white"
+                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white max-sm:!text-[2.5vw]"
                 >
                   Hiring
                 </TabsTrigger>
                 <TabsTrigger
                   value="bounties"
-                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white"
+                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white max-sm:!text-[2.5vw]"
                 >
                   Bounties
                 </TabsTrigger>
                 <TabsTrigger
                   value="announcements"
-                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white"
+                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white max-sm:!text-[2.5vw]"
                 >
                   Announcements
                 </TabsTrigger>
@@ -1348,7 +1026,7 @@ const Profile = () => {
           </Tabs>
         </div>
 
-        <div className="flex-1 h-4 "></div>
+        <div className="flex-1 h-4 lg:hidden "></div>
 
         <div
           className="lg:w-3/12 w-0 lg:fixed top-[90px] right-3 h-[84vh] overflow-y-scroll border border-[#303030] bg-[#161616] hidden lg:flex flex-col gap-5 rounded-2xl p-6"

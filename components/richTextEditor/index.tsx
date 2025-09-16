@@ -48,9 +48,6 @@ export default function RichTextEditor({
   setDescription,
 }: RichTextEditorProps) {
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
-  // const initialValue: Descendant[] = [
-  //   { type: "paragraph", children: [{ text: "" }] },
-  // ];
 
   const renderElement = useCallback((props: any) => {
     switch (props.element.type) {
@@ -146,7 +143,6 @@ export default function RichTextEditor({
           const focused = ReactEditor.isFocused(editor);
           setIsEditorActive(focused);
           setDescription(newValue);
-          console.log(newValue);
         }}
       >
         <Editable

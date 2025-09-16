@@ -24,10 +24,7 @@ const Dashboard = () => {
       ) : (
         ""
       )}
-      <Tabs
-        defaultValue="overview"
-        className="w-full flex flex-col items-center"
-      >
+      <Tabs value={tabValue} className="w-full flex flex-col items-center">
         <div className="w-full border-b border-b-[#303030] pl-6 pr-6">
           <TabsList className="bg-transparent max-md:w-full flex  gap-10 font-sans p-[0]">
             <div className="max-md:w-[50%] max-md:text-center">
@@ -60,20 +57,24 @@ const Dashboard = () => {
         ) : (
           ""
         )}
-        <TabsContent
-          className="relative w-full h-full pl-6 pr-6 pt-6"
-          value="overview"
-        >
-          <div className="w-full h-full">
-            <Overview />
-          </div>
-        </TabsContent>
-        <TabsContent
-          className="relative w-full h-full pl-6 pr-6 md:pt-6"
-          value="project"
-        >
-          <Projects />
-        </TabsContent>
+        {tabValue === "overview" && (
+          <TabsContent
+            className="relative w-full h-full pl-6 pr-6 pt-6"
+            value="overview"
+          >
+            <div className="w-full h-full">
+              <Overview setTabValue={setTabValue} />
+            </div>
+          </TabsContent>
+        )}
+        {tabValue === "project" && (
+          <TabsContent
+            className="relative w-full h-full pl-6 pr-6 md:pt-6"
+            value="project"
+          >
+            <Projects />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

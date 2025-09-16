@@ -24,7 +24,7 @@ const DashboardNav = ({ pioneer = false }) => {
 
   return (
     <nav
-      className={` ${!pioneer ? "sticky top-0 z-10" : ""} ${pioneer ? "lg:sticky lg:top-0 lg:z-10" : ""} lg:bg-[#161616] md:bg-[#0B0B0B]/[50%] backdrop-blur-md lg:backdrop-blur-none px-5 py-[18px] flex items-center justify-between lg:border-b lg:border-b-[#303030] w-full ${pioneer ? "max-sm:w-[100vw]" : ""}`}
+      className={` sticky top-0 z-10  lg:bg-[#161616] md:bg-[#0B0B0B]/[50%] backdrop-blur-md lg:backdrop-blur-none px-5 py-[18px] flex items-center justify-between lg:border-b lg:border-b-[#303030] w-full ${pioneer ? "max-sm:w-[100vw]" : ""}`}
     >
       {/* desktop view */}
       <Link href="/" className="hidden lg:flex">

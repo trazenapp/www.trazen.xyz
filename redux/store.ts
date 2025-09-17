@@ -8,6 +8,7 @@ import forgotPasswordReducer from "@/redux/slices/forgotPasswordSlice";
 import resetPasswordReducer from "@/redux/slices/resetPasswordSlice";
 import verifyEmailReducer from "@/redux/slices/verifyEmailSlice";
 import onboardingReducer from "@/redux/slices/onboardingSlice";
+import fcmNotificationReducer from "@/redux/slices/fcmNotificationSlice";
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     dashboardSidebar: dashboardSidebarReducer,
     register: registerReducer,
     login: loginReducer,
+    fcmNotification: fcmNotificationReducer,
     forgotPassword: forgotPasswordReducer,
     resetPassword: resetPasswordReducer,
     verifyEmail: verifyEmailReducer,

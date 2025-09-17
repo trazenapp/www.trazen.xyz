@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import axiosInstance from "@/utils/axios";
 import { getMessaging, getToken } from "firebase/messaging";
 import {
   SignInData,
@@ -25,39 +26,31 @@ export const signIn = createAsyncThunk<SignInResponse, SignInData>(
   "sign-in",
   async (SignInData, { rejectWithValue }) => {
     try {
-      let fcmToken = "";
-      const messaging = getMessaging();
-      try {
-        fcmToken = await getToken(messaging, {
-          vapidKey: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_VAPID_KEY,
-        });
-      } catch (err) {
-        console.log("An error occurred while retrieving FCM token. ", err);
-      }
-      const response = await axios.post<SignInResponse>(
+      const response = await axiosInstance.post<SignInResponse>(
         "/v1/auth/login",
         SignInData,
         {
           headers: {
             "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
             "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-            "x-device-token": fcmToken,
+            "x-device-token": localStorage.getItem("fcmToken"),
           },
         }
       );
-
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
+      console.log(response.data.data)
+      if (response.data.data.token) {
+        localStorage.setItem("token", response.data.data.token);
       }
 
       await fetch("/api/auth/set-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: response.data.token }),
+        body: JSON.stringify({ token: response.data.data.token }),
       });
 
       return response.data;
     } catch (error: any) {
+      console.log("Sign In Error: ", error);
       return rejectWithValue(error.response?.data?.message || "Sign In Failed");
     }
   }
@@ -92,7 +85,7 @@ const loginSlice = createSlice({
       })
       .addCase(signIn.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload.data.user;
         state.isAuthenticated = true;
         state.error = null;
       })

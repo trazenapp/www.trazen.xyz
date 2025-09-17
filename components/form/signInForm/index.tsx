@@ -18,6 +18,7 @@ import {
 } from "@/redux/slices/loginSlice";
 import { ClipLoader } from "react-spinners";
 import { toast } from "react-toastify";
+import { useFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
 
 const SignInForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,7 +26,7 @@ const SignInForm = () => {
 
   const dispatch = useAppDispatch();
   const router = useRouter();
-  
+
   const {
     control,
     handleSubmit,
@@ -35,25 +36,10 @@ const SignInForm = () => {
     defaultValues: data,
   });
 
-  const requestNotificationPermission = async () => {
-    try {
-      const permission = await Notification.requestPermission();
-      if (permission === "granted") {
-        console.log("Notification permission granted.");
-      } else {
-        console.log("Notification permission denied.");
-      }
-    } catch (err) {
-      console.log("Error requesting notification permission:", err);
-    }
-  };
-
   // "email": "tvd13337@jioso.com",
   // "password": "password"
 
-  useEffect(() => {
-    requestNotificationPermission();
-  }, []);
+  useFirebaseMessaging();
 
   const onSubmit = async (data: SignInData) => {
     try {
@@ -63,11 +49,11 @@ const SignInForm = () => {
       await dispatch(signIn(data)).unwrap();
       toast(<div>Login Successful</div>, {
         theme: "dark",
-        type: "success"
+        type: "success",
       });
       dispatch(setLoading(false));
       dispatch(resetForm());
-      router.replace("/home")
+      router.replace("/home");
     } catch (err: any) {
       console.log(err);
       toast(<div>{err}</div>, {
@@ -85,7 +71,10 @@ const SignInForm = () => {
   const passwordType = showPassword ? "text" : "password";
 
   return (
-    <form className="font-sans text-[#F4F4F4F4] w-full mt-8 flex flex-col gap-y-8" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="font-sans text-[#F4F4F4F4] w-full mt-8 flex flex-col gap-y-8"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="flex flex-col gap-y-2 w-full">
         <Label htmlFor="email" className="font-medium text-sm">
           Email
@@ -106,7 +95,9 @@ const SignInForm = () => {
           )}
         />
         {errors.email && (
-          <p className="text-red-500 text-sm">{errors.email.message || "Enter a valid email"}</p>
+          <p className="text-red-500 text-sm">
+            {errors.email.message || "Enter a valid email"}
+          </p>
         )}
       </div>
       <div className="flex flex-col gap-y-2 w-full">
@@ -141,15 +132,16 @@ const SignInForm = () => {
           </Button>
         </div>
         {errors.password && (
-          <p className="text-red-500 text-sm">{errors.password.message || "Enter a valid password"}</p>
+          <p className="text-red-500 text-sm">
+            {errors.password.message || "Enter a valid password"}
+          </p>
         )}
       </div>
       <Button
         type="submit"
         className="bg-[#430B68] hover:bg-[#430B68] rounded-full font-semibold"
-            disabled={loading}
+        disabled={loading}
       >
-
         {loading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Login"}
       </Button>
       <p className="text-center font-light text-base">

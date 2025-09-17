@@ -8,8 +8,8 @@ import SettingUpForm from "@/components/form/signupForm/settingUpForm";
 import FormSuccess from "@/components/form/formSuccess";
 import FileInput from "@/components/ui/FileInput";
 
-const OnBoarding = () => {  
-  const { steps, data, user } = useAppSelector((state) => state.auth);
+const OnBoarding = () => {
+  const { steps, user } = useAppSelector((state) => state.register);
   return (
     <div className="flex flex-col justify-center items-center">
       {steps === 1 && <SettingUpForm />}

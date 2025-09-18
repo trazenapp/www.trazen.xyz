@@ -76,7 +76,7 @@ export interface SignUpState {
 }
 
 export interface SignUpResponse {
-  user: User;
+  data: User;
 }
 
 export interface SignInState {
@@ -117,29 +117,6 @@ export interface SignInResponseData {
   user: User;
   token: string;
 }
-// token
-// : 
-// "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiM2VkOWQ2NjYtNzMzYy00MmIwLWE0YmUtNGFkZWUzNDM5NjJmIiwicm9sZSI6IlVTRVIiLCJlbWFpbCI6InR2ZDEzMzM3QGppb3NvLmNvbSIsImlwQWRkcmVzcyI6Ijo6ZmZmZjoxMC4wLjEuOSIsImlhdCI6MTc1ODA2NjI4NywiZXhwIjoxNzU4NjcxMDg3fQ.ptU-aRNKrkD1Br1Sr0LANOwmjQh9F_D3c5hIoIJTmec"
-// user
-// : 
-// created_at
-// : 
-// "2025-09-14T10:25:22.480Z"
-// email
-// : 
-// "tvd13337@jioso.com"
-// role
-// : 
-// "USER"
-// updated_at
-// : 
-// "2025-09-14T10:43:20.359Z"
-// username
-// : 
-// "tvd13337"
-// uuid
-// : 
-// "3ed9d666-733c-42b0-a4be-4adee343962f"
 
 export interface SignInResponse {
   data: SignInResponseData

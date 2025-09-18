@@ -33,7 +33,7 @@ const VerifyEmailForm = () => {
   const router = useRouter();
   const [timeLeft, setTimeLeft] = useState(300);
   const [timerExpired, setTimerExpired] = useState(false);
-  const { formData, loading, steps, user } = useAppSelector(
+  const { loading, user } = useAppSelector(
     (state: RootState) => state.register
   );
   const { data, resendLoading } = useAppSelector(
@@ -65,15 +65,18 @@ const VerifyEmailForm = () => {
   });
 
   const getEmail = user?.email;
-  console.log(getEmail);
 
   const emailSubtitle = `We've sent a code to ${getEmail}`;
 
-  const onSubmit = async (data: VerifyEmailData) => {
+  const onSubmit = async (formData: VerifyEmailData) => {
+    const getFormData = {
+      email: getEmail as string,
+      token: formData.token,
+    };
     try {
       dispatch(setLoading(true));
-      dispatch(updateFormData({ ...data, email: getEmail as string }));
-      await dispatch(verifyEmail(data)).unwrap();
+      dispatch(updateFormData(getFormData));
+      await dispatch(verifyEmail(getFormData)).unwrap();
       toast(<div>Email verified successfully</div>, {
         theme: "dark",
         type: "success",
@@ -91,12 +94,12 @@ const VerifyEmailForm = () => {
     }
   };
 
-  const handleResend = async (data: string) => {
+  const handleResend = async () => {
     try {
       dispatch(setResendLoading(true));
       setTimeLeft(300);
       setTimerExpired(false);
-      await dispatch(resendEmailVerification(data)).unwrap();
+      await dispatch(resendEmailVerification(getEmail as string)).unwrap();
       toast(<div>Email verification token resent</div>, {
         theme: "dark",
         type: "success",
@@ -158,9 +161,10 @@ const VerifyEmailForm = () => {
         <p className="text-center font-light text-base">
           Did not receive the email?{" "}
           <Button
+            type="button"
             className="p-0 bg-transparent"
-            onClick={() => handleResend(getEmail as string)}
-            disabled={resendLoading}
+            onClick={handleResend}
+            disabled={resendLoading || timerExpired}
           >
             {resendLoading ? (
               <ClipLoader color="#F4F4F4F4" size={10} />

@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 import axiosInstance from "@/utils/axios";
 import { getMessaging, getToken } from "firebase/messaging";
 import {

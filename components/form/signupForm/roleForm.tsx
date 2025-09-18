@@ -18,11 +18,10 @@ import FormHeading from "@/components/formHeading";
 import img1 from "@/public/user-broken.svg";
 import img2 from "@/public/user-id-broken.svg";
 import { SignUpData } from "@/types/auth.types";
-import { toast } from "react-toastify";
 
 const RoleForm = () => {
   const dispatch = useAppDispatch();
-  const { loading, steps, error, formData } = useAppSelector(
+  const { loading, steps, formData } = useAppSelector(
     (state: RootState) => state.register
   );
 
@@ -35,19 +34,14 @@ const RoleForm = () => {
     defaultValues: formData,
   });
 
-  // console.log(data)
 
   const onSubmit = (data: SignUpData) => {
     dispatch(setLoading(true));
-    // toast(<div>Role successfully selected</div>, {
-    //   theme: "dark",
-    //   type: "error"
-    // });
     dispatch(updateFormData({ ...data }));
     setTimeout(() => {
       dispatch(setLoading(false));
       dispatch(setSteps(steps + 1));
-    }, 2000);
+    }, 100);
   };
   return (
     <Card className="w-11/12 md:w-9/12 lg:w-5/12 mx-auto border-0 md:border md:border-[#303030] py-10 bg-transparent md:bg-[#161616] flex flex-col items-center justify-center">

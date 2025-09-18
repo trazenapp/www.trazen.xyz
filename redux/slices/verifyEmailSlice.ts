@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "@/utils/axios";
 import {
   EmailVerificationState,
   ForgotPasswordResponse,
@@ -21,9 +21,9 @@ const initialState: EmailVerificationState = {
 export const verifyEmail = createAsyncThunk<
   ForgotPasswordResponse,
   VerifyEmailData
->("verify-email", async (VerifyEmailData, { rejectWithValue }) => {
+>("verify-email/verify", async (VerifyEmailData, { rejectWithValue }) => {
   try {
-    const response = await axios.post<ForgotPasswordResponse>(
+    const response = await axiosInstance.post<ForgotPasswordResponse>(
       "/v1/auth/verify-email",
       VerifyEmailData,
       {
@@ -33,7 +33,6 @@ export const verifyEmail = createAsyncThunk<
         },
       }
     );
-    console.log(response.data.message);
     return response.data;
   } catch (error: any) {
     return rejectWithValue(
@@ -45,11 +44,11 @@ export const verifyEmail = createAsyncThunk<
 export const resendEmailVerification = createAsyncThunk<
   ForgotPasswordResponse,
   string
->("verify-email", async (resendEmailData, { rejectWithValue }) => {
+>("verify-email/resend", async (email, { rejectWithValue }) => {
   try {
-    const response = await axios.post<ForgotPasswordResponse>(
+    const response = await axiosInstance.post<ForgotPasswordResponse>(
       "/v1/auth/resend-email-verification",
-      resendEmailData,
+      {email},
       {
         headers: {
           "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
@@ -57,9 +56,9 @@ export const resendEmailVerification = createAsyncThunk<
         },
       }
     );
-    console.log(response.data.message);
     return response.data;
   } catch (error: any) {
+    console.log(error)
     return rejectWithValue(
       error.response?.data?.message || "Email Verification Token Resend Failed"
     );
@@ -99,11 +98,28 @@ const verifyEmailSlice = createSlice({
       .addCase(verifyEmail.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(resendEmailVerification.pending, (state) => {
+        state.resendLoading = true;
+        state.error = null;
+      })
+      .addCase(resendEmailVerification.fulfilled, (state) => {
+        state.resendLoading = false;
+        state.error = null;
+      })
+      .addCase(resendEmailVerification.rejected, (state, action) => {
+        state.resendLoading = false;
+        state.error = action.payload as string ?? "Resend Verification Failed";
       });
   },
 });
 
-export const { clearError, updateFormData, setLoading, resetForm, setResendLoading } =
-  verifyEmailSlice.actions;
+export const {
+  clearError,
+  updateFormData,
+  setLoading,
+  resetForm,
+  setResendLoading,
+} = verifyEmailSlice.actions;
 
 export default verifyEmailSlice.reducer;

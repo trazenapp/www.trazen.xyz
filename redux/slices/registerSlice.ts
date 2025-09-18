@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "@/utils/axios";
 import {
   SignUpResponse,
   SignUpState,
@@ -11,7 +11,7 @@ const formData: SignUpData = {
   role: "USER",
   email: "",
   password: "",
-  cPassword: ""
+  cPassword: "",
 };
 
 const initialState: SignUpState = {
@@ -23,11 +23,11 @@ const initialState: SignUpState = {
   formData: formData,
 };
 
-export const signUp = createAsyncThunk<SignUpResponse, SignUpData>(
+export const signUp = createAsyncThunk<User, SignUpData>(
   "sign-up",
   async (SignUpData, { rejectWithValue }) => {
     try {
-      const response = await axios.post<SignUpResponse>(
+      const response = await axiosInstance.post<SignUpResponse>(
         "/v1/auth/register",
         SignUpData,
         {
@@ -37,10 +37,9 @@ export const signUp = createAsyncThunk<SignUpResponse, SignUpData>(
           },
         }
       );
-
-      return response.data;
+      return response.data.data;
     } catch (error: any) {
-      console.log(error.response?.statusText)
+      console.log(error.response?.statusText);
       return rejectWithValue("Sign Up Failed");
     }
   }
@@ -78,7 +77,7 @@ const registerSlice = createSlice({
       })
       .addCase(signUp.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.user = action.payload;
         state.isAuthenticated = true;
         state.error = null;
       })

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { RootState } from "@/redux/store";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import {
@@ -7,7 +7,7 @@ import {
   setSteps,
   setLoading,
   signUp,
-  resetForm
+  resetForm,
 } from "@/redux/slices/registerSlice";
 import { useForm, Controller } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
@@ -17,7 +17,6 @@ import { Button } from "@/components/ui/button";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
 import DividerText from "@/components/dividerText";
 import SignInWithGoogle from "@/components/form/signInWithGoogle";
-import SignInWithWallet from "@/components/form/signInWithWallet";
 import Card from "@/components/card";
 import FormHeading from "@/components/formHeading";
 import { SignUpData } from "@/types/auth.types";
@@ -27,7 +26,7 @@ import { toast } from "react-toastify";
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useAppDispatch();
-  const { formData, loading, steps, error } = useAppSelector(
+  const { formData, loading, steps, error, user } = useAppSelector(
     (state: RootState) => state.register
   );
 
@@ -43,11 +42,6 @@ const SignUpForm = () => {
 
   const watchPassword = watch("password");
 
-  const signInWithWallet = () => {
-    console.log("signInWithWallet");
-    dispatch(setSteps(steps + 2));
-  };
-
   const togglePassword = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setShowPassword(!showPassword);
@@ -57,12 +51,11 @@ const SignUpForm = () => {
   const onSubmit = async (data: SignUpData) => {
     try {
       dispatch(setLoading(true));
-      dispatch(updateFormData(data));
-      console.log(data);
+      dispatch(updateFormData({...data}));
       await dispatch(signUp(data)).unwrap();
       toast(<div>Account Created</div>, {
         theme: "dark",
-        type: "success"
+        type: "success",
       });
       dispatch(setLoading(false));
       dispatch(resetForm());
@@ -76,6 +69,7 @@ const SignUpForm = () => {
       dispatch(setLoading(false));
     }
   };
+
   return (
     <Card className="w-11/12 md:w-9/12 lg:w-5/12 mx-auto border-0 md:border md:border-[#303030] py-10 bg-transparent md:bg-[#161616] flex flex-col items-center justify-center">
       <div className="mb-8">
@@ -85,8 +79,6 @@ const SignUpForm = () => {
         />
       </div>
       <div className="flex flex-col gap-y-4 w-full mb-8">
-        <SignInWithWallet onClick={signInWithWallet} />
-
         <SignInWithGoogle />
       </div>
       <DividerText text="Or sign up with" />
@@ -113,7 +105,9 @@ const SignUpForm = () => {
             )}
           />
           {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message || "Enter a valid email"}</p>
+            <p className="text-red-500 text-sm">
+              {errors.email.message || "Enter a valid email"}
+            </p>
           )}
         </div>
         <div className="flex flex-col gap-y-2 w-full">
@@ -148,7 +142,9 @@ const SignUpForm = () => {
             </Button>
           </div>
           {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password.message || "Enter a valid password"}</p>
+            <p className="text-red-500 text-sm">
+              {errors.password.message || "Enter a valid password"}
+            </p>
           )}
         </div>
         <div className="flex flex-col gap-y-2 w-full">
@@ -184,7 +180,9 @@ const SignUpForm = () => {
             </Button>
           </div>
           {errors.cPassword && (
-            <p className="text-red-500 text-sm">{errors.cPassword.message || "Passwords do not match"}</p>
+            <p className="text-red-500 text-sm">
+              {errors.cPassword.message || "Passwords do not match"}
+            </p>
           )}
         </div>
         <Button

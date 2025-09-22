@@ -6,7 +6,6 @@ import {
   SignUpData,
   User,
 } from "@/types/auth.types";
-import { User } from "lucide-react";
 
 const formData: SignUpData = {
   role: "USER",

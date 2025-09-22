@@ -9,6 +9,7 @@ import resetPasswordReducer from "@/redux/slices/resetPasswordSlice";
 import verifyEmailReducer from "@/redux/slices/verifyEmailSlice";
 import onboardingReducer from "@/redux/slices/onboardingSlice";
 import fcmNotificationReducer from "@/redux/slices/fcmNotificationSlice";
+import projectReducer from "@/redux/slices/projectSlice";
 
 export const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ export const store = configureStore({
     resetPassword: resetPasswordReducer,
     verifyEmail: verifyEmailReducer,
     onboarding: onboardingReducer,
+    project: projectReducer,
   }
 });
 

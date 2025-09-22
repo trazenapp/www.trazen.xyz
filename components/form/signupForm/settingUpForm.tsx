@@ -50,7 +50,6 @@ const user = typeof window !== "undefined" && localStorage.getItem("User");
   });
 
   const onSubmit = (data: OnboardingData) => {
-    console.log(data);
     dispatch(updateFormData({ ...data }));
     dispatch(setLoading(true));
     setTimeout(() => {

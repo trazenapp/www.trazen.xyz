@@ -6,6 +6,7 @@ import {
   SignUpData,
   User,
 } from "@/types/auth.types";
+import { User } from "lucide-react";
 
 const formData: SignUpData = {
   role: "USER",
@@ -37,6 +38,8 @@ export const signUp = createAsyncThunk<User, SignUpData>(
           },
         }
       );
+      localStorage.setItem("User", JSON.stringify(response.data.data));
+      // console.log(localStorage.getItem("User"));
       return response.data.data;
     } catch (error: any) {
       console.log(error.response?.statusText);

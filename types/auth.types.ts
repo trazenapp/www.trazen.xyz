@@ -19,13 +19,15 @@ export interface SignUpData {
 
 export interface OnboardingData {
   username: string;
-  xHandle?: string;
+  email: string;
+  social?: string;
   title?: string;
-  skills: OptionType[];
-  hearAboutUs: string;
-  chains: string[];
-  niche: string;
-  projects: string;
+  skills: string[];
+  hearAboutUs?: string;
+  interests: string[];
+  chains?: string[];
+  niche?: string[];
+  projects?: string;
 }
 
 export interface SignInData {

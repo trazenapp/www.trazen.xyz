@@ -4,7 +4,7 @@ export interface OptionType {
 }
 
 export const options: OptionType[] = [
-  { value: "Smart Contract Development", label: "Smart Contract Development" }, // Web3
+  { value: "Smart Contract Development", label: "Smart Contract Development" },
   {
     value: "Decentralized Applications (dApps)",
     label: "Decentralized Applications (dApps)",

@@ -1,16 +1,25 @@
-import {NextResponse} from "next/server"
-import type {NextRequest} from "next/server"
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const publicRoutes = ["/", "/sign-in", "/sign-up", "/forgot-password", "/reset-password", "/email-verification", "on-boarding"];
-  if(publicRoutes.includes(request.nextUrl.pathname)) {
+  const publicRoutes = [
+    "/",
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/reset-password",
+    "/email-verification",
+    "on-boarding",
+    "/create-project",
+  ];
+  if (publicRoutes.includes(request.nextUrl.pathname)) {
     return NextResponse.next();
   }
 
   const token = request.cookies.get("token")?.value;
-  
+
   if (!token) {
-    return NextResponse.redirect(new URL("/sign-in", request.url))
+    return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
   return NextResponse.next();
@@ -28,5 +37,5 @@ export const config = {
     "/dashboard/:path*",
     "/saved/:path*",
     "/settings/:path*",
-  ]
+  ],
 };

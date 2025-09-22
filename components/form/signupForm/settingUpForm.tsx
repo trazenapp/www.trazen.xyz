@@ -2,7 +2,11 @@
 import React from "react";
 import { RootState } from "@/redux/store";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { updateFormData, setSteps, setLoading } from "@/redux/slices/authSlice";
+import {
+  updateFormData,
+  setSteps,
+  setLoading,
+} from "@/redux/slices/onboardingSlice";
 import { useForm, Controller } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
 import { Label } from "@/components/ui/label";
@@ -10,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Card from "@/components/card";
 import FormHeading from "@/components/formHeading";
-import { SignUpData } from "@/types/auth.types";
+import { OnboardingData } from "@/types/auth.types";
 import { options, hearOptions, OptionType } from "@/constants/options";
 import FormRadio from "@/components/form/formRadio";
 import Select from "react-select";
@@ -18,22 +22,34 @@ import { FaCheck } from "react-icons/fa6";
 
 const settingUpForm = () => {
   const dispatch = useAppDispatch();
-  const { data, loading, steps, user } = useAppSelector(
-    (state: RootState) => state.auth
+  const { loading, steps, data, error } = useAppSelector(
+    (state: RootState) => state.onboarding
   );
 
-  console.log(data?.role)
+  // console.log(user?.role)
+
+const user = typeof window !== "undefined" && localStorage.getItem("User");
+  const userRole = user
+    ? JSON.parse(user).role
+    : null;
+
+  const formTitle =
+    userRole === "USER" ? "Almost Done" : "Tell us more about yourself";
+  const formSubTitle =
+    userRole === "USER"
+      ? "Fill out the following to proceed"
+      : "This helps us know how best the platform will suit your needs";
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignUpData>({
+  } = useForm<OnboardingData>({
     mode: "all",
     defaultValues: data,
   });
 
-  const onSubmit = (data: SignUpData) => {
+  const onSubmit = (data: OnboardingData) => {
     console.log(data);
     dispatch(updateFormData({ ...data }));
     dispatch(setLoading(true));
@@ -47,8 +63,8 @@ const settingUpForm = () => {
     <Card className="w-11/12 md:w-9/12 lg:w-5/12 mx-auto border-0 md:border md:border-[#303030] py-10 bg-transparent md:bg-[#161616] flex flex-col items-center justify-center">
       <div className="mb-8 w-full">
         <FormHeading
-          title="Almost Done"
-          subtitle="Fill out the following to proceed"
+          title={formTitle}
+          subtitle={formSubTitle}
           className="!text-left"
         />
       </div>
@@ -60,65 +76,64 @@ const settingUpForm = () => {
           <Label htmlFor="username" className="font-medium text-sm">
             Username
           </Label>
-          <Controller
-            name="username"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <Input
-                type="text"
-                id="username"
-                className="border-[#434343] rounded-[8px] py-[19px] px-4"
-                {...field}
-              />
-            )}
+          <Input
+            type="text"
+            id="username"
+            className="border-[#434343] rounded-[8px] py-[19px] px-4"
+            value={user ? JSON.parse(user).username || "" : ""}
+            disabled
           />
-          {errors.username && (
-            <p className="text-red-500 text-sm">{errors.username.message}</p>
-          )}
         </div>
-        <div className="flex flex-col gap-y-2 w-full">
-          <Label htmlFor="username" className="font-medium text-sm">
-            Username
-          </Label>
-          <Controller
-            name="username"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <Input
-                type="text"
-                id="username"
-                className="border-[#434343] rounded-[8px] py-[19px] px-4"
-                {...field}
-              />
+        {userRole === "PIONEER" && (
+          <div className="flex flex-col gap-y-2 w-full">
+            <Label htmlFor="social" className="font-medium text-sm">
+              X(Twitter) handle
+            </Label>
+            <Controller
+              name="social"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  id="social"
+                  className="border-[#434343] rounded-[8px] py-[19px] px-4"
+                  {...field}
+                />
+              )}
+            />
+            {errors.social && (
+              <p className="text-red-500 text-sm">
+                {errors.social.message || "Please enter your X(Twitter) handle"}
+              </p>
             )}
-          />
-          {errors.username && (
-            <p className="text-red-500 text-sm">{errors.username.message}</p>
-          )}
-        </div>
-        <div className="flex flex-col gap-y-2 w-full">
-          <Label htmlFor="username" className="font-medium text-sm">
-            Username
-          </Label>
-          <Controller
-            name="username"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <Input
-                type="text"
-                id="username"
-                className="border-[#434343] rounded-[8px] py-[19px] px-4"
-                {...field}
-              />
+          </div>
+        )}
+        {userRole === "PIONEER" && (
+          <div className="flex flex-col gap-y-2 w-full">
+            <Label htmlFor="title" className="font-medium text-sm">
+              What is your title?
+            </Label>
+            <Controller
+              name="title"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  id="title"
+                  className="border-[#434343] rounded-[8px] py-[19px] px-4"
+                  {...field}
+                />
+              )}
+            />
+            {errors.title && (
+              <p className="text-red-500 text-sm">
+                {errors.title.message || "Please enter your title"}
+              </p>
             )}
-          />
-          {errors.username && (
-            <p className="text-red-500 text-sm">{errors.username.message}</p>
-          )}
-        </div>
+          </div>
+        )}
         <div className="flex flex-col gap-y-2 w-full">
           <Label htmlFor="skills" className="font-medium text-sm">
             Add skills <span className="opacity-30">(Max. 5)</span>
@@ -134,7 +149,12 @@ const settingUpForm = () => {
                 className="basic-multi-select font-sans !bg-[#171717] !border-[#434343]"
                 classNamePrefix="select"
                 isOptionDisabled={() => field.value?.length >= 5}
-                {...field}
+                value={options.filter((opt) =>
+                  (field.value ?? []).includes(opt.value)
+                )}
+                onChange={(selected) =>
+                  field.onChange(selected.map((s) => s.value))
+                }
               />
             )}
           />
@@ -144,7 +164,7 @@ const settingUpForm = () => {
             </p>
           )}
         </div>
-        <div className="flex flex-col gap-y-2 w-full">
+        {/* <div className="flex flex-col gap-y-2 w-full">
           <Label htmlFor="interests" className="font-medium text-sm">
             How did your hear about us
           </Label>
@@ -164,10 +184,11 @@ const settingUpForm = () => {
           {errors.role && (
             <p className="text-red-500 text-sm">Role is required</p>
           )}
-        </div>
+        </div> */}
         <Button
           type="submit"
           className="bg-[#430B68] hover:bg-[#430B68] rounded-full font-semibold"
+          disabled={loading}
         >
           {loading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Continue"}
         </Button>

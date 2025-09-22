@@ -1,8 +1,14 @@
 "use client";
 import React from "react";
+import { useRouter } from "next/navigation";
 import { RootState } from "@/redux/store";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { updateFormData, setSteps, setLoading } from "@/redux/slices/authSlice";
+import {
+  updateFormData,
+  setSteps,
+  setLoading,
+  onboarding,
+} from "@/redux/slices/onboardingSlice";
 import { useForm, Controller } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
 import { Label } from "@/components/ui/label";
@@ -10,44 +16,97 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Card from "@/components/card";
 import FormHeading from "@/components/formHeading";
-import { SignUpData } from "@/types/auth.types";
-import { chainOptions, OptionType, nicheOptions, projectOptions } from "@/constants/options";
+import { OnboardingData } from "@/types/auth.types";
+import {
+  chainOptions,
+  nicheOptions,
+  projectOptions,
+} from "@/constants/options";
 import FormRadio from "@/components/form/formRadio";
 import FormCheckbox from "@/components/form/formCheckbox";
-import Select from "react-select";
+import FormSuccess from "@/components/form/formSuccess";
 import { FaCheck } from "react-icons/fa6";
+import { toast } from "react-toastify";
 
 const InterestsForm = () => {
+  const router = useRouter();
   const dispatch = useAppDispatch();
-  const { data, loading, steps } = useAppSelector(
-    (state: RootState) => state.auth
+  const { loading, steps, data, error } = useAppSelector(
+    (state: RootState) => state.onboarding
   );
+
+  const user = typeof window !== "undefined" && localStorage.getItem("User");
+  const userRole = user ? JSON.parse(user).role : null;
+  const userEmail = user ? JSON.parse(user).email : null;
+
+  const formTitle =
+    userRole === "USER" ? "What interests you?" : "Project Category";
+  const formSubTitle =
+    userRole === "USER"
+      ? "Select categories that you’d love to see on your news feed"
+      : "Select what applies to your project";
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignUpData>({
+  } = useForm<OnboardingData>({
     mode: "all",
     defaultValues: data,
   });
 
-  const onSubmit = (data: SignUpData) => {
-    console.log(data);
-    dispatch(updateFormData({ ...data }));
-    dispatch(setLoading(true));
-    setTimeout(() => {
+  const finalData = (formData: any) => {
+    return {
+      email: formData.email,
+      username: formData.username,
+      title: formData.title,
+      social: formData.social,
+      skills: formData.skills,
+      interests: formData.interests,
+    };
+  };
+
+  const onSubmit = async (data: any) => {
+    try {
+      dispatch(setLoading(true));
+      const finalFormData = finalData(data);
+      console.log(finalFormData);
+      const mergedData = {
+        ...finalFormData,
+        // username: user ? JSON.parse(user).username : "",
+        // email: userEmail,
+        interests: [
+          ...(data.chains || []),
+          ...(data.niche || []),
+          ...(data.projects ? [data.projects] : []),
+        ],
+      };
+      dispatch(updateFormData(mergedData));
+      await dispatch(onboarding(mergedData)).unwrap();
+      toast(<div>Onboarding Steps Complete</div>, {
+        theme: "dark",
+        type: "success",
+      });
       dispatch(setLoading(false));
-      dispatch(setSteps(steps + 3));
-    }, 500);
+      userRole === "USER"
+        ? dispatch(setSteps(steps + 3))
+        : router.push("/create-project");
+    } catch (error: any) {
+      console.log(error);
+      toast(<div>{error}</div>, {
+        theme: "dark",
+        type: "error",
+      });
+      dispatch(setLoading(false));
+    }
   };
 
   return (
     <Card className="w-11/12 md:w-9/12 lg:w-5/12 mx-auto border-0 md:border md:border-[#303030] py-10 bg-transparent md:bg-[#161616] flex flex-col items-center justify-center">
       <div className="mb-8 w-full">
         <FormHeading
-          title="What interests you?"
-          subtitle="Select categories that you’d love to see on your news feed"
+          title={formTitle}
+          subtitle={formSubTitle}
           className="!text-left"
         />
       </div>
@@ -66,7 +125,7 @@ const InterestsForm = () => {
             render={({ field }) => (
               <FormCheckbox
                 options={chainOptions}
-                values={field.value}
+                values={field.value || []}
                 onChange={field.onChange}
                 selectedIcon={<FaCheck />}
               />
@@ -87,9 +146,9 @@ const InterestsForm = () => {
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
-              <FormRadio
+              <FormCheckbox
                 options={nicheOptions}
-                value={field.value}
+                values={field.value || []}
                 onChange={field.onChange}
                 selectedIcon={<FaCheck />}
               />
@@ -101,29 +160,30 @@ const InterestsForm = () => {
             </p>
           )}
         </div>
-        <div className="flex flex-col gap-y-2 w-full">
-          <Label htmlFor="interests" className="font-medium text-sm">
-            Popular Projects
-          </Label>
-          <Controller
-            name="projects"
-            control={control}
-            render={({ field }) => (
-              <FormRadio
-                options={projectOptions}
-                value={field.value}
-                onChange={field.onChange}
-                selectedIcon={<FaCheck />}
-              />
+        {userRole === "USER" && (
+          <div className="flex flex-col gap-y-2 w-full">
+            <Label htmlFor="interests" className="font-medium text-sm">
+              Popular Projects
+            </Label>
+            <Controller
+              name="projects"
+              control={control}
+              render={({ field }) => (
+                <FormRadio
+                  options={projectOptions}
+                  value={field.value || ""}
+                  onChange={field.onChange}
+                  selectedIcon={<FaCheck />}
+                />
+              )}
+            />
+            {errors.projects && (
+              <p className="text-red-500 text-sm">
+                {errors.projects.message || "Please select your projects"}
+              </p>
             )}
-          />
-
-          {errors.projects && (
-            <p className="text-red-500 text-sm">
-              {errors.projects.message || "Please select your projects"}
-            </p>
-          )}
-        </div>
+          </div>
+        )}
         <Button
           type="submit"
           className="bg-[#430B68] hover:bg-[#430B68] rounded-full font-semibold"

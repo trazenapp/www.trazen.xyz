@@ -51,7 +51,7 @@ const SignUpForm = () => {
   const onSubmit = async (data: SignUpData) => {
     try {
       dispatch(setLoading(true));
-      dispatch(updateFormData({...data}));
+      dispatch(updateFormData({ ...data }));
       await dispatch(signUp(data)).unwrap();
       toast(<div>Account Created</div>, {
         theme: "dark",

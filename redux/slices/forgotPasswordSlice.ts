@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
+import axiosInstance from "@/utils/axios";
 import {
   ForgotPasswordState,
   ForgotPasswordResponse,
@@ -21,7 +21,7 @@ export const forgotPassword = createAsyncThunk<
   ForgotPasswordData
 >("forgot-password", async (ForgotPasswordData, { rejectWithValue }) => {
   try {
-    const response = await axios.post<ForgotPasswordResponse>(
+    const response = await axiosInstance.post<ForgotPasswordResponse>(
       "/v1/auth/forgot-password",
       ForgotPasswordData,
       {

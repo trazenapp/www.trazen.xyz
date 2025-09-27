@@ -2,30 +2,25 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import img from "@/public/file-upload.svg";
+import { useAppSelector } from "@/redux/store";
+import { ClipLoader } from "react-spinners";
 
 interface FileInputProps {
-  value?: string | null; 
+  value?: string | null;
   onChange: (value: string | null) => void;
 }
 
 const FileInput = ({ value, onChange }: FileInputProps) => {
+  const { token } = useAppSelector((state) => state.register);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [userID, setUserID] = useState<string | null>(null);
-
-  // Get userID from localStorage (client-side only)
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const user = localStorage.getItem("User");
-      setUserID(user ? JSON.parse(user).uuid : null);
-    }
-  }, []);
+  const [isUploaded, setIsUploaded] = useState(false);
 
   useEffect(() => {
     setPreviewUrl(value || null);
   }, [value]);
 
-  // console.log(userID)
+  const previewFileUrl = process.env.NEXT_PUBLIC_FILE_PREVIEW_URL
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -38,13 +33,12 @@ const FileInput = ({ value, onChange }: FileInputProps) => {
       setUploading(true);
       const formData = new FormData();
       formData.append("file", selectedFile);
-      if (userID) formData.append("userID", userID);
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_FILE_URL}/api/storage`,
         {
           method: "POST",
           body: formData,
-          headers: { Authorization: `Bearer ${userID}` },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -52,10 +46,12 @@ const FileInput = ({ value, onChange }: FileInputProps) => {
 
       const data = await res.json();
       console.log(data);
-      const fileUrl = data.url as string;
-
-      onChange(fileUrl);
-      setPreviewUrl(fileUrl);
+      setIsUploaded(true);
+      const fileUrl = data.data.path as string;
+      const filePreviewUrl = `${previewFileUrl}/${data.data.path as string}`;
+      // console.log(fileUrl)
+      onChange(filePreviewUrl);
+      setPreviewUrl(filePreviewUrl);
     } catch (err) {
       console.error("Upload error:", err);
       onChange(null);
@@ -87,20 +83,20 @@ const FileInput = ({ value, onChange }: FileInputProps) => {
             htmlFor="file-upload"
             className="text-white px-2 py-2 rounded-md mt-2 cursor-pointer transition"
           >
-            {uploading ? "Uploading..." : "Browse"}
+            {uploading ? <p>Uploading... Please wait <ClipLoader color="#F4F4F4F4" size={10} /></p> : "Browse"}
           </label>
         </div>
       </label>
       <p className="text-[#98A2B3] text-xs font-normal">JPG, PNG (Max. 5mb)</p>
 
-      {previewUrl && (
+      {isUploaded && (
         <div className="relative w-40 h-40">
-          <Image
+          {previewUrl && <Image
             src={previewUrl}
             alt="preview"
             fill
             className="rounded-md object-cover"
-          />
+          />}
         </div>
       )}
     </div>

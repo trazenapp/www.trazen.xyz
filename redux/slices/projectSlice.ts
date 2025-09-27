@@ -9,8 +9,9 @@ const formData: AddProjectData = {
   wallet_uuid: "",
   social: "",
   whitepaper: "",
-  team_size: 0,
+  team_emails: [],
   isTeam: "No",
+  category: [],
 }
 
 const initialState: AddProjectState = {

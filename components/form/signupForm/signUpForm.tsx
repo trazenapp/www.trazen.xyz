@@ -26,7 +26,7 @@ import { toast } from "react-toastify";
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useAppDispatch();
-  const { formData, loading, steps, error, user } = useAppSelector(
+  const { formData, loading, steps } = useAppSelector(
     (state: RootState) => state.register
   );
 

@@ -7,12 +7,11 @@ import {
   updateFormData,
   setSteps,
   setLoading,
-  onboarding,
-} from "@/redux/slices/onboardingSlice";
+  addProject,
+} from "@/redux/slices/projectSlice";
 import { useForm, Controller } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Card from "@/components/card";
 import FormHeading from "@/components/formHeading";
@@ -20,32 +19,17 @@ import { OnboardingData } from "@/types/auth.types";
 import {
   chainOptions,
   nicheOptions,
-  projectOptions,
 } from "@/constants/options";
-import FormRadio from "@/components/form/formRadio";
 import FormCheckbox from "@/components/form/formCheckbox";
-import FormSuccess from "@/components/form/formSuccess";
 import { FaCheck } from "react-icons/fa6";
 import { toast } from "react-toastify";
 
-const InterestsForm = () => {
-  const router = useRouter();
+const ProjectCategory = () => {
   const dispatch = useAppDispatch();
-  const { loading, steps, data, error } = useAppSelector(
-    (state: RootState) => state.onboarding
+  const { loading, steps, projectData, error } = useAppSelector(
+    (state: RootState) => state.project
   );
   const user = useAppSelector((state: RootState) => state.register.user);
-
-  const userRole = user?.role ?? "";
-  const userEmail = user?.email ?? "";
-  const uUsername = user?.username ?? "";
-
-  const formTitle =
-    userRole === "USER" ? "What interests you?" : "Project Category";
-  const formSubTitle =
-    userRole === "USER"
-      ? "Select categories that you’d love to see on your news feed"
-      : "Select what applies to your project";
 
   const {
     control,
@@ -53,22 +37,21 @@ const InterestsForm = () => {
     formState: { errors },
   } = useForm<OnboardingData>({
     mode: "all",
-    defaultValues: data,
+    defaultValues: projectData,
   });
 
   const finalData = (formData: any) => {
     return {
-      email: userEmail,
-      username: uUsername,
-      title: formData.title,
+      name: formData.name,
+      description: formData.description,
+      avatar: formData.avatar,
       social: formData.social,
-      skills: formData.skills,
-      interests: [
+      whitepaper: formData.whitepaper,
+      categories: [
         ...(formData.chains || []),
         ...(formData.niche || []),
-        ...(formData.projects ? [formData.projects] : []),
       ],
-      ref: formData.ref,
+      team_emails: formData.team_emails,
     };
   };
 
@@ -79,15 +62,13 @@ const InterestsForm = () => {
       const mergedData = { ...finalFormData };
       console.log(mergedData);
       dispatch(updateFormData(mergedData));
-      await dispatch(onboarding(mergedData)).unwrap();
-      toast(<div>Onboarding Steps Complete</div>, {
+      await dispatch(addProject(mergedData)).unwrap();
+      toast(<div>Project created successfully</div>, {
         theme: "dark",
         type: "success",
       });
       dispatch(setLoading(false));
-      userRole === "USER"
-        ? dispatch(setSteps(steps + 1))
-        : router.push("/create-project");
+      dispatch(setSteps(steps + 1));
     } catch (error: any) {
       console.log(error);
       toast(<div>{error}</div>, {
@@ -102,8 +83,8 @@ const InterestsForm = () => {
     <Card className="w-11/12 md:w-9/12 lg:w-5/12 mx-auto border-0 md:border md:border-[#303030] py-10 bg-transparent md:bg-[#161616] flex flex-col items-center justify-center">
       <div className="mb-8 w-full">
         <FormHeading
-          title={formTitle}
-          subtitle={formSubTitle}
+          title="Project Category"
+          subtitle="Select what applies to your project"
           className="!text-left"
         />
       </div>
@@ -113,7 +94,7 @@ const InterestsForm = () => {
       >
         <div className="flex flex-col gap-y-2 w-full">
           <Label htmlFor="username" className="font-medium text-sm">
-            Chains
+            Chains (Max. 3)
           </Label>
           <Controller
             name="chains"
@@ -125,6 +106,7 @@ const InterestsForm = () => {
                 values={field.value || []}
                 onChange={field.onChange}
                 selectedIcon={<FaCheck />}
+                maxSelected={3}
               />
             )}
           />
@@ -136,7 +118,7 @@ const InterestsForm = () => {
         </div>
         <div className="flex flex-col gap-y-2 w-full">
           <Label htmlFor="skills" className="font-medium text-sm">
-            Niche
+            Niche (Max. 3)
           </Label>
           <Controller
             name="niche"
@@ -148,6 +130,7 @@ const InterestsForm = () => {
                 values={field.value || []}
                 onChange={field.onChange}
                 selectedIcon={<FaCheck />}
+                maxSelected={3}
               />
             )}
           />
@@ -157,30 +140,6 @@ const InterestsForm = () => {
             </p>
           )}
         </div>
-        {userRole === "USER" && (
-          <div className="flex flex-col gap-y-2 w-full">
-            <Label htmlFor="interests" className="font-medium text-sm">
-              Popular Projects
-            </Label>
-            <Controller
-              name="projects"
-              control={control}
-              render={({ field }) => (
-                <FormRadio
-                  options={projectOptions}
-                  value={field.value || ""}
-                  onChange={field.onChange}
-                  selectedIcon={<FaCheck />}
-                />
-              )}
-            />
-            {errors.projects && (
-              <p className="text-red-500 text-sm">
-                {errors.projects.message || "Please select your projects"}
-              </p>
-            )}
-          </div>
-        )}
         <Button
           type="submit"
           className="bg-[#430B68] hover:bg-[#430B68] rounded-full font-semibold"
@@ -189,7 +148,7 @@ const InterestsForm = () => {
         </Button>
       </form>
     </Card>
-  );
-};
+  )
+}
 
-export default InterestsForm;
+export default ProjectCategory

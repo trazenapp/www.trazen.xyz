@@ -7,11 +7,16 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "images.unsplash.com",
-        pathname: "/photo-**", // matches /photo-1557804506-669a67965ba0 and similar
+        pathname: "/photo-**", // http://trazenapp.s3-website.eu-west-3.amazonaws.comundefined
       },
       {
         protocol: "https",
         hostname: "github.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "trazenapp.s3-website.eu-west-3.amazonaws.com",
         pathname: "/**",
       },
     ],

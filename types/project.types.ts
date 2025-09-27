@@ -2,11 +2,12 @@ export interface AddProjectData {
   name: string;
   description: string;
   avatar: string;
-  wallet_uuid: string;
+  wallet_uuid?: string;
   social: string;
   whitepaper: string;
-  team_size: number;
-  isTeam: "Yes" | "No";
+  team_emails?: string[];
+  isTeam?: "Yes" | "No";
+  category?: string[];
 }
 
 export interface AddProjectState {

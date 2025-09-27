@@ -81,7 +81,9 @@ const ForgotPasswordForm = () => {
           )}
         />
         {errors.email && (
-          <p className="text-red-500 text-sm">{errors.email.message || "Enter a valid email"}</p>
+          <p className="text-red-500 text-sm">
+            {errors.email.message || "Enter a valid email"}
+          </p>
         )}
       </div>
       <Button

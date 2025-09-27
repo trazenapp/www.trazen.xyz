@@ -19,13 +19,14 @@ const initialState: SignInState = {
   error: null,
   isAuthenticated: false,
   data: formData,
+  token: null,
 };
 // /app/api/auth/set-token/route.ts
-export const signIn = createAsyncThunk<SignInResponse, SignInData>(
+export const signIn = createAsyncThunk(
   "sign-in",
   async (SignInData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post<SignInResponse>(
+      const response = await axiosInstance.post(
         "/v1/auth/login",
         SignInData,
         {
@@ -36,24 +37,28 @@ export const signIn = createAsyncThunk<SignInResponse, SignInData>(
           },
         }
       );
-      console.log(response.data.data)
-      if (response.data.data.token) {
-        localStorage.setItem("token", response.data.data.token);
-      }
+      
+      const { user, token } = response.data.data;
+      localStorage.setItem("token", token);
 
       await fetch("/api/auth/set-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: response.data.data.token }),
+        body: JSON.stringify({ token }),
       });
 
-      return response.data;
+      return { user, token };
     } catch (error: any) {
       console.log("Sign In Error: ", error);
       return rejectWithValue(error.response?.data?.message || "Sign In Failed");
     }
   }
 );
+
+export const logoutUser = createAsyncThunk("logout", async(_, { dispatch }) => {
+  await fetch("api/auth/logout", { method: "POST" });
+  dispatch(logout());
+})
 
 const loginSlice = createSlice({
   name: "signIn",
@@ -75,6 +80,13 @@ const loginSlice = createSlice({
     resetForm: (state) => {
       state.data = formData;
     },
+    logout: (state) => {
+      state.user = null;
+      state.isAuthenticated = false;
+      state.token = null;
+      state.error = null;
+      
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -84,9 +96,10 @@ const loginSlice = createSlice({
       })
       .addCase(signIn.fulfilled, (state, action) => {
         state.loading = false;
-        state.user = action.payload.data.user;
+        state.user = action.payload.user;
         state.isAuthenticated = true;
         state.error = null;
+        state.token = action.payload.token;
       })
       .addCase(signIn.rejected, (state, action) => {
         state.loading = false;
@@ -96,7 +109,7 @@ const loginSlice = createSlice({
   },
 });
 
-export const { clearError, setUser, updateFormData, setLoading, resetForm } =
+export const { clearError, setUser, updateFormData, setLoading, resetForm, logout } =
   loginSlice.actions;
 
 export default loginSlice.reducer;

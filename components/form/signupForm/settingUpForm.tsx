@@ -25,13 +25,9 @@ const settingUpForm = () => {
   const { loading, steps, data, error } = useAppSelector(
     (state: RootState) => state.onboarding
   );
+  const user = useAppSelector((state: RootState) => state.register.user);
 
-  // console.log(user?.role)
-
-const user = typeof window !== "undefined" && localStorage.getItem("User");
-  const userRole = user
-    ? JSON.parse(user).role
-    : null;
+  const userRole = user?.role;
 
   const formTitle =
     userRole === "USER" ? "Almost Done" : "Tell us more about yourself";
@@ -49,6 +45,7 @@ const user = typeof window !== "undefined" && localStorage.getItem("User");
     defaultValues: data,
   });
 
+  
   const onSubmit = (data: OnboardingData) => {
     dispatch(updateFormData({ ...data }));
     dispatch(setLoading(true));
@@ -79,7 +76,7 @@ const user = typeof window !== "undefined" && localStorage.getItem("User");
             type="text"
             id="username"
             className="border-[#434343] rounded-[8px] py-[19px] px-4"
-            value={user ? JSON.parse(user).username || "" : ""}
+            value={user?.username}
             disabled
           />
         </div>
@@ -163,12 +160,12 @@ const user = typeof window !== "undefined" && localStorage.getItem("User");
             </p>
           )}
         </div>
-        {/* <div className="flex flex-col gap-y-2 w-full">
-          <Label htmlFor="interests" className="font-medium text-sm">
+        <div className="flex flex-col gap-y-2 w-full">
+          <Label htmlFor="ref" className="font-medium text-sm">
             How did your hear about us
           </Label>
           <Controller
-            name="hearAboutUs"
+            name="ref"
             control={control}
             render={({ field }) => (
               <FormRadio
@@ -180,10 +177,10 @@ const user = typeof window !== "undefined" && localStorage.getItem("User");
             )}
           />
 
-          {errors.role && (
-            <p className="text-red-500 text-sm">Role is required</p>
+          {errors.ref && (
+            <p className="text-red-500 text-sm">Referral is required</p>
           )}
-        </div> */}
+        </div>
         <Button
           type="submit"
           className="bg-[#430B68] hover:bg-[#430B68] rounded-full font-semibold"

@@ -1,4 +1,3 @@
-import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -6,10 +5,11 @@ export async function POST(req: Request) {
   const res = NextResponse.json({ success: true });
 
   res.cookies.set("token", token, {
-    httpOnly: true, 
+    httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "strict",
     path: "/",
+    maxAge: 60 * 60 * 24 * 7,
   });
 
   return res;

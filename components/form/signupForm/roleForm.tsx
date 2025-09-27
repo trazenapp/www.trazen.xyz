@@ -34,7 +34,6 @@ const RoleForm = () => {
     defaultValues: formData,
   });
 
-
   const onSubmit = (data: SignUpData) => {
     dispatch(setLoading(true));
     dispatch(updateFormData({ ...data }));

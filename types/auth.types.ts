@@ -28,6 +28,7 @@ export interface OnboardingData {
   chains?: string[];
   niche?: string[];
   projects?: string;
+  ref: string;
 }
 
 export interface SignInData {
@@ -75,10 +76,12 @@ export interface SignUpState {
   isAuthenticated: boolean;
   steps: number;
   user: User | null;
+  token: string | null;
 }
 
 export interface SignUpResponse {
   data: User;
+  token: string;
 }
 
 export interface SignInState {
@@ -87,6 +90,7 @@ export interface SignInState {
   data: SignInData;
   isAuthenticated: boolean;
   user: User | null;
+  token: string | null;
 }
 
 export interface ForgotPasswordState {

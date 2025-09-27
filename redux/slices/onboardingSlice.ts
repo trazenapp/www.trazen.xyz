@@ -1,8 +1,8 @@
+import { RootState } from "@/redux/store";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "@/utils/axios";
 import {
   OnboardingState,
-  SignUpData,
   SignInResponse,
   OnboardingData,
 } from "@/types/auth.types";
@@ -18,6 +18,7 @@ const formData: OnboardingData = {
   niche: [],
   projects: "",
   chains: [],
+  ref: "",
 };
 
 const initialState: OnboardingState = {
@@ -27,10 +28,15 @@ const initialState: OnboardingState = {
   data: formData,
 };
 
-export const onboarding = createAsyncThunk<SignInResponse, OnboardingData>(
+export const onboarding = createAsyncThunk<SignInResponse, OnboardingData, {state: RootState}>(
   "onboarding/updateProfile",
-  async (OnboardingData, { rejectWithValue }) => {
+  async (OnboardingData, { rejectWithValue, getState }) => {
     try {
+      const state = getState();
+      const token = state.register.token || null;
+
+      if (!token) return rejectWithValue("No token found");
+
       const response = await axiosInstance.patch<SignInResponse>(
         "/v1/user/profile",
         OnboardingData,
@@ -38,13 +44,16 @@ export const onboarding = createAsyncThunk<SignInResponse, OnboardingData>(
           headers: {
             "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
             "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`
           },
         }
       );
 
+      console.log(response.data)
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Profile Update Failed");
+      console.log(error);
+      return rejectWithValue(error?.message || "Profile Update Failed");
     }
   }
 );

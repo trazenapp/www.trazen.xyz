@@ -5,7 +5,7 @@ FROM node:${NODE_VERSION}-slim
 # RUN apk add --no-cache libc6-compat
 
 # Use production node environment by default.
-# ENV NODE_ENV production
+ENV NODE_ENV production
 
 WORKDIR /app
 

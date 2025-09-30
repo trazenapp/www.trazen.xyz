@@ -40,7 +40,7 @@ const SignInWithWallet = () => {
     <Button
       type="button"
       variant="outline"
-      onClick={() => {console.log("Hello world"); return connect()}}
+      onClick={() => connect()}
       className="bg-transparent border-[#303030] rounded-full w-full flex justify-center items-center gap-x-2.5 hover:bg-transparent text-[#F4F4F4F4] hover:text-[#F4F4F4F4] font-sans text-base md:text-xl font-medium"
     >
       <Image src={wallet} alt="wallet" width={24} />

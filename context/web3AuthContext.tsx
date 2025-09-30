@@ -3,6 +3,7 @@ import {
   Web3AuthProvider,
   type Web3AuthContextConfig,
 } from "@web3auth/modal/react";
+import { CHAIN_NAMESPACES } from "@web3auth/base";
 import { IWeb3AuthState, WEB3AUTH_NETWORK } from "@web3auth/modal";
 import { WagmiProvider } from "@web3auth/modal/react/wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -15,8 +16,13 @@ const queryClient = new QueryClient();
 const web3AuthContextConfig: Web3AuthContextConfig = {
   web3AuthOptions: {
     clientId,
-    web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_DEVNET,
+    web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
     ssr: true,
+    chainConfig: {
+      chainNamespace: CHAIN_NAMESPACES.EIP155,
+      chainId: "0x1", // Ethereum Mainnet
+      rpcTarget: "https://rpc.ankr.com/eth",
+    },
   },
 };
 

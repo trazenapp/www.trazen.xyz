@@ -15,9 +15,9 @@ const PioneerLayout = ({ children }: { children: React.ReactNode }) => {
     <ParentRefContext.Provider value={parentRef}>
       <main ref={parentRef} className="relative min-h-screen w-full">
         <DashboardNav pioneer={true} />
-        <div className="lg:flex lg:p-5 lg:pr-0 pl-0 lg:mt-0 mt-3 md:pr-0">
+        <div className="lg:flex lg:justify-center pl-0 lg:mt-0 mt-3 md:pr-0">
           <DashboardSidebar pioneer={true} />
-          <div className=" flex-1">{children}</div>
+          {children}
         </div>
       </main>
     </ParentRefContext.Provider>

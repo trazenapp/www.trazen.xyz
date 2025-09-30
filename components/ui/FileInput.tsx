@@ -20,7 +20,7 @@ const FileInput = ({ value, onChange }: FileInputProps) => {
     setPreviewUrl(value || null);
   }, [value]);
 
-  const previewFileUrl = process.env.NEXT_PUBLIC_FILE_PREVIEW_URL
+  const previewFileUrl = process.env.NEXT_PUBLIC_FILE_PREVIEW_URL;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
@@ -83,7 +83,14 @@ const FileInput = ({ value, onChange }: FileInputProps) => {
             htmlFor="file-upload"
             className="text-white px-2 py-2 rounded-md mt-2 cursor-pointer transition"
           >
-            {uploading ? <p>Uploading... Please wait <ClipLoader color="#F4F4F4F4" size={10} /></p> : "Browse"}
+            {uploading ? (
+              <p>
+                Uploading... Please wait{" "}
+                <ClipLoader color="#F4F4F4F4" size={10} />
+              </p>
+            ) : (
+              "Browse"
+            )}
           </label>
         </div>
       </label>
@@ -91,12 +98,14 @@ const FileInput = ({ value, onChange }: FileInputProps) => {
 
       {isUploaded && (
         <div className="relative w-40 h-40">
-          {previewUrl && <Image
-            src={previewUrl}
-            alt="preview"
-            fill
-            className="rounded-md object-cover"
-          />}
+          {previewUrl && (
+            <Image
+              src={previewUrl}
+              alt="preview"
+              fill
+              className="rounded-md object-cover"
+            />
+          )}
         </div>
       )}
     </div>

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,12 +11,18 @@ import { IoIosMenu } from "react-icons/io";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import { setShow } from "@/redux/slices/dashboardSidebarSlice";
+import { fetchProfile } from "@/redux/slices/userSlice";
 
 const DashboardNav = ({ pioneer = false }) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const { show } = useAppSelector((state: RootState) => state.dashboardSidebar);
+  const { profile } = useAppSelector((state: RootState) => state.user);
   let title = pathname.slice(1, pathname.length);
+
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
 
   const handleToggleSidebar = () => {
     dispatch(setShow(!show));
@@ -41,9 +47,11 @@ const DashboardNav = ({ pioneer = false }) => {
               className="font-sans border-0 focus-visible:border-0 focus-visible:ring-0 text-[#9F9F9F]"
             />
           </div>
-          <Button className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8">
+          {profile?.userProfile?.role === "PIONEER" ? <Button disabled className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8">
+            Pending Approval 
+          </Button> : <Button className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8">
             Create Project <ArrowRight />
-          </Button>
+          </Button> }
         </div>
       )}
 

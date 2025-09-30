@@ -20,7 +20,7 @@ type MainProps = {
 export const FeedPostsMain = forwardRef<HTMLInputElement, MainProps>(
   ({ value, onChange }, ref) => {
     return (
-      <div>
+      <div className="">
         <Input
           id="feed-post"
           name="feed-post"

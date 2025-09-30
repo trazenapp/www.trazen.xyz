@@ -1,6 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "@/utils/axios";
-import { AddProjectData, AddProjectState, AddProjectResponse } from "@/types/project.types";
+import {
+  AddProjectData,
+  AddProjectState,
+  AddProjectResponse,
+} from "@/types/project.types";
 
 const formData: AddProjectData = {
   name: "",
@@ -12,7 +16,7 @@ const formData: AddProjectData = {
   team_emails: [],
   isTeam: "No",
   category: [],
-}
+};
 
 const initialState: AddProjectState = {
   loading: false,
@@ -20,20 +24,39 @@ const initialState: AddProjectState = {
   projectData: formData,
   isFirstProject: false,
   steps: 1,
-}
+  projects: [],
+};
 
 export const addProject = createAsyncThunk<AddProjectResponse, AddProjectData>(
-  "project/addProject", 
-  async (AddProjectData, {rejectWithValue}) => {
+  "project/addProject",
+  async (AddProjectData, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post<AddProjectResponse>(
         "/v1/project",
-        AddProjectData,
+        AddProjectData
       );
 
       return response.data;
-    } catch(error: any) {
-      return rejectWithValue(error?.response?.data?.message || "Error adding Project");
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.response?.data?.message || "Error adding Project"
+      );
+    }
+  }
+);
+
+export const getProject = createAsyncThunk(
+  "project/getProject",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get("/v1/project/private");
+
+      console.log(response.data);
+      return response.data.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.response?.data?.message || "Error getting project data"
+      );
     }
   }
 );
@@ -55,7 +78,7 @@ const projectSlice = createSlice({
       state.loading = action.payload;
     },
   },
-    extraReducers: (builder) => {
+  extraReducers: (builder) => {
     builder
       .addCase(addProject.pending, (state) => {
         state.loading = true;
@@ -68,7 +91,17 @@ const projectSlice = createSlice({
       .addCase(addProject.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      });
+      })
+      .addCase(getProject.pending, (state) => {
+      state.loading = true;
+    })
+    .addCase(getProject.fulfilled, (state, action) => {
+      state.loading = false;
+      state.projects = action.payload; 
+    })
+    .addCase(getProject.rejected, (state) => {
+      state.loading = false;
+    });
   },
 });
 

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 
 import Card from "@/components/card";
@@ -32,6 +33,7 @@ type CustomTooltipProps = TooltipProps<number, string> & {
 };
 
 const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+
   if (active && payload && payload.length) {
     return (
       <div className="bg-neutral-900 text-white px-3 py-2 rounded-md shadow-md text-sm">
@@ -102,7 +104,7 @@ function FollowersChart() {
   );
 
   return (
-    <Card className=" rounded-xl md:!p-6 hidden md:flex flex-col h-150 ">
+    <Card className=" rounded-xl md:!p-6 hidden md:flex flex-col h-150">
       <div className="w-full flex justify-between">
         <Select
           value={selectedProject}

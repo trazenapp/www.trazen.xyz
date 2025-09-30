@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import ClientProvider from "@/utils/clientProvider";
-import favicon from "@/public/favicon.svg"
+import favicon from "@/public/favicon.svg";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -56,9 +56,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${clashDisplay.className} antialiased`}
       >
-        <ClientProvider>
-          {children}
-        </ClientProvider>
+        <ClientProvider>{children}</ClientProvider>
       </body>
     </html>
   );

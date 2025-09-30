@@ -16,6 +16,7 @@ export interface AddProjectState {
   projectData: AddProjectData;
   isFirstProject: boolean;
   steps: number;
+  projects?: [];
 }
 
 export interface AddProjectResponse {

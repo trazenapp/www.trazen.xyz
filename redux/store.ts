@@ -13,6 +13,8 @@ import verifyEmailReducer from "@/redux/slices/verifyEmailSlice";
 import onboardingReducer from "@/redux/slices/onboardingSlice";
 import fcmNotificationReducer from "@/redux/slices/fcmNotificationSlice";
 import projectReducer from "@/redux/slices/projectSlice";
+import postReducer from "@/redux/slices/postSlice";
+import profileReducer from "@/redux/slices/userSlice";
 
 const persistConfig = {
   key: "root",
@@ -31,6 +33,8 @@ const rootReducer = combineReducers({
   verifyEmail: verifyEmailReducer,
   onboarding: onboardingReducer,
   project: projectReducer,
+  post: postReducer,
+  user: profileReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

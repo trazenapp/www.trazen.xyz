@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 import ReduxProvider from "@/redux/ReduxProvider";
 import Provider from "@/context/web3AuthContext";
 import { ToastContainer } from "react-toastify";

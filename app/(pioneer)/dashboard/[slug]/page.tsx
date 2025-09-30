@@ -440,7 +440,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
       is_published: data.is_published,
     };
 
-    console.log(payload)
+    console.log(payload);
 
     try {
       await dispatch(createPost(payload)).unwrap();
@@ -940,8 +940,11 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                               type="submit"
                               disabled={loading}
                             >
-                              {loading ? "Posting..." : <p className="px-4">Post</p>}
-                              
+                              {loading ? (
+                                "Posting..."
+                              ) : (
+                                <p className="px-4">Post</p>
+                              )}
                             </Button>
                           </DialogFooter>
                         </div>

@@ -1,21 +1,26 @@
 "use client";
 import React from "react";
+import { ReadonlyHeaders } from "next/dist/server/web/spec-extension/adapters/headers";
 import ReduxProvider from "@/redux/ReduxProvider";
-import { Web3AuthProvider } from "@web3auth/modal/react";
-import web3AuthContextConfig from "@/context/web3AuthContext";
+import Provider from "@/context/web3AuthContext";
 import { ToastContainer } from "react-toastify";
+import { cookieToWeb3AuthState } from "@web3auth/modal";
+
+interface ClientProviderProps {
+  cookie: string;
+  children: React.ReactNode
+}
 
 const ClientProvider = ({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) => {
+  children, cookie
+}: ClientProviderProps) => {
+  const web3authInitialState = cookieToWeb3AuthState(cookie);
   return (
     <ReduxProvider>
-      <Web3AuthProvider config={web3AuthContextConfig}>
+      <Provider web3authInitialState={web3authInitialState}>
         {children}
         <ToastContainer />
-      </Web3AuthProvider>
+      </Provider>
     </ReduxProvider>
   );
 };

@@ -2,8 +2,12 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import wallet from "@/public/solar_wallet.svg"
-import { useWeb3Auth, useWeb3AuthConnect, useWeb3AuthDisconnect } from "@web3auth/modal/react";
+import wallet from "@/public/solar_wallet.svg";
+import {
+  useWeb3Auth,
+  useWeb3AuthConnect,
+  useWeb3AuthDisconnect,
+} from "@web3auth/modal/react";
 import { BrowserProvider } from "ethers";
 
 interface SignInWithWalletProps {
@@ -30,7 +34,7 @@ const SignInWithWallet = ({ onClick }: SignInWithWalletProps) => {
 
     getAddress();
   }, [provider]);
-  
+
   return (
     <Button
       type="button"
@@ -38,12 +42,7 @@ const SignInWithWallet = ({ onClick }: SignInWithWalletProps) => {
       onClick={() => connect()}
       className="bg-transparent border-[#303030] rounded-full w-full flex justify-center items-center gap-x-2.5 hover:bg-transparent text-[#F4F4F4F4] hover:text-[#F4F4F4F4] font-sans text-base md:text-xl font-medium"
     >
-      <Image
-        src={wallet}
-        alt="wallet"
-        width={24}
-      />
-
+      <Image src={wallet} alt="wallet" width={24} />
       Continue with wallet
     </Button>
   );

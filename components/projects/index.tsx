@@ -68,35 +68,36 @@ export function ProjectsPartial() {
   const [activeProject, setActiveProject] = useState(null);
   const [getItems, setGetItems] = useState([]);
   const dispatch = useAppDispatch();
-  const { loading, projects } = useAppSelector((state: RootState) => state.project);
+  const { loading, projects } = useAppSelector(
+    (state: RootState) => state.project
+  );
 
-
-  const allProjects = projects?.projects as []
-//   {
-//     "id": 3,
-//     "uuid": "6b774cd8-bf4c-422d-9f63-bf72c1416948",
-//     "user_uuid": "310a575a-a6a2-477a-8c36-b62558824202",
-//     "wallet_uuid": null,
-//     "name": "jkgvvhjvhvjhvvj",
-//     "description": "gfcfcjvhvhgvjcgkhlkjhfghklhjhlb",
-//     "social": "https://x.com/hggjv",
-//     "whitepaper": "https://jkbjkbjk.com/jhbhjb",
-//     "avatar": "http://trazenapp.s3-website.eu-west-3.amazonaws.com/buckets/test/user/310a575a-a6a2-477a-8c36-b62558824202/images/397fa5f1d111e2c82bbaeaf2dcd9199a05a09bba.jpg",
-//     "categories": [
-//         "Ethereum",
-//         "Polygon",
-//         "NFT",
-//         "Metaverse"
-//     ],
-//     "team_emails": [
-//         "halo@gmail.com",
-//         "helo@gmail.com",
-//         "hello@gmail.com"
-//     ],
-//     "is_approved": false,
-//     "created_at": "2025-09-26T20:52:00.142Z",
-//     "updated_at": "2025-09-26T20:52:00.142Z"
-// }
+  const allProjects = projects?.projects as [];
+  //   {
+  //     "id": 3,
+  //     "uuid": "6b774cd8-bf4c-422d-9f63-bf72c1416948",
+  //     "user_uuid": "310a575a-a6a2-477a-8c36-b62558824202",
+  //     "wallet_uuid": null,
+  //     "name": "jkgvvhjvhvjhvvj",
+  //     "description": "gfcfcjvhvhgvjcgkhlkjhfghklhjhlb",
+  //     "social": "https://x.com/hggjv",
+  //     "whitepaper": "https://jkbjkbjk.com/jhbhjb",
+  //     "avatar": "http://trazenapp.s3-website.eu-west-3.amazonaws.com/buckets/test/user/310a575a-a6a2-477a-8c36-b62558824202/images/397fa5f1d111e2c82bbaeaf2dcd9199a05a09bba.jpg",
+  //     "categories": [
+  //         "Ethereum",
+  //         "Polygon",
+  //         "NFT",
+  //         "Metaverse"
+  //     ],
+  //     "team_emails": [
+  //         "halo@gmail.com",
+  //         "helo@gmail.com",
+  //         "hello@gmail.com"
+  //     ],
+  //     "is_approved": false,
+  //     "created_at": "2025-09-26T20:52:00.142Z",
+  //     "updated_at": "2025-09-26T20:52:00.142Z"
+  // }
   useEffect(() => {
     const getPrivateProjects = async () => {
       try {

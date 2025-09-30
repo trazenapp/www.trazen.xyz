@@ -68,9 +68,9 @@ const DashboardSidebar = ({ pioneer = false }) => {
               <div className="text-white text-sm md:text-base font-bold">
                 {profile?.userProfile?.username}
               </div>
-              {/* <div className="text-[#7B7B7B] text-xs md:text-sm font-light">
-                
-              </div> */}
+              <div className="text-[#7B7B7B] text-xs md:text-sm font-light line-clamp-1">
+                {profile?.userProfile?.email}
+              </div>
             </div>
           </div>
         </div>

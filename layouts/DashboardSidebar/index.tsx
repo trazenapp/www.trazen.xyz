@@ -19,7 +19,7 @@ const DashboardSidebar = ({ pioneer = false }) => {
 
   const { show } = useAppSelector((state: RootState) => state.dashboardSidebar);
   const { profile } = useAppSelector((state: RootState) => state.user);
-  console.log(profile)
+  console.log(profile);
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
@@ -59,17 +59,17 @@ const DashboardSidebar = ({ pioneer = false }) => {
           <Image src={logo} alt="logo" width={100} />
         </Link>
         <div className="mb-6 w-full bg-[#272727] lg:rounded-2xl rounded-full p-2.5 flex justify-between items-center gap-2.5">
-          <div className="flex items-center gap-2.5">
-            <Avatar>
+          <div className="flex items-center gap-2.5 w-full">
+            <Avatar className="">
               <AvatarImage src="https://github.com/shadcn.png" />
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
-            <div className="font-sans">
-              <div className="text-white text-sm md:text-base font-bold">
-                {profile?.userProfile?.username}
+            <div className="font-sans w-8/12">
+              <div className="text-white text-sm md:text-base font-bold w-full">
+                {profile?.username}
               </div>
-              <div className="text-[#7B7B7B] text-xs md:text-sm font-light line-clamp-1">
-                {profile?.userProfile?.email}
+              <div className="text-[#7B7B7B] text-xs md:text-sm font-light w-full line-clamp-1">
+                {profile?.email}
               </div>
             </div>
           </div>

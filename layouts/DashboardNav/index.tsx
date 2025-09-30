@@ -47,7 +47,7 @@ const DashboardNav = ({ pioneer = false }) => {
               className="font-sans border-0 focus-visible:border-0 focus-visible:ring-0 text-[#9F9F9F]"
             />
           </div>
-          {profile?.userProfile?.role === "PIONEER" ? <Button disabled className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8">
+          {profile?.role === "PIONEER" ? <Button disabled className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8">
             Pending Approval 
           </Button> : <Button className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8">
             Create Project <ArrowRight />

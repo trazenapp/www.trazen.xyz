@@ -19,13 +19,15 @@ export const fetchProfile = createAsyncThunk<UserProfile>(
   "profile/fetchProfile",
   async (_, { rejectWithValue }) => {
     try {
-    const response = await axiosInstance.get("/v1/user/profile");
-    console.log(response.data.data);
-    return response.data.data;
-  } catch (err: any) {
-    console.error("get user profile error", err);
-    return rejectWithValue(err?.response?.data?.message || "Error getting user profile");
-  }
+      const response = await axiosInstance.get("/v1/user/profile");
+      console.log(response.data.data);
+      return response.data.data.userProfile;
+    } catch (err: any) {
+      console.error("get user profile error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error getting user profile"
+      );
+    }
   }
 );
 

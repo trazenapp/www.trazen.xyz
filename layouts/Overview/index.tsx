@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 
 import OverviewInfo from "../OverviewInfo";
@@ -17,7 +17,6 @@ function Overview({ setTabValue }: OverviewProps) {
     (state: RootState) => state.project
   );
 
-  const allProjects = projects?.projects as [];
   return (
     <div className="flex flex-col gap-5 ">
       <OverviewInfo setTabValue={setTabValue} />

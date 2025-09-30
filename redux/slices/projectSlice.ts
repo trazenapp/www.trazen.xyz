@@ -51,8 +51,7 @@ export const getProject = createAsyncThunk(
     try {
       const response = await axiosInstance.get("/v1/project/private");
 
-      console.log(response.data);
-      return response.data.data;
+      return response.data.data.projects;
     } catch (error: any) {
       return rejectWithValue(
         error?.response?.data?.message || "Error getting project data"
@@ -93,15 +92,15 @@ const projectSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(getProject.pending, (state) => {
-      state.loading = true;
-    })
-    .addCase(getProject.fulfilled, (state, action) => {
-      state.loading = false;
-      state.projects = action.payload; 
-    })
-    .addCase(getProject.rejected, (state) => {
-      state.loading = false;
-    });
+        state.loading = true;
+      })
+      .addCase(getProject.fulfilled, (state, action) => {
+        state.loading = false;
+        state.projects = action.payload;
+      })
+      .addCase(getProject.rejected, (state) => {
+        state.loading = false;
+      });
   },
 });
 

@@ -19,7 +19,6 @@ const DashboardSidebar = ({ pioneer = false }) => {
 
   const { show } = useAppSelector((state: RootState) => state.dashboardSidebar);
   const { profile } = useAppSelector((state: RootState) => state.user);
-  console.log(profile);
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);

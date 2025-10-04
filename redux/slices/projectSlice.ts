@@ -4,6 +4,7 @@ import {
   AddProjectData,
   AddProjectState,
   AddProjectResponse,
+  ProjectDetail,
 } from "@/types/project.types";
 
 const formData: AddProjectData = {
@@ -25,6 +26,7 @@ const initialState: AddProjectState = {
   isFirstProject: false,
   steps: 1,
   projects: [],
+  projectDetail: null,
 };
 
 export const addProject = createAsyncThunk<AddProjectResponse, AddProjectData>(
@@ -52,6 +54,23 @@ export const getProject = createAsyncThunk(
       const response = await axiosInstance.get("/v1/project/private");
 
       return response.data.data.projects;
+    } catch (error: any) {
+      return rejectWithValue(
+        error?.response?.data?.message || "Error getting project data"
+      );
+    }
+  }
+);
+
+export const getProjectDetail = createAsyncThunk(
+  "project/getProjectDetail",
+  async (project_uuid: string, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `/v1/project/${project_uuid}`
+      );
+
+      return response.data.data.project;
     } catch (error: any) {
       return rejectWithValue(
         error?.response?.data?.message || "Error getting project data"
@@ -99,6 +118,16 @@ const projectSlice = createSlice({
         state.projects = action.payload;
       })
       .addCase(getProject.rejected, (state) => {
+        state.loading = false;
+      })
+      .addCase(getProjectDetail.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(getProjectDetail.fulfilled, (state, action) => {
+        state.loading = false;
+        state.projectDetail = action.payload;
+      })
+      .addCase(getProjectDetail.rejected, (state) => {
         state.loading = false;
       });
   },

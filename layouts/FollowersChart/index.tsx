@@ -120,6 +120,7 @@ function FollowersChart() {
             <SelectGroup>
               {tempProjectsList.map((project) => (
                 <SelectItem
+                  key={project.name}
                   className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff] "
                   value={project.name}
                 >
@@ -141,6 +142,7 @@ function FollowersChart() {
               <SelectGroup>
                 {monthsOfTheYear.map((month) => (
                   <SelectItem
+                    key={month}
                     className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff] "
                     value={month}
                   >
@@ -161,6 +163,7 @@ function FollowersChart() {
               <SelectGroup>
                 {years.map((year) => (
                   <SelectItem
+                    key={year}
                     className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff] "
                     value={`${year}`}
                   >

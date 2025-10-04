@@ -48,7 +48,7 @@ export const signUp = createAsyncThunk(
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
-      
+
       return { user, token };
     } catch (error: any) {
       console.log(error?.message);
@@ -81,7 +81,7 @@ const registerSlice = createSlice({
       state.isAuthenticated = false;
       state.token = null;
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -109,7 +109,7 @@ export const {
   setSteps,
   setLoading,
   resetForm,
-  logout
+  logout,
 } = registerSlice.actions;
 
 export default registerSlice.reducer;

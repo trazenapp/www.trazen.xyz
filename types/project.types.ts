@@ -10,6 +10,23 @@ export interface AddProjectData {
   category?: string[];
 }
 
+export interface ProjectDetail {
+  id: number;
+  uuid: string;
+  user_uuid: string;
+  wallet_uuid: string | null;
+  name: string;
+  description: string;
+  social: string;
+  whitepaper: string;
+  avatar: string;
+  categories: string[];
+  team_emails: string[];
+  is_approved: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface AddProjectState {
   loading: boolean;
   error: string | null;
@@ -17,6 +34,7 @@ export interface AddProjectState {
   isFirstProject: boolean;
   steps: number;
   projects?: [];
+  projectDetail: ProjectDetail | null;
 }
 
 export interface AddProjectResponse {

@@ -1,19 +1,44 @@
-export async function uploadImage(file: File): Promise<string> {
-  const url = `${process.env.NEXT_PUBLIC_FILE_URL}/storage`;
+import { useState } from "react";
+import axiosInstance from "@/utils/axios";
 
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string);
+export const useFileUpload = () => {
+  const [uploading, setUploading] = useState(false);
+  const [result, setResult] = useState<string | string[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const res = await fetch(url, {
-    method: "POST",
-    body: formData,
-  });
+  const baseUrl = `${process.env.NEXT_PUBLIC_FILE_URL}/api/storage`;
 
-  if (!res.ok) {
-    throw new Error("Failed to upload image to Cloudinary");
-  }
+  const uploadFiles = async (files: FileList) => {
+    try {
+      setUploading(true);
+      setError(null);
 
-  const data = await res.json();
-  return data.data.path as string;
-}
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await axiosInstance.post(
+          baseUrl,
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        return res.data.data.path;
+      });
+
+      const urls = await Promise.all(uploadPromises);
+      setResult(urls.length === 1 ? urls[0] : urls);
+      return urls.length === 1 ? urls[0] : urls;
+    } catch (err: any) {
+      setError("Upload failed. Please try again.");
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const reset = () => {
+    setResult(null);
+    setError(null);
+  };
+
+  return { uploading, result, error, uploadFiles, reset };
+};

@@ -16,10 +16,10 @@ const ClientProvider = ({
   const web3authInitialState = cookieToWeb3AuthState(cookie);
   return (
     <ReduxProvider>
-      <Provider web3authInitialState={web3authInitialState}>
+      {/* <Provider web3authInitialState={web3authInitialState}> */}
         {children}
         <ToastContainer />
-      </Provider>
+      {/* </Provider> */}
     </ReduxProvider>
   );
 };

@@ -47,7 +47,7 @@ import { FaCheck } from "react-icons/fa6";
 import { LuFilePenLine } from "react-icons/lu";
 import { Pen } from "lucide-react";
 import { FeedPostsMain } from "@/components/feedPost";
-import { FeedPostsFooter } from "@/components/feedPost";
+// import { FeedPostsFooter } from "@/components/feedPost";
 import EventsPost from "@/components/eventsPost";
 import HiringPost from "@/components/hiringPost";
 import BountyPost from "@/components/bountyPost";
@@ -65,10 +65,12 @@ import { set } from "date-fns";
 import { withLists } from "@/lib/withLists";
 import { RootState } from "@/redux/store";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { getProject, setLoading } from "@/redux/slices/projectSlice";
-import { useForm, Controller } from "react-hook-form";
-import { createPost } from "@/redux/slices/postSlice";
-import { CreatePost } from "@/types/post.types";
+import {
+  getProject,
+  setLoading,
+  getProjectDetail,
+} from "@/redux/slices/projectSlice";
+import { FormType } from "@/types/post.types";
 import { toast } from "react-toastify";
 
 const tempProjectsList = [
@@ -80,11 +82,6 @@ const tempProjectsList = [
   { logo: "https://github.com/shadcn.png", name: "CryptoProject5" },
 ];
 
-type Props = {
-  projectUuid: string;
-  defaultPublished?: boolean;
-};
-
 type FormValues = {
   content: string;
   is_published: boolean;
@@ -93,26 +90,19 @@ type FormValues = {
 const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
   const dispatch = useAppDispatch();
-  const { projects } = useAppSelector((state: RootState) => state.project);
-  const { loading, error, lastCreated } = useAppSelector(
+  const router = useRouter();
+  const { projectDetail } = useAppSelector((state: RootState) => state.project);
+  const { loading, error, data, drafts } = useAppSelector(
     (state: RootState) => state.post
   );
+  const [formType, setFormType] = useState<FormType>("feed");
 
-  const { handleSubmit, control, reset, setValue, watch } = useForm<FormValues>(
-    {
-      defaultValues: { content: "", is_published: false },
-    }
-  );
-
-  const allProjects = projects?.projects as [];
-  const projectItem = allProjects?.find((item: any) => item.name === slug);
-  console.log(projectItem);
 
   useEffect(() => {
     const getPrivateProjects = async () => {
       try {
         dispatch(setLoading(true));
-        await dispatch(getProject()).unwrap();
+        await dispatch(getProjectDetail(slug)).unwrap();
         dispatch(setLoading(false));
       } catch (err: any) {
         console.log(err);
@@ -122,332 +112,8 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
     getPrivateProjects();
   }, []);
 
-  type DraftItem = {
-    id: string;
-    text?: string;
-    image?: string[];
-    eventDescription?: Descendant[];
-    date?: string;
-    time?: string;
-    location?: string;
-    eventType?: string;
-    jobTitle?: string;
-    jobType?: string;
-    jobExperienceLevel?: string;
-    jobConvenience?: string;
-    jobLocation?: string;
-    jobPayment?: string;
-    jobApplicationLink?: string;
-    jobDescription?: Descendant[];
-    bountyTitle?: string;
-    bountyDuration?: string;
-    bountyReward?: string;
-    bountyLink?: string;
-  };
-
-  const [text, setText] = useState<string>("");
-  const [images, setImages] = useState<string[]>([]);
-  const [eventDescription, setEventDescription] = useState<Descendant[]>([
-    { type: "paragraph", children: [{ text: "" }] },
-  ]);
-  const [date, setDate] = useState<string>("");
-  const [time, setTime] = useState<string>("");
-  const [location, setLocation] = useState<string>("");
-  const [eventType, setEventType] = useState<string>("");
-  const [jobDescription, setJobDescription] = useState<Descendant[]>([
-    { type: "paragraph", children: [{ text: "" }] },
-  ]);
-  const [jobTitle, setJobTitle] = useState<string>("");
-  const [jobType, setJobType] = useState<string>("");
-  const [jobExperienceLevel, setJobExperienceLevel] = useState<string>("");
-  const [jobLocation, setJobLocation] = useState<string>("");
-  const [jobConvenience, setJobConvenience] = useState<string>("");
-  const [jobPayment, setJobPayment] = useState<string>("");
-  const [jobApplicationLink, setJobApplicationLink] = useState<string>("");
-  const [bountyTitle, setBountyTitle] = useState<string>("");
-  const [bountyDuration, setBountyDuration] = useState<string>("");
-  const [bountyReward, setBountyReward] = useState<string>("");
-  const [bountyLink, setBountyLink] = useState<string>("");
-  const [savedMsg, setSavedMsg] = useState<string | null>(null);
-  const [draftItems, setDraftItems] = useLocalStorageState<DraftItem[]>(
-    [],
-    "drafts"
-  );
-  const [postType, setPostType] = useState("feed-post");
-  const [showDrafts, setShowDrafts] = useState(false);
-
-  const editor = useMemo(
-    () => withLists(withHistory(withReact(createEditor()))),
-    []
-  );
-
-  // const editor = useMemo(() => withHistory(withReact(createEditor())), []);
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const router = useRouter();
-
-  // const plainText = eventDescription.map((n) => Node.string(n)).join("\n");
-
-  function handleSelectEmoji(emoji: string) {
-    const el = inputRef.current;
-    if (!el) {
-      setText((prev) => prev + emoji);
-      return;
-    }
-    const start = el.selectionStart ?? text.length;
-    const end = el.selectionEnd ?? text.length;
-
-    const next = text.slice(0, start) + emoji + text.slice(end);
-    setText(next);
-
-    requestAnimationFrame(() => {
-      el.focus();
-      const pos = start + emoji.length;
-      el.setSelectionRange(pos, pos);
-    });
-  }
-
-  function handleDeleteDraft(id: string) {
-    setDraftItems((drafts) => drafts.filter((draft) => draft.id !== id));
-  }
-
-  function handleSaveDrafts() {
-    if (postType === "feed-post") {
-      const newDraft =
-        images.length > 0 && text
-          ? { id: crypto.randomUUID(), postType, text, image: images }
-          : images.length > 0
-            ? { id: crypto.randomUUID(), postType, image: images }
-            : { id: crypto.randomUUID(), postType, text };
-
-      if (!newDraft.text && !newDraft.image) return;
-
-      setDraftItems((drafts) => [...drafts, newDraft]);
-      localStorage.setItem("drafts", JSON.stringify([...draftItems, newDraft]));
-
-      setText("");
-      setImages([]);
-
-      setSavedMsg("Draft saved");
-      setTimeout(() => setSavedMsg(null), 3000);
-    }
-
-    if (postType === "events") {
-      const eventDescriptionValidity = eventDescription.at(0);
-
-      if (
-        !eventDescriptionValidity ||
-        !SlateElement.isElement(eventDescriptionValidity)
-      ) {
-        return;
-      }
-
-      const hasText = Boolean(eventDescriptionValidity.children[0]?.text);
-      const hasOrderedList = Boolean(eventDescriptionValidity.type === "ol");
-      const hasUnorderedList = Boolean(eventDescriptionValidity.type === "ul");
-      const draft: any = {
-        id: crypto.randomUUID(),
-        postType,
-      };
-
-      if (hasText || hasOrderedList || hasUnorderedList)
-        draft.eventDescription = eventDescription;
-      if (date) draft.date = date;
-      if (time) draft.time = time;
-      if (location) draft.location = location;
-      if (eventType) draft.eventType = eventType;
-
-      if (
-        !hasText &&
-        !hasOrderedList &&
-        !hasUnorderedList &&
-        !date &&
-        !time &&
-        !location &&
-        !eventType
-      ) {
-        return;
-      }
-
-      setDraftItems((drafts) => [...drafts, draft]);
-
-      localStorage.setItem("drafts", JSON.stringify([...draftItems, draft]));
-
-      setSavedMsg("Draft saved");
-      setTimeout(() => setSavedMsg(null), 3000);
-    }
-
-    if (postType === "hiring") {
-      const jobDescriptionValidity = jobDescription.at(0);
-
-      if (
-        !jobDescriptionValidity ||
-        !SlateElement.isElement(jobDescriptionValidity)
-      ) {
-        return;
-      }
-
-      const hasText = Boolean(jobDescriptionValidity.children[0]?.text);
-      const hasOrderedList = Boolean(jobDescriptionValidity.type === "ol");
-      const hasUnorderedList = Boolean(jobDescriptionValidity.type === "ul");
-      const draft: any = {
-        id: crypto.randomUUID(),
-        postType,
-      };
-
-      if (hasText || hasOrderedList || hasUnorderedList)
-        draft.jobDescription = jobDescription;
-      if (jobTitle) draft.jobTitle = jobTitle;
-      if (jobType) draft.jobType = jobType;
-      if (jobExperienceLevel) draft.jobExperienceLevel = jobExperienceLevel;
-      if (jobLocation) draft.jobLocation = jobLocation;
-      if (jobConvenience) draft.jobConvenience = jobConvenience;
-      if (jobPayment) draft.jobPayment = jobPayment;
-      if (jobApplicationLink) draft.jobApplicationLink = jobApplicationLink;
-
-      if (
-        !hasText &&
-        !hasOrderedList &&
-        !hasUnorderedList &&
-        !jobTitle &&
-        !jobType &&
-        !jobExperienceLevel &&
-        !jobLocation &&
-        !jobConvenience &&
-        !jobPayment &&
-        !jobApplicationLink
-      ) {
-        return;
-      }
-
-      setDraftItems((drafts) => [...drafts, draft]);
-
-      localStorage.setItem("drafts", JSON.stringify([...draftItems, draft]));
-
-      setSavedMsg("Draft saved");
-      setTimeout(() => setSavedMsg(null), 3000);
-    }
-
-    if (postType === "bounties") {
-      const draft: any = {
-        id: crypto.randomUUID(),
-        postType,
-      };
-
-      if (bountyTitle) draft.bountyTitle = bountyTitle;
-      if (bountyDuration) draft.bountyDuration = bountyDuration;
-      if (bountyReward) draft.bountyReward = bountyReward;
-      if (bountyLink) draft.bountyLink = bountyLink;
-
-      if (!bountyTitle && !bountyDuration && !bountyReward && !bountyLink) {
-        return;
-      }
-
-      setDraftItems((drafts) => [...drafts, draft]);
-
-      localStorage.setItem("drafts", JSON.stringify([...draftItems, draft]));
-
-      setSavedMsg("Draft saved");
-      setTimeout(() => setSavedMsg(null), 3000);
-    }
-  }
-
-  function serialize(node: Descendant): string {
-    if ("text" in node) {
-      let text = node.text;
-      if ((node as any).bold) text = `<strong>${text}</strong>`;
-      if ((node as any).italic) text = `<em>${text}</em>`;
-      if ((node as any).underline) text = `<u>${text}</u>`;
-      return text;
-    }
-
-    const children = node.children.map((n) => serialize(n)).join("");
-
-    switch ((node as any).type) {
-      case "paragraph":
-        return `<p class="mb-1">${children}</p>`;
-      case "ol":
-        return `<ol class="mb-1 list-decimal pl-6">${children}</ol>`;
-      case "ul":
-        return `<ul class="mb-1 list-disc pl-6">${children}</ul>`;
-      case "li":
-        return `<li key=${crypto.randomUUID()} >${children}</li>`;
-      default:
-        return children;
-    }
-  }
-
-  function handleEditDraft(draft: any) {
-    setPostType(draft.postType);
-    draft.text && setText(draft.text);
-    draft.image && setImages(draft.image);
-    draft.eventDescription && setEventDescription(draft.eventDescription);
-    draft.date && setDate(draft.date);
-    draft.time && setTime(draft.time);
-    draft.location && setLocation(draft.location);
-    draft.eventType && setEventType(draft.eventType);
-    draft.jobDescription && setJobDescription(draft.jobDescription);
-    draft.jobTitle && setJobTitle(draft.jobTitle);
-    draft.jobType && setJobType(draft.jobType);
-    draft.jobExperienceLevel && setJobExperienceLevel(draft.jobExperienceLevel);
-    draft.jobLocation && setJobLocation(draft.jobLocation);
-    draft.jobConvenience && setJobConvenience(draft.jobConvenience);
-    draft.jobPayment && setJobPayment(draft.jobPayment);
-    draft.jobApplicationLink && setJobApplicationLink(draft.jobApplicationL);
-    draft.bountyTitle && setBountyTitle(draft.bountyTitle);
-    draft.bountyDuration && setBountyDuration(draft.bountyDuration);
-    draft.bountyReward && setBountyReward(draft.bountyReward);
-    draft.bountyLink && setBountyLink(draft.bountyLink);
-    setShowDrafts(false);
-  }
-
-  // const [images, setImages] = useState<string[]>([]); // base64 data URLs
-  // const [draftItems, setDraftItems] = useState<
-  //   { id: string; text?: string; image?: string[] }[]
-  // >([]);
-  // const [savedMsg, setSavedMsg] = useState<string | null>(null);
-
-  // watch content for live binding if needed
-  const contentValue = watch("content");
-
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-  }, [error]);
-
-  useEffect(() => {
-    if (lastCreated) {
-      toast.success("Post created successfully");
-      reset({ content: "", is_published: false });
-      setImages([]);
-    }
-  }, [lastCreated, reset]);
-
-  function handleEmojiSelect(emoji: string) {
-    // append emoji to content
-    setValue("content", `${contentValue || ""}${emoji}`);
-  }
-
-  async function onSubmit(data: FormValues) {
-    // Prepare request payload
-    const payload = {
-      project_uuid: projectItem?.uuid as string,
-      content: data.content,
-      // API expects medias: array of strings — send base64 images or URLs.
-      medias: images,
-      is_published: data.is_published,
-    };
-
-    console.log(payload);
-
-    try {
-      await dispatch(createPost(payload)).unwrap();
-    } catch (err: any) {
-      console.log(err);
-      toast.error(err || "Failed to create post");
-    }
+  if (!projectDetail) {
+    return null;
   }
 
   return (
@@ -467,20 +133,20 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
           <div className="flex flex-col gap-y-6">
             <div className="flex flex-col md:flex-row md:items-center gap-x-5">
               <Avatar className="lg:w-[120px] lg:h-[120px] sm:w-[100px] sm:h-[100px] w-[80px] h-[80px] ">
-                <AvatarImage src={projectItem?.avatar} className="" />
+                <AvatarImage src={projectDetail?.avatar} className="" />
                 <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
                   CN
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 font-sans">
                 <p className="text-[#f4f4f4] sm:text-[28px] text-[20px] font-medium flex items-center gap-x-2 mb-4">
-                  {projectItem?.name}{" "}
-                  {projectItem?.is_approved && (
+                  {projectDetail?.name}{" "}
+                  {projectDetail?.is_approved && (
                     <BsPatchCheckFill size={24} color="#B348F9" />
                   )}
                 </p>
                 <p className="sm:text-base text-[12px] font-normal text-[#BCBCBC]">
-                  {projectItem?.description}
+                  {projectDetail?.description}
                 </p>
               </div>
             </div>
@@ -496,11 +162,11 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                 <FaSquareXTwitter color="#7f7f7f" className="text-[1.04rem]" />
                 <p className="text-[#f4f4f4] font-medium text-[0.73rem] flex gap-x-1">
                   <Link
-                    href={projectItem?.social as string}
+                    href={projectDetail?.social as string}
                     target="blank"
                     className="text-[#1768FF] font-normal"
                   >
-                    {projectItem?.social}
+                    {projectDetail?.social}
                   </Link>
                 </p>
               </div>
@@ -508,7 +174,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                 <HiOutlineCube color="#7f7f7f" className="text-[1.04rem]" />
                 <p className="text-[#f4f4f4] font-medium text-[0.73rem] flex gap-x-1">
                   <span className="text-[#BCBCBC] font-normal">
-                    {projectItem?.categories?.map((c) => (
+                    {projectDetail?.categories?.map((c: any) => (
                       <React.Fragment key={c}>{`${c} . `}</React.Fragment>
                     ))}
                   </span>
@@ -523,38 +189,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
             </div>
             <div className="w-full flex gap-5">
               <div className="w-1/2">
-                <Dialog
-                  onOpenChange={(isOpen) => {
-                    if (!isOpen) {
-                      Transforms.deselect(editor);
-                      setShowDrafts(false);
-                      setPostType("feed-post");
-                      setText("");
-                      setImages([]);
-                      setEventDescription([
-                        { type: "paragraph", children: [{ text: "" }] },
-                      ]);
-                      setJobDescription([
-                        { type: "paragraph", children: [{ text: "" }] },
-                      ]);
-                      setDate("");
-                      setTime("");
-                      setLocation("");
-                      setEventType("");
-                      setJobTitle("");
-                      setJobType("");
-                      setJobExperienceLevel("");
-                      setJobConvenience("");
-                      setJobLocation("");
-                      setJobPayment("");
-                      setJobApplicationLink("");
-                      setBountyTitle("");
-                      setBountyDuration("");
-                      setBountyReward("");
-                      setBountyLink("");
-                    }
-                  }}
-                >
+                <Dialog>
                   <DialogTrigger asChild>
                     <Button className="w-full font-sans bg-white hover:bg-black hover:text-white text-black rounded-full py-3 mb-4 max-sm:text-[13px] max-sm:font-semibold">
                       <PlusIcon />
@@ -565,191 +200,133 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                     className=" font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[50vw] lg:max-w-[65vw] md:max-w-[85vw] max-md:!max-w-[95vw]  md:max-h-[95vh] max-h-[98vh] min-h-[45vh] overflow-auto"
                     style={{ scrollbarWidth: "none" }}
                   >
-                    <DialogHeader className="py-4 sm:px-7 p-4 border-b-[1px] border-b-[#383838]">
+                    <DialogHeader className="py-4 sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
                       <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4] ">
-                        {showDrafts ? (
-                          <div className="flex gap-5 items-center">
-                            <Button
-                              className="bg-transparent hover:bg-transparent"
-                              onClick={() => setShowDrafts(false)}
-                            >
-                              <FaArrowLeft />
-                            </Button>
-                            <p className="max-sm:text-[16px]"> Drafts</p>
-                          </div>
-                        ) : (
-                          <p className="max-sm:text-[16px]">New post</p>
-                        )}
-                        {!showDrafts && (
-                          <div className=" max-sm:mr-6 flex sm:gap-6 gap-3 sm:flex-row flex-col-reverse max-sm:items-end">
-                            {savedMsg ? (
-                              <div className=" flex gap-1 items-center font-sans text-[#21a80f] sm:text-[14px] text-[12px] font-bold animate-fade">
-                                <FaCheck />
-                                {savedMsg}
-                              </div>
-                            ) : (
-                              <Button
-                                className="bg-transparent !p-0 hover:bg-transparent max-sm:gap-1"
-                                onClick={handleSaveDrafts}
-                              >
-                                <LuFilePenLine style={{ color: "#a6a6a6" }} />
-                                <p className="text-[#a6a6a6] sm:text-[14px] text-[12px]">
-                                  Save as draft
-                                </p>
-                              </Button>
-                            )}
-                            <Button
-                              onClick={() => {
-                                setShowDrafts(true);
-                                setSavedMsg("");
-                              }}
-                              className="w-max sm:mr-9 rounded-full border-[#303030] border-[1px] py-1.5 sm:!px-5 max-sm:!px-4 max-sm:gap-1 font-light sm:text-[14px] text-[12px] text-[#f4f4f4]"
-                            >
-                              <LuFilePenLine className="text-[#f4f4f4] " />
-                              <span>Drafts</span>
-                            </Button>
-                          </div>
-                        )}
+                        <p className="max-sm:text-[16px]">New post</p>
+                        <Button
+                          className="bg-transparent px-6 py-3 rounded-full hover:bg-transparent gap-2 border border-[#303030] mr-5"
+                          // onClick={handleSaveDrafts}
+                        >
+                          <LuFilePenLine style={{ color: "#a6a6a6" }} />
+                          <p className="text-[#a6a6a6] sm:text-[14px] text-[12px]">
+                            Drafts
+                          </p>
+                        </Button>
                       </DialogTitle>
                     </DialogHeader>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                      <div className="grid sm:gap-2 gap-3 py-2 sm:px-7 px-3">
-                        {!showDrafts && (
-                          <Select
-                            value={postType}
-                            onValueChange={(val) => {
-                              setShowDrafts(false);
-                              setPostType(val);
-                              setEventDescription([
-                                { type: "paragraph", children: [{ text: "" }] },
-                              ]);
-                              setJobDescription([
-                                { type: "paragraph", children: [{ text: "" }] },
-                              ]);
-                            }}
-                          >
-                            <SelectTrigger className="font-sans w-max py-5 px-4 border-[#434343] text-[#f4f4f4] rounded-full max-sm:text-[14px] ">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="font-sans bg-[#161616] border-[#303030] rounded-2xl">
-                              <SelectGroup className="w-[200px]">
-                                <SelectLabel className="text-[#f4f4f4] sm:text-[16px] text-[13px] ">
-                                  Chooose post type
-                                </SelectLabel>
-                                <SelectItem
-                                  className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff] "
-                                  value="feed-post"
-                                >
-                                  Feed post
-                                </SelectItem>
-                                <SelectItem
-                                  className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
-                                  value="events"
-                                >
-                                  Events
-                                </SelectItem>
-                                <SelectItem
-                                  className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
-                                  value="hiring"
-                                >
-                                  Hiring
-                                </SelectItem>
-                                <SelectItem
-                                  className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
-                                  value="bounties"
-                                >
-                                  Bounties
-                                </SelectItem>
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        )}
-                        {!showDrafts && postType === "feed-post" && (
-                          <Controller
-                            name="content"
-                            control={control}
-                            render={({ field }) => (
-                              <FeedPostsMain
-                                ref={undefined as any} // FeedPostsMain expects forwarded ref — we aren't using it here
-                                value={field.value}
-                                onChange={field.onChange}
-                              />
-                            )}
-                          />
-                          // <FeedPostsMain
-                          //   ref={inputRef}
-                          //   value={text}
-                          //   onChange={setText}
-                          // />
-                        )}
-                        {!showDrafts && postType === "events" && (
-                          <>
-                            <EventsPost
-                              description={eventDescription}
-                              setDescription={setEventDescription}
-                              date={date}
-                              setDate={setDate}
-                              time={time}
-                              setTime={setTime}
-                              location={location}
-                              setLocation={setLocation}
-                              eventType={eventType}
-                              setEventType={setEventType}
-                              editor={editor}
-                            />
-                          </>
-                        )}
-                        {!showDrafts && postType === "hiring" && (
-                          <HiringPost
-                            jobTitle={jobTitle}
-                            setJobTitle={setJobTitle}
-                            jobType={jobType}
-                            setJobType={setJobType}
-                            jobExperienceLevel={jobExperienceLevel}
-                            setJobExperienceLevel={setJobExperienceLevel}
-                            jobLocation={jobLocation}
-                            setJobLocation={setJobLocation}
-                            jobConvenience={jobConvenience}
-                            setJobConvenience={setJobConvenience}
-                            jobPayment={jobPayment}
-                            setJobPayment={setJobPayment}
-                            jobApplicationLink={jobApplicationLink}
-                            setJobApplicationLink={setJobApplicationLink}
-                            description={jobDescription}
-                            setDescription={setJobDescription}
+                    <div className="grid sm:gap-2 gap-3 py-2 sm:px-7 px-3">
+                      <Select
+                        value={formType}
+                        onValueChange={(val: FormType) => {
+                          setFormType(val as FormType)
+                        }}
+                      >
+                        <SelectTrigger className="font-sans w-max py-5 px-4 border-[#434343] text-[#f4f4f4] rounded-full max-sm:text-[14px] ">
+                          <SelectValue placeholder={formType} />
+                        </SelectTrigger>
+                        <SelectContent className="font-sans bg-[#161616] border-[#303030] rounded-2xl">
+                          <SelectGroup className="w-[200px]">
+                            <SelectLabel className="text-[#f4f4f4] sm:text-[16px] text-[13px] ">
+                              Chooose post type
+                            </SelectLabel>
+                            <SelectItem
+                              className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff] "
+                              value="feed"
+                            >
+                              Feeds
+                            </SelectItem>
+                            <SelectItem
+                              className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
+                              value="events"
+                            >
+                              Events
+                            </SelectItem>
+                            <SelectItem
+                              className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
+                              value="hiring"
+                            >
+                              Hiring
+                            </SelectItem>
+                            <SelectItem
+                              className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
+                              value="bounties"
+                            >
+                              Bounties
+                            </SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      {formType === "feed" && (
+                        <FeedPostsMain projectId={projectDetail?.uuid} />
+                      )}
+                      {formType === "event" && (
+                        <>
+                          {/* <EventsPost
+                            description={eventDescription}
+                            setDescription={setEventDescription}
+                            date={date}
+                            setDate={setDate}
+                            time={time}
+                            setTime={setTime}
+                            location={location}
+                            setLocation={setLocation}
+                            eventType={eventType}
+                            setEventType={setEventType}
                             editor={editor}
-                          />
-                        )}
-                        {!showDrafts && postType === "bounties" && (
-                          <BountyPost
-                            bountyTitle={bountyTitle}
-                            setBountyTitle={setBountyTitle}
-                            bountyDuration={bountyDuration}
-                            setBountyDuration={setBountyDuration}
-                            bountyReward={bountyReward}
-                            setBountyReward={setBountyReward}
-                            bountyLink={bountyLink}
-                            setBountyLink={setBountyLink}
-                          />
-                        )}
-                        {showDrafts && draftItems.length < 1 && (
-                          <Drafts>
-                            <div className="flex flex-col items-center gap-3 min-h-[50vh] justify-center pb-4">
-                              <LuFilePenLine
-                                className="text-[#a6a6a6]"
-                                size={95}
-                                strokeWidth={1}
-                              />
-                              <p className="text-[#dddddd] sm:text-xl text-lg ">
-                                Your drafts is empty
-                              </p>
-                              <p className="text-[#7f7f7f] sm:text-sm text-[12px] ">
-                                Your drafts will appear here
-                              </p>
-                            </div>
-                          </Drafts>
-                        )}
-                        {showDrafts && draftItems.length > 0 && (
+                          /> */}
+                        </>
+                      )}
+                      {formType === "hiring" && (<></>
+                        // <HiringPost
+                        //   jobTitle={jobTitle}
+                        //   setJobTitle={setJobTitle}
+                        //   jobType={jobType}
+                        //   setJobType={setJobType}
+                        //   jobExperienceLevel={jobExperienceLevel}
+                        //   setJobExperienceLevel={setJobExperienceLevel}
+                        //   jobLocation={jobLocation}
+                        //   setJobLocation={setJobLocation}
+                        //   jobConvenience={jobConvenience}
+                        //   setJobConvenience={setJobConvenience}
+                        //   jobPayment={jobPayment}
+                        //   setJobPayment={setJobPayment}
+                        //   jobApplicationLink={jobApplicationLink}
+                        //   setJobApplicationLink={setJobApplicationLink}
+                        //   description={jobDescription}
+                        //   setDescription={setJobDescription}
+                        //   editor={editor}
+                        // />
+                      )}
+                      {formType === "bounty" && (<></>
+                        // <BountyPost
+                        //   bountyTitle={bountyTitle}
+                        //   setBountyTitle={setBountyTitle}
+                        //   bountyDuration={bountyDuration}
+                        //   setBountyDuration={setBountyDuration}
+                        //   bountyReward={bountyReward}
+                        //   setBountyReward={setBountyReward}
+                        //   bountyLink={bountyLink}
+                        //   setBountyLink={setBountyLink}
+                        // />
+                      )}
+                      {/* {showDrafts && draftItems.length < 1 && (
+                        <Drafts>
+                          <div className="flex flex-col items-center gap-3 min-h-[50vh] justify-center pb-4">
+                            <LuFilePenLine
+                              className="text-[#a6a6a6]"
+                              size={95}
+                              strokeWidth={1}
+                            />
+                            <p className="text-[#dddddd] sm:text-xl text-lg ">
+                              Your drafts is empty
+                            </p>
+                            <p className="text-[#7f7f7f] sm:text-sm text-[12px] ">
+                              Your drafts will appear here
+                            </p>
+                          </div>
+                        </Drafts>
+                      )} */}
+                      {/* {showDrafts && draftItems.length > 0 && (
                           <Drafts>
                             <div className="flex flex-col gap-3 min-h-[50vh] pb-4">
                               {draftItems.map((draft) => (
@@ -790,15 +367,15 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                                       />
                                     </Button>
                                   </div>
-                                  {draft.text && (
+                                  {draft.data.text && (
                                     <p className="mb-1.5">
-                                      Feed post: {draft.text}
+                                      Feed post: {draft.data.text}
                                     </p>
                                   )}{" "}
-                                  {draft.image && (
+                                  {draft.data.image && (
                                     <div className="h-max grid grid-cols-2 gap-2 mb-1.5">
                                       Images:
-                                      {draft.image.map((img, index) => (
+                                      {draft.data.image.map((img: string, index: number) => (
                                         <div className="w-full h-[170px]">
                                           <img
                                             src={img}
@@ -809,161 +386,130 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                                       ))}
                                     </div>
                                   )}
-                                  {draft.eventDescription && (
+                                  {draft.data.eventDescription && (
                                     <div>
                                       Event description:
                                       <div
                                         className="mb-1.5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6"
                                         dangerouslySetInnerHTML={{
-                                          __html: draft.eventDescription
-                                            .map((n) => serialize(n))
+                                          __html: draft.data.eventDescription
+                                            .map((n: Descendant) => serialize(n))
                                             .join(""),
                                         }}
                                       />
                                     </div>
                                   )}
-                                  {draft.date && (
+                                  {draft.data.date && (
                                     <p className="mb-1.5">
-                                      Event date: {draft.date}
+                                      Event date: {draft.data.date}
                                     </p>
                                   )}
-                                  {draft.time && (
+                                  {draft.data.time && (
                                     <p className="mb-1.5">
-                                      Event time: {draft.time}
+                                      Event time: {draft.data.time}
                                     </p>
                                   )}
-                                  {draft.location && (
+                                  {draft.data.location && (
                                     <p className="mb-1.5">
-                                      Event location: {draft.location}
+                                      Event location: {draft.data.location}
                                     </p>
                                   )}
-                                  {draft.eventType && (
+                                  {draft.data.eventType && (
                                     <p className="mb-1.5">
-                                      Event type: {draft.eventType}
+                                      Event type: {draft.type}
                                     </p>
                                   )}
-                                  {draft.jobTitle && (
+                                  {draft.data.jobTitle && (
                                     <p className="mb-1.5">
-                                      Job title: {draft.jobTitle}
+                                      Job title: {draft.data.jobTitle}
                                     </p>
                                   )}
-                                  {draft.jobDescription && (
+                                  {draft.data.jobDescription && (
                                     <div>
                                       Job description:
                                       <div
                                         className="mb-1.5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6"
                                         dangerouslySetInnerHTML={{
-                                          __html: draft.jobDescription
-                                            .map((n) => serialize(n))
+                                          __html: draft.data.jobDescription
+                                            .map((n: Descendant) => serialize(n))
                                             .join(""),
                                         }}
                                       />
                                     </div>
                                   )}
-                                  {draft.jobType && (
+                                  {draft.data.jobType && (
                                     <p className="mb-1.5">
-                                      Job type: {draft.jobType}
+                                      Job type: {draft.data.jobType}
                                     </p>
                                   )}
-                                  {draft.jobExperienceLevel && (
+                                  {draft.data.jobExperienceLevel && (
                                     <p className="mb-1.5">
                                       Job experience level
-                                      {draft.jobExperienceLevel}
+                                      {draft.data.jobExperienceLevel}
                                     </p>
                                   )}
-                                  {draft.jobLocation && (
+                                  {draft.data.jobLocation && (
                                     <p className="mb-1.5">
-                                      Job location: {draft.jobLocation}
+                                      Job location: {draft.data.jobLocation}
                                     </p>
                                   )}
-                                  {draft.jobConvenience && (
+                                  {draft.data.jobConvenience && (
                                     <p className="mb-1.5">
                                       Job convenience
-                                      {draft.jobConvenience}
+                                      {draft.data.jobConvenience}
                                     </p>
                                   )}
-                                  {draft.jobPayment && (
+                                  {draft.data.jobPayment && (
                                     <p className="mb-1.5">
-                                      Job payment: {draft.jobPayment}
+                                      Job payment: {draft.data.jobPayment}
                                     </p>
                                   )}
-                                  {draft.jobApplicationLink && (
+                                  {draft.data.jobApplicationLink && (
                                     <p className="mb-1.5">
                                       Job application link:
-                                      {draft.jobApplicationLink}
+                                      {draft.data.jobApplicationLink}
                                     </p>
                                   )}
-                                  {draft.bountyTitle && (
+                                  {draft.data.bountyTitle && (
                                     <p className="mb-1.5">
-                                      Bounty title: {draft.bountyTitle}
+                                      Bounty title: {draft.data.bountyTitle}
                                     </p>
                                   )}
-                                  {draft.bountyDuration && (
+                                  {draft.data.bountyDuration && (
                                     <p className="mb-1.5">
                                       Bounty duration:
-                                      {draft.bountyDuration}
+                                      {draft.data.bountyDuration}
                                     </p>
                                   )}
-                                  {draft.bountyReward && (
+                                  {draft.data.bountyReward && (
                                     <p className="mb-1.5">
-                                      Bounty reward: {draft.bountyReward}
+                                      Bounty reward: {draft.data.bountyReward}
                                     </p>
                                   )}
-                                  {draft.bountyLink && (
+                                  {draft.data.bountyLink && (
                                     <p className="mb-1.5">
-                                      Bounty link: {draft.bountyLink}
+                                      Bounty link: {draft.data.bountyLink}
                                     </p>
                                   )}
                                 </div>
                               ))}
                             </div>
                           </Drafts>
-                        )}
-                      </div>
-                      {!showDrafts && (
-                        <div className="mt-3 mb-6 sm:px-7 px-3 flex sm:flex-row max-sm:flex-col max-sm:items-start gap-3 items-center">
-                          {postType === "feed-post" && (
-                            <FeedPostsFooter
-                              onSelect={handleSelectEmoji}
-                              inputText={text}
-                              draftItems={draftItems}
-                              onSetDraftItems={setDraftItems}
-                              images={images}
-                              setImages={setImages}
-                              savedMsg={savedMsg}
-                              setSavedMsg={setSavedMsg}
-                            />
-                          )}
-                          <DialogFooter className="sm:self-end">
-                            <Button
-                              className="bg-[#430b68] hover:bg-[#430b68] rounded-full py-2 "
-                              type="submit"
-                              disabled={loading}
-                            >
-                              {loading ? (
-                                "Posting..."
-                              ) : (
-                                <p className="px-4">Post</p>
-                              )}
-                            </Button>
-                          </DialogFooter>
-                        </div>
-                      )}
-                    </form>
+                        )} */}
+                    </div>
                   </DialogContent>
                 </Dialog>
               </div>
 
               <div className="w-1/2">
                 <Dialog>
-                  <form>
                     <DialogTrigger asChild>
                       <Button className="w-full font-sans bg-black hover:bg-white hover:text-black text-white rounded-full py-3 mb-4 max-sm:text-[13px] max-sm:font-semibold">
                         Edit Project
                       </Button>
                     </DialogTrigger>
                     <DialogContent
-                      className=" font-sans bg-[#161616] border-[#303030] rounded-2xl py-8 px-7 sm:max-w-[425px] lg:max-w-[480px] !max-h-[90vh] max-sm:!max-h-[95vh] overflow-auto"
+                      className=" font-sans bg-[#161616] border-[#303030] rounded-2xl py-8 px-7 sm:max-w-[425px] lg:!max-w-[480px] !max-h-[90vh] max-sm:!max-h-[95vh] overflow-y-auto"
                       style={{ scrollbarWidth: "none" }}
                     >
                       <DialogHeader>
@@ -1074,7 +620,6 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                         </Button>
                       </DialogFooter>
                     </DialogContent>
-                  </form>
                 </Dialog>
               </div>
             </div>

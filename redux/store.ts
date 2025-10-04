@@ -14,6 +14,7 @@ import onboardingReducer from "@/redux/slices/onboardingSlice";
 import fcmNotificationReducer from "@/redux/slices/fcmNotificationSlice";
 import projectReducer from "@/redux/slices/projectSlice";
 import postReducer from "@/redux/slices/postSlice";
+import draftsReducer from "@/redux/slices/draftSlice";
 import profileReducer from "@/redux/slices/userSlice";
 
 const persistConfig = {
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
   onboarding: onboardingReducer,
   project: projectReducer,
   post: postReducer,
+  drafts: draftsReducer,
   user: profileReducer,
 });
 

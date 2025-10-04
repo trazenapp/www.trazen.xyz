@@ -28,7 +28,11 @@ const initialState: OnboardingState = {
   data: formData,
 };
 
-export const onboarding = createAsyncThunk<SignInResponse, OnboardingData, {state: RootState}>(
+export const onboarding = createAsyncThunk<
+  SignInResponse,
+  OnboardingData,
+  { state: RootState }
+>(
   "onboarding/updateProfile",
   async (OnboardingData, { rejectWithValue, getState }) => {
     try {
@@ -44,12 +48,12 @@ export const onboarding = createAsyncThunk<SignInResponse, OnboardingData, {stat
           headers: {
             "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
             "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-            Authorization: `Bearer ${token}`
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      console.log(response.data)
+      console.log(response.data);
       return response.data;
     } catch (error: any) {
       console.log(error);

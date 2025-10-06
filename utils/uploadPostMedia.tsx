@@ -16,11 +16,9 @@ export const useFileUpload = () => {
       const uploadPromises = Array.from(files).map(async (file) => {
         const formData = new FormData();
         formData.append("file", file);
-        const res = await axiosInstance.post(
-          baseUrl,
-          formData,
-          { headers: { "Content-Type": "multipart/form-data" } }
-        );
+        const res = await axiosInstance.post(baseUrl, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
         return res.data.data.path;
       });
 

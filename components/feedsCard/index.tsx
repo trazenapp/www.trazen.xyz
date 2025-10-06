@@ -24,25 +24,87 @@ import { IoChatbubbleOutline } from "react-icons/io5";
 import { TbShare3 } from "react-icons/tb";
 import { Edit } from "lucide-react";
 import { Trash2 } from "lucide-react";
+import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
+import { votePost, setLoading } from "@/redux/slices/postSlice";
+import { ClipLoader } from "react-spinners";
 
-const FeedsCard = ({ pioneer = false }) => {
+// uuid?: string;
+//   user_uuid?: string;
+//   project_uuid?: string;
+//   content: string;
+//   medias?: string[];
+//   createdAt?: string;
+//   updatedAt?: string;
+//   votes: [];
+//   isPublished?: boolean;
+//   project?: ProjectDetail;
+
+interface FeedsCardProps {
+  uuid: string;
+  content: string;
+  medias?: string[];
+  voteCount?: number;
+  commentCount?: number;
+  createdAt?: string;
+  name?: string;
+  avatar?: string;
+  is_approved?: boolean;
+  project_uuid?: string;
+}
+
+const FeedsCard = ({
+  uuid,
+  content,
+  medias,
+  createdAt,
+  voteCount,
+  commentCount,
+  name,
+  avatar,
+  is_approved,
+  project_uuid,
+}: FeedsCardProps) => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { loading } = useAppSelector((state: RootState) => state.post);
 
   const handlePageClick = (slug: string) => {
     router.push(`/home/${slug}`);
   };
 
+  const handleVote = async (
+    voteType: "UPVOTE" | "DOWNVOTE",
+    post_uuid: string
+  ) => {
+    if (!post_uuid) {
+      console.log("No post_uuid in state");
+      return;
+    }
+
+    try {
+      const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
+      console.log("Vote response:", res);
+    } catch (error) {
+      console.error("Vote error:", error);
+    }
+  };
+
   return (
     <>
-      <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0">
+      <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0 mb-4">
         <div className="flex justify-between items-start">
           <div className="flex items-start gap-x-2.5 font-sans">
             <Link href="/profile" className="flex items-start gap-x-2.5">
-              <AvatarProfile />
+              <AvatarProfile
+                createdAt={createdAt}
+                name={name}
+                avatar={avatar}
+                is_approved={is_approved}
+              />
             </Link>
-            <Button className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]">
+            {/* <Button className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]">
               Follow
-            </Button>
+            </Button> */}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -64,31 +126,39 @@ const FeedsCard = ({ pioneer = false }) => {
           </DropdownMenu>
         </div>
         <p
-          onClick={() => !pioneer && handlePageClick("test")}
+          onClick={() => handlePageClick(uuid)}
           className="cursor-pointer text-[#F4F4F4F4] text-sm lg:text-base font-normal font-sans line-clamp-2"
         >
-          Big news: We’ve officially opened our first office in New Orleans!
-          ⚜️We’re excited to build the future of Web3 with this vibrant,
-          creative community.Let’s grow together
+          {content}
         </p>
         <div className="overflow-hidden rounded-[12px] w-full">
-          <FeedsMedia media={media} maxVisible={4} />
+          <FeedsMedia media={medias} maxVisible={4} />
         </div>
         <div
           className="flex justify-between gap-x-2.5 overflow-x-scroll md:overflow-x-hidden"
           style={{ scrollbarWidth: "none" }}
         >
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button
+            type="button"
+            onClick={() => handleVote("UPVOTE", uuid)}
+            disabled={loading}
+            className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
+          >
             <PiArrowFatUp />
-            276
+            {voteCount}
           </Button>
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button
+            type="button"
+            onClick={() => handleVote("DOWNVOTE", uuid)}
+            disabled={loading}
+            className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
+          >
             <PiArrowFatDown />
             276
           </Button>
           <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <IoChatbubbleOutline />
-            276
+            {commentCount}
           </Button>
           <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <TbShare3 />
@@ -99,7 +169,7 @@ const FeedsCard = ({ pioneer = false }) => {
             276
           </Button>
         </div>
-        <FeedsComment />
+        <FeedsComment uuid={uuid} isComment={false} />
       </Card>
     </>
   );

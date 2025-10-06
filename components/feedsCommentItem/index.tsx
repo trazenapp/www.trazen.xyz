@@ -75,7 +75,11 @@ const FeedsCommentItem = () => {
               Reply
             </Button>
           </div>
-          {isReply && <div className="mt-2.5"><FeedsComment isComment={true} /></div>}
+          {isReply && (
+            <div className="mt-2.5">
+              <FeedsComment isComment={true} />
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -3,7 +3,37 @@ export interface User {
   email: string;
   username: string;
   role: string;
+  title?: string;
+  social?: string;
+  skills?: string[];
+  interests?: string[];
+  ref?: string;
 }
+
+// {
+//     "id": 55,
+//     "uuid": "310a575a-a6a2-477a-8c36-b62558824202",
+//     "email": "umf84596@toaik.com",
+//     "username": "umf84596",
+//     "password": "$2b$10$X6utNOy8Q/bHRmCRhnCs1u9hHqWhPx2Cpp6/VnZUxUzUJ.AZonDdi",
+//     "title": "Founder",
+//     "social": "https://x.com/umf84596",
+//     "skills": [
+//         "Web3.js/Ethers.js",
+//         "Solidity"
+//     ],
+//     "interests": [
+//         "Ethereum",
+//         "Tezos",
+//         "NFT",
+//         "Metaverse"
+//     ],
+//     "role": "PIONEER",
+//     "ref": "Google",
+//     "email_verified_at": "2025-09-24T15:51:20.166Z",
+//     "created_at": "2025-09-24T15:35:21.800Z",
+//     "updated_at": "2025-09-24T16:25:44.518Z"
+// }
 
 type OptionType = {
   value: string;

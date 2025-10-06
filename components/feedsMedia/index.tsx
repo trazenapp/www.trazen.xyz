@@ -9,35 +9,35 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-const FeedsMedia = ({ media = [], maxVisible = 4 }) => {
+const FeedsMedia = ({ media = [] as string[], maxVisible = 4 }) => {
   const [playingVideos, setPlayingVideos] = useState();
   const [fullScreenMedia, setFullScreenMedia] = useState(null);
 
-  const togglePlay = (index) => {
-    const newPlaying = new Set(playingVideos);
-    if (newPlaying.has(index)) {
-      newPlaying.delete(index);
-    } else {
-      newPlaying.add(index);
-    }
-    setPlayingVideos(newPlaying);
-  };
+  // const togglePlay = (index) => {
+  //   const newPlaying = new Set(playingVideos);
+  //   if (newPlaying.has(index)) {
+  //     newPlaying.delete(index);
+  //   } else {
+  //     newPlaying.add(index);
+  //   }
+  //   setPlayingVideos(newPlaying);
+  // };
 
-  const openFullScreen = (mediaItem, index) =>
+  const openFullScreen = (mediaItem: any, index: number) =>
     setFullScreenMedia({ ...mediaItem, index });
 
   const closeFullScreen = () => setFullScreenMedia(null);
 
   const getGridLayout = (count: number) => {
-    if (count === 1) return "grid-cols-1 grid-rows-1";
-    if (count === 2) return "grid-cols-2 grid-rows-2";
-    if (count === 3) return "grid-cols-3 grid-rows-3";
+    if (count === 1) return "w-full";
+    if (count === 2) return "grid-cols-2";
+    if (count === 3) return "grid-cols-3";
     if (count >= 4) return "grid-cols-2 grid-rows-2";
-    return "grid-cols-1 grid-rows-1";
+    return "grid-cols-1 ";
   };
 
   const getColSpan = (index: number, count: number) => {
-    if (count === 1) return "col-span-1 row-span-1";
+    if (count === 1) return "col-span-12 row-span-1";
     if (count === 2) return "col-span-1 row-span-1";
     if (count === 3) {
       if (index === 0) return "col-span-1 row-span-1";
@@ -55,9 +55,8 @@ const FeedsMedia = ({ media = [], maxVisible = 4 }) => {
     showOverlay = false,
     overlayCount = 0,
   }) => {
-    const isVideo =
-      item?.type === "video" || item?.url?.match(/\.(mp4|mov|avi|mkv)$/i);
-    const isPlaying = playingVideos?.has(index);
+    
+    const imgUrl = `${process.env.NEXT_PUBLIC_FILE_PREVIEW_URL}/${item}`;
 
     return (
       <div
@@ -66,40 +65,12 @@ const FeedsMedia = ({ media = [], maxVisible = 4 }) => {
           visibleMedia.length
         )}`}
       >
-        {isVideo ? (
-          <div className="w-full h-full relative">
-            <video
-              width="320"
-              height="240"
-              controls
-              loop
-              onClick={() => openFullScreen(item, index)}
-              ref={(el) => {
-                if (el) {
-                  if (isPlaying) {
-                    el.play();
-                  } else {
-                    el.pause();
-                  }
-                }
-              }}
-              preload="none"
-            >
-              <source
-                src={item?.url}
-                type="video/mp4"
-                className="object-cover w-full h-full"
-              />
-              Your browser does not support the video tag.
-            </video>
-          </div>
-        ) : (
-          <div className="w-full h-full relative">
+        <div className="w-full h-full relative">
             <Image
-              src={item?.url}
-              alt={item?.alt}
+              src={imgUrl}
+              alt={item}
               width={320}
-              height={240}
+              height={100}
               className="w-full h-full"
               onClick={() => openFullScreen(item, index)}
             />
@@ -111,7 +82,6 @@ const FeedsMedia = ({ media = [], maxVisible = 4 }) => {
               </div>
             )}
           </div>
-        )}
       </div>
     );
   };
@@ -167,34 +137,15 @@ const FeedsMedia = ({ media = [], maxVisible = 4 }) => {
               <CarouselContent>
                 {media?.map((item) => {
                   return (
-                    <CarouselItem key={item.url}>
-                      {item?.type === "video" ||
-                      item?.url.match(/\.(mp4|webm|ogg)$/i) ? (
-                        <video
-                          width="320"
-                          height="240"
-                          controls
-                          loop
-                          onClick={(e) => e.stopPropagation()}
-                          preload="none"
-                        >
-                          <source
-                            src={item?.url}
-                            type="video/mp4"
-                            className="max-w-full max-h-full rounded-lg"
-                          />
-                          Your browser does not support the video tag.
-                        </video>
-                      ) : (
-                        <Image
-                          src={item?.url}
+                    <CarouselItem key={item}>
+                      <Image
+                          src={`${process.env.NEXT_PUBLIC_FILE_PREVIEW_URL}/${item}`}
                           width={640}
                           height={240}
-                          alt={item?.alt || "Fullscreen media"}
+                          alt="Fullscreen media"
                           className="max-w-full max-h-full rounded-lg mx-auto"
                           onClick={(e) => e.stopPropagation()}
                         />
-                      )}
                     </CarouselItem>
                   );
                 })}

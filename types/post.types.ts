@@ -1,11 +1,43 @@
 import { Descendant } from "slate";
-export type FormType = "feed" | "event" | "hiring" | "bounty";
+import { ProjectDetail } from "./project.types";
+import { UserProfile } from "./user.types";
+export type FormType = "feed" | "events" | "hiring" | "bounties";
 
-export interface Post {
+export interface  Post {
   project_uuid: string;
   content: string;
   medias: string[];
   is_published: boolean;
+}
+export interface PostPagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface CommentItem {
+  content: string;
+  created_at: string;
+  user: UserProfile;
+}
+
+export interface PostItem {
+  uuid?: string;
+  user_uuid?: string;
+  project_uuid?: string;
+  content: string;
+  medias?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  upvoteCount?: number;
+  downvoteCount?: number;
+  commentCount?: number;
+  isPublished?: boolean;
+  project?: ProjectDetail;
+  is_approved?: boolean;
+  avatar?: string;
+  name?: string;
 }
 
 export interface PostState {
@@ -13,12 +45,17 @@ export interface PostState {
   error: string | null;
   drafts: Record<FormType, Draft | null>;
   data: Post;
+  pagination: PostPagination;
+  hasMore: boolean;
+  publicPosts: PostItem[];
+  privatePosts: PostItem[];
+  postDetails: PostItem;
 }
 
 export interface Draft {
   type: FormType;
   data: Record<string, any>;
-};
+}
 
 export interface Event {
   project_uuid: string;

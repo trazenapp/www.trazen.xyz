@@ -4,6 +4,7 @@ import Image from "next/image";
 import img from "@/public/file-upload.svg";
 import { useAppSelector } from "@/redux/store";
 import { ClipLoader } from "react-spinners";
+import axiosInstance from "@/utils/axios";
 
 interface FileInputProps {
   value?: string | null;
@@ -20,6 +21,7 @@ const FileInput = ({ value, onChange }: FileInputProps) => {
     setPreviewUrl(value || null);
   }, [value]);
 
+  const baseUrl = `${process.env.NEXT_PUBLIC_FILE_URL}/api/storage`;
   const previewFileUrl = process.env.NEXT_PUBLIC_FILE_PREVIEW_URL;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,25 +35,20 @@ const FileInput = ({ value, onChange }: FileInputProps) => {
       setUploading(true);
       const formData = new FormData();
       formData.append("file", selectedFile);
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_FILE_URL}/api/storage`,
-        {
-          method: "POST",
-          body: formData,
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+        const res = await axiosInstance.post(baseUrl, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
 
-      if (!res.ok) throw new Error("Upload failed");
+      // if (!res.ok) throw new Error("Upload failed");
 
-      const data = await res.json();
-      console.log(data);
+      const data =  res.data.data;
       setIsUploaded(true);
-      const fileUrl = data.data.path as string;
-      const filePreviewUrl = `${previewFileUrl}/${data.data.path as string}`;
-      // console.log(fileUrl)
+      const fileUrl = data.path as string;
+      // console.log(fileUrl);
+      const filePreviewUrl = `${previewFileUrl}/${data.path as string}`;
       onChange(filePreviewUrl);
       setPreviewUrl(filePreviewUrl);
+      // console.log(filePreviewUrl);
     } catch (err) {
       console.error("Upload error:", err);
       onChange(null);

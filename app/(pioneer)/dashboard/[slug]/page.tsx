@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useMemo, use, useEffect } from "react";
+import React, { useState, useRef, useMemo, use, useEffect, useCallback } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -64,7 +64,9 @@ import { ReactEditor } from "slate-react";
 import { set } from "date-fns";
 import { withLists } from "@/lib/withLists";
 import { RootState } from "@/redux/store";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { fetchPublicPosts, fetchPrivatePosts } from "@/redux/slices/postSlice";
 import {
   getProject,
   setLoading,
@@ -92,11 +94,36 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { projectDetail } = useAppSelector((state: RootState) => state.project);
-  const { loading, error, data, drafts } = useAppSelector(
-    (state: RootState) => state.post
-  );
-  const [formType, setFormType] = useState<FormType>("feed");
+  const { privatePosts, loading, pagination, hasMore } =
+    useAppSelector((state) => state.post);
 
+  const observer = useRef<IntersectionObserver | null>(null);
+  const lastPostRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          dispatch(
+            fetchPublicPosts({
+              search: "",
+              page: pagination.page + 1,
+              limit: pagination.limit,
+            })
+          );
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore, pagination.page, pagination.limit, dispatch]
+  );
+
+  useEffect(() => {
+    dispatch(fetchPrivatePosts({ page: 1, limit: 10 }));
+  }, [dispatch]);
+  const [formType, setFormType] = useState<FormType>("feed");
 
   useEffect(() => {
     const getPrivateProjects = async () => {
@@ -218,7 +245,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                       <Select
                         value={formType}
                         onValueChange={(val: FormType) => {
-                          setFormType(val as FormType)
+                          setFormType(val as FormType);
                         }}
                       >
                         <SelectTrigger className="font-sans w-max py-5 px-4 border-[#434343] text-[#f4f4f4] rounded-full max-sm:text-[14px] ">
@@ -259,24 +286,13 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                       {formType === "feed" && (
                         <FeedPostsMain projectId={projectDetail?.uuid} />
                       )}
-                      {formType === "event" && (
+                      {formType === "events" && (
                         <>
-                          {/* <EventsPost
-                            description={eventDescription}
-                            setDescription={setEventDescription}
-                            date={date}
-                            setDate={setDate}
-                            time={time}
-                            setTime={setTime}
-                            location={location}
-                            setLocation={setLocation}
-                            eventType={eventType}
-                            setEventType={setEventType}
-                            editor={editor}
-                          /> */}
+                          <EventsPost projectId={projectDetail?.uuid} />
                         </>
                       )}
-                      {formType === "hiring" && (<></>
+                      {formType === "hiring" && (
+                        <></>
                         // <HiringPost
                         //   jobTitle={jobTitle}
                         //   setJobTitle={setJobTitle}
@@ -297,7 +313,8 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                         //   editor={editor}
                         // />
                       )}
-                      {formType === "bounty" && (<></>
+                      {formType === "bounties" && (
+                        <></>
                         // <BountyPost
                         //   bountyTitle={bountyTitle}
                         //   setBountyTitle={setBountyTitle}
@@ -503,123 +520,123 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
 
               <div className="w-1/2">
                 <Dialog>
-                    <DialogTrigger asChild>
-                      <Button className="w-full font-sans bg-black hover:bg-white hover:text-black text-white rounded-full py-3 mb-4 max-sm:text-[13px] max-sm:font-semibold">
+                  <DialogTrigger asChild>
+                    <Button className="w-full font-sans bg-black hover:bg-white hover:text-black text-white rounded-full py-3 mb-4 max-sm:text-[13px] max-sm:font-semibold">
+                      Edit Project
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent
+                    className=" font-sans bg-[#161616] border-[#303030] rounded-2xl py-8 px-7 sm:max-w-[425px] lg:!max-w-[480px] !max-h-[90vh] max-sm:!max-h-[95vh] overflow-y-auto"
+                    style={{ scrollbarWidth: "none" }}
+                  >
+                    <DialogHeader>
+                      <DialogTitle className="font-medium text-2xl">
                         Edit Project
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent
-                      className=" font-sans bg-[#161616] border-[#303030] rounded-2xl py-8 px-7 sm:max-w-[425px] lg:!max-w-[480px] !max-h-[90vh] max-sm:!max-h-[95vh] overflow-y-auto"
-                      style={{ scrollbarWidth: "none" }}
-                    >
-                      <DialogHeader>
-                        <DialogTitle className="font-medium text-2xl">
-                          Edit Project
-                        </DialogTitle>
-                        <DialogDescription className="text-xs text-[#dddddd] font-light">
-                          Enter the details of the project in the form below
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="grid gap-4">
-                        <div className="grid gap-3">
-                          <Label
-                            htmlFor="project_name-1"
-                            className="text-sm text-[#f4f4f4] font-light "
-                          >
-                            Project Name
-                          </Label>
-                          <Input
-                            id="project_name-1"
-                            name="name"
-                            defaultValue=""
-                            className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#430b68] focus-visible:!ring-[0]"
-                          />
-                        </div>
-                        <div className="grid gap-3">
-                          <Label
-                            htmlFor="username-1"
-                            className="text-sm text-[#f4f4f4] font-light "
-                          >
-                            Username
-                          </Label>
-                          <Textarea
-                            className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-25 focus-visible:!border-[#430b68] focus-visible:!ring-[0] resize-none"
-                            defaultValue=""
-                          />
-                        </div>
-                        <div className="grid gap-3">
-                          <Label
-                            htmlFor="social-url"
-                            className="text-sm text-[#f4f4f4] font-light "
-                          >
-                            Social url (X)
-                          </Label>
-                          <Input
-                            id="social-url"
-                            name="name"
-                            defaultValue=""
-                            className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#430b68] focus-visible:!ring-[0]"
-                          />
-                        </div>
-                        <div className="grid gap-3">
-                          <Label className="text-sm text-[#f4f4f4] font-light ">
-                            Does this project have a team?
-                          </Label>
-                          <Select>
-                            <SelectTrigger className="font-sans w-full py-5.5 border-[#434343] ">
-                              <SelectValue placeholder="Select an option" />
-                            </SelectTrigger>
-                            <SelectContent className="font-sans bg-[#161616] border-[#434343]">
-                              <SelectGroup>
-                                <SelectLabel>Options</SelectLabel>
-                                <SelectItem
-                                  className="text-[#bcbcbc] focus:bg-[#303030] focus:text-[#fff] "
-                                  value="yes"
-                                >
-                                  Yes
-                                </SelectItem>
-                                <SelectItem
-                                  className="text-[#bcbcbc] focus:bg-[#303030] focus:text-[#fff]"
-                                  value="no"
-                                >
-                                  No
-                                </SelectItem>
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <p className="text-[#F4F4F4F4] text-sm font-normal text-left">
-                          Chains
-                        </p>
-                        <div>
-                          <FormRadio
-                            options={chainOptions}
-                            value=""
-                            onChange={() => {}}
-                            selectedIcon={<FaCheck />}
-                          />
-                        </div>
-                        <p className="text-[#F4F4F4F4] text-sm font-normal text-left mt-5">
-                          Niche
-                        </p>
-                        <div>
-                          <FormRadio
-                            options={nicheOptions}
-                            value=""
-                            onChange={() => {}}
-                            selectedIcon={<FaCheck />}
-                          />
-                        </div>
-                      </div>
-                      <DialogFooter className="mt-3 !justify-start">
-                        <Button
-                          className="bg-[#430b68] rounded-full "
-                          type="submit"
+                      </DialogTitle>
+                      <DialogDescription className="text-xs text-[#dddddd] font-light">
+                        Enter the details of the project in the form below
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4">
+                      <div className="grid gap-3">
+                        <Label
+                          htmlFor="project_name-1"
+                          className="text-sm text-[#f4f4f4] font-light "
                         >
-                          Save changes
-                        </Button>
-                      </DialogFooter>
-                    </DialogContent>
+                          Project Name
+                        </Label>
+                        <Input
+                          id="project_name-1"
+                          name="name"
+                          defaultValue=""
+                          className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#430b68] focus-visible:!ring-[0]"
+                        />
+                      </div>
+                      <div className="grid gap-3">
+                        <Label
+                          htmlFor="username-1"
+                          className="text-sm text-[#f4f4f4] font-light "
+                        >
+                          Username
+                        </Label>
+                        <Textarea
+                          className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-25 focus-visible:!border-[#430b68] focus-visible:!ring-[0] resize-none"
+                          defaultValue=""
+                        />
+                      </div>
+                      <div className="grid gap-3">
+                        <Label
+                          htmlFor="social-url"
+                          className="text-sm text-[#f4f4f4] font-light "
+                        >
+                          Social url (X)
+                        </Label>
+                        <Input
+                          id="social-url"
+                          name="name"
+                          defaultValue=""
+                          className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#430b68] focus-visible:!ring-[0]"
+                        />
+                      </div>
+                      <div className="grid gap-3">
+                        <Label className="text-sm text-[#f4f4f4] font-light ">
+                          Does this project have a team?
+                        </Label>
+                        <Select>
+                          <SelectTrigger className="font-sans w-full py-5.5 border-[#434343] ">
+                            <SelectValue placeholder="Select an option" />
+                          </SelectTrigger>
+                          <SelectContent className="font-sans bg-[#161616] border-[#434343]">
+                            <SelectGroup>
+                              <SelectLabel>Options</SelectLabel>
+                              <SelectItem
+                                className="text-[#bcbcbc] focus:bg-[#303030] focus:text-[#fff] "
+                                value="yes"
+                              >
+                                Yes
+                              </SelectItem>
+                              <SelectItem
+                                className="text-[#bcbcbc] focus:bg-[#303030] focus:text-[#fff]"
+                                value="no"
+                              >
+                                No
+                              </SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <p className="text-[#F4F4F4F4] text-sm font-normal text-left">
+                        Chains
+                      </p>
+                      <div>
+                        <FormRadio
+                          options={chainOptions}
+                          value=""
+                          onChange={() => {}}
+                          selectedIcon={<FaCheck />}
+                        />
+                      </div>
+                      <p className="text-[#F4F4F4F4] text-sm font-normal text-left mt-5">
+                        Niche
+                      </p>
+                      <div>
+                        <FormRadio
+                          options={nicheOptions}
+                          value=""
+                          onChange={() => {}}
+                          selectedIcon={<FaCheck />}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter className="mt-3 !justify-start">
+                      <Button
+                        className="bg-[#430b68] rounded-full "
+                        type="submit"
+                      >
+                        Save changes
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
                 </Dialog>
               </div>
             </div>
@@ -664,23 +681,41 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
             </div>
             <TabsContent className="relative w-full h-full" value="feed-post">
               <div className="w-full h-full">
-                <Feedscard pioneer={true} />
+                {loading
+        ? privatePosts.map((post) => (
+            <Skeleton key={post.uuid} className="w-full h-[200px] my-4" />
+          ))
+        : privatePosts.map((post) => (
+              <Feedscard
+                key={post.uuid}
+                uuid={post.uuid as string}
+                content={post.content}
+                medias={post.medias}
+                createdAt={post.created_at}
+                voteCount={post.voteCount}
+                commentCount={post.commentCount}
+                name={post.project?.name}
+                avatar={post.project?.avatar}
+                is_approved={post.project?.is_approved}
+                project_uuid={post.project_uuid}
+              />
+            ))}
               </div>
             </TabsContent>
             <TabsContent className="relative w-full h-full" value="events">
-              <Feedscard pioneer={true} />
+              {/* <Feedscard pioneer={true} /> */}
             </TabsContent>
             <TabsContent className="relative w-full h-full" value="hiring">
-              <Feedscard pioneer={true} />
+              {/* <Feedscard pioneer={true} /> */}
             </TabsContent>
             <TabsContent className="relative w-full h-full" value="bounties">
-              <Feedscard pioneer={true} />
+              {/* <Feedscard pioneer={true} /> */}
             </TabsContent>
             <TabsContent
               className="relative w-full h-full"
               value="announcements"
             >
-              <Feedscard pioneer={true} />
+              {/* <Feedscard pioneer={true} /> */}
             </TabsContent>
           </Tabs>
         </div>

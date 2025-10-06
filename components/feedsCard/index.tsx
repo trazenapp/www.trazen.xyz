@@ -43,7 +43,8 @@ interface FeedsCardProps {
   uuid: string;
   content: string;
   medias?: string[];
-  voteCount?: number;
+  upvoteCount?: number;
+  downvoteCount?: number;
   commentCount?: number;
   createdAt?: string;
   name?: string;
@@ -57,7 +58,8 @@ const FeedsCard = ({
   content,
   medias,
   createdAt,
-  voteCount,
+  upvoteCount,
+  downvoteCount,
   commentCount,
   name,
   avatar,
@@ -138,25 +140,15 @@ const FeedsCard = ({
           className="flex justify-between gap-x-2.5 overflow-x-scroll md:overflow-x-hidden"
           style={{ scrollbarWidth: "none" }}
         >
-          <Button
-            type="button"
-            onClick={() => handleVote("UPVOTE", uuid)}
-            disabled={loading}
-            className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
-          >
+          <Button onClick={() => handleVote("UPVOTE", uuid)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <PiArrowFatUp />
-            {voteCount}
+            {upvoteCount}
           </Button>
-          <Button
-            type="button"
-            onClick={() => handleVote("DOWNVOTE", uuid)}
-            disabled={loading}
-            className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
-          >
+          <Button onClick={() => handleVote("DOWNVOTE", uuid)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <PiArrowFatDown />
-            276
+            {downvoteCount}
           </Button>
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button onClick={() => router.push(`/home/${uuid}`)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <IoChatbubbleOutline />
             {commentCount}
           </Button>

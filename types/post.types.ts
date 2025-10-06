@@ -20,6 +20,8 @@ export interface CommentItem {
   content: string;
   created_at: string;
   user: UserProfile;
+  uuid: string;
+  id: number;
 }
 
 export interface PostItem {
@@ -38,6 +40,7 @@ export interface PostItem {
   is_approved?: boolean;
   avatar?: string;
   name?: string;
+  comments?: CommentItem[];
 }
 
 export interface PostState {

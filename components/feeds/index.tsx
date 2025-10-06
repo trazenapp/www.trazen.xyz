@@ -56,7 +56,8 @@ const Feeds = ({ isPrivate = false }: FeedsProps) => {
                 content={post.content}
                 medias={post.medias}
                 createdAt={post.createdAt}
-                voteCount={post.voteCount}
+                upvoteCount={post.upvoteCount}
+                downvoteCount={post.downvoteCount}
                 commentCount={post.commentCount}
                 name={post.project?.name}
                 avatar={post.project?.avatar}
@@ -71,7 +72,8 @@ const Feeds = ({ isPrivate = false }: FeedsProps) => {
                 content={post.content}
                 medias={post.medias}
                 createdAt={post.createdAt}
-                voteCount={post.voteCount}
+                upvoteCount={post.upvoteCount}
+                downvoteCount={post.downvoteCount}
                 commentCount={post.commentCount}
                 name={post.project?.name}
                 avatar={post.project?.avatar}

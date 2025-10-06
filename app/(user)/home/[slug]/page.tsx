@@ -27,7 +27,7 @@ import { FaArrowLeft } from "react-icons/fa6";
 import FeedsCommentItem from "@/components/feedsCommentItem";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { fetchPostDetails } from "@/redux/slices/postSlice";
+import { fetchPostDetails, votePost } from "@/redux/slices/postSlice";
 
 const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
@@ -38,6 +38,23 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
   useEffect(() => {
     dispatch(fetchPostDetails({ post_uuid: slug }));
   }, [dispatch, slug]);
+
+  const handleVote = async (
+    voteType: "UPVOTE" | "DOWNVOTE",
+    post_uuid: string
+  ) => {
+    if (!post_uuid) {
+      console.log("No post_uuid in state");
+      return;
+    }
+
+    try {
+      const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
+      console.log("Vote response:", res);
+    } catch (error) {
+      console.error("Vote error:", error);
+    }
+  };
 
   if (loading) {
     return (
@@ -99,30 +116,32 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
           className="flex justify-between gap-x-2.5 overflow-x-scroll"
           style={{ scrollbarWidth: "none" }}
         >
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button onClick={() => postDetails?.uuid && handleVote("UPVOTE", postDetails.uuid)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <PiArrowFatUp />
-            276
+            {postDetails?.upvoteCount}
           </Button>
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button onClick={() => postDetails?.uuid && handleVote("DOWNVOTE", postDetails.uuid)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <PiArrowFatDown />
-            276
+            {postDetails?.downvoteCount}
           </Button>
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button onClick={() => router.push(`/home/${postDetails?.uuid}`)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <IoChatbubbleOutline />
-            276
+            {postDetails?.commentCount}
           </Button>
           <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <TbShare3 />
-            276
+            0
           </Button>
           <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <PiBookmarkSimpleBold />
-            276
+            0
           </Button>
         </div>
         <FeedsComment isComment={true} />
         <div className="flex flex-col gap-y-5">
-          <FeedsCommentItem />
+          {postDetails?.comments?.map((comment) => (
+            <FeedsCommentItem key={comment.uuid} comment={comment} />
+          ))}
         </div>
       </Card>
     </>

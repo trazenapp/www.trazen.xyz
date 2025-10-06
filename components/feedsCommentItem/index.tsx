@@ -12,12 +12,44 @@ import FeedsComment from "@/components/feedsComment";
 import { MdMoreHoriz } from "react-icons/md";
 import { CgFlagAlt } from "react-icons/cg";
 import { PiArrowFatUp, PiArrowFatDown } from "react-icons/pi";
+import { CommentItem } from "@/types/post.types";
 
-const FeedsCommentItem = () => {
+const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
   const [isReply, setIsReply] = useState(false);
   const [isCommentReplied, setIsCommentReplied] = useState(false);
 
   const handleToggleReply = () => setIsReply(!isReply);
+  function timeAgo(pastTimeStr: string) {
+    const pastTime = new Date(pastTimeStr);
+    const currentTime = new Date();
+
+    const timeDifferenceMs = currentTime.getTime() - pastTime.getTime();
+
+    const MS_PER_SECOND = 1000;
+    const MS_PER_MINUTE = MS_PER_SECOND * 60;
+    const MS_PER_HOUR = MS_PER_MINUTE * 60;
+
+    // 1. Check Seconds
+    if (timeDifferenceMs < MS_PER_MINUTE) {
+      const seconds = Math.round(timeDifferenceMs / MS_PER_SECOND);
+      return seconds <= 1 ? "1 second ago" : `${seconds} seconds ago`;
+    }
+
+    // 2. Check Minutes
+    if (timeDifferenceMs < MS_PER_HOUR) {
+      const minutes = Math.round(timeDifferenceMs / MS_PER_MINUTE);
+      return minutes <= 1 ? "1 minute ago" : `${minutes} minutes ago`;
+    }
+
+    // 3. Check Hours (the default unit if greater than an hour)
+    if (timeDifferenceMs >= MS_PER_HOUR) {
+      const hours = Math.round(timeDifferenceMs / MS_PER_HOUR);
+      return hours <= 1 ? "1 hour ago" : `${hours} hours ago`;
+    }
+
+    // Fallback for future times or error
+    return "just now";
+  }
 
   return (
     <div className="border border-[#303030] gap-x-2.5 p-3.5 rounded-[10px] flex flex-col gap-y-2.5 font-sans">
@@ -30,8 +62,8 @@ const FeedsCommentItem = () => {
             </AvatarFallback>
           </Avatar>
           <div className="flex gap-x-2">
-            <p className="text-[#F4F4F4F4] font-medium text-sm">Victoria325</p>
-            <p className="text-[#A6A6A6] font-light text-sm">2h ago</p>
+            <p className="text-[#F4F4F4F4] font-medium text-sm">{comment?.user?.username}</p>
+            <p className="text-[#A6A6A6] font-light text-sm">{timeAgo(comment?.created_at || "")}</p>
           </div>
         </div>
         <DropdownMenu>
@@ -56,8 +88,7 @@ const FeedsCommentItem = () => {
         </div>
         <div className="flex-1 flex-col gap-y-2.5 pl-[34px]">
           <p className="text-sm font-normal">
-            This is an awesome update. Congratulation on opening your amazing
-            office space. it looks amazing
+            {comment.content}
           </p>
           <div className="flex gap-x-2.5 mt-1">
             <Button className="!w-fit !h-fit !py-1.5 !px-4 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-xs text-[#B7B7B7]">

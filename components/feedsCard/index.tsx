@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Card from "@/components/card";
@@ -25,7 +25,7 @@ import { TbShare3 } from "react-icons/tb";
 import { Edit } from "lucide-react";
 import { Trash2 } from "lucide-react";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
-import { votePost, setLoading } from "@/redux/slices/postSlice";
+import { votePost, setLoading, bookmarkPost } from "@/redux/slices/postSlice";
 import { ClipLoader } from "react-spinners";
 
 // uuid?: string;
@@ -68,7 +68,7 @@ const FeedsCard = ({
 }: FeedsCardProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector((state: RootState) => state.post);
+  const { loading, bookmark } = useAppSelector((state: RootState) => state.post);
 
   const handlePageClick = (slug: string) => {
     router.push(`/home/${slug}`);
@@ -88,6 +88,20 @@ const FeedsCard = ({
       console.log("Vote response:", res);
     } catch (error) {
       console.error("Vote error:", error);
+    }
+  };
+
+  const handleBookmark = async (post_uuid: string) => {
+    if (!post_uuid) {
+      console.log("No post_uuid in state");
+      return;
+    }
+
+    try {
+      const res = await dispatch(bookmarkPost({ post_uuid })).unwrap();
+      console.log("Bookmark response:", res);
+    } catch (error) {
+      console.error("Bookmark error:", error);
     }
   };
 
@@ -156,7 +170,7 @@ const FeedsCard = ({
             <TbShare3 />
             0
           </Button>
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button onClick={() => handleBookmark(uuid)} className={`!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm`}>
             <PiBookmarkSimpleBold />
             0
           </Button>

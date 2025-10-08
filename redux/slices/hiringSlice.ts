@@ -52,6 +52,7 @@ interface HiringState {
   };
   hiringPosts: HiringPost[];
   hiringPostItem?: HiringPost;
+  bookmark?: boolean;
 }
 
 const initialState: HiringState = {
@@ -61,7 +62,39 @@ const initialState: HiringState = {
   data: undefined,
   hiringPosts: [],
   hiringPostItem: undefined,
+  bookmark: false
 };
+
+export const bookmarkHiring = createAsyncThunk<
+  any,
+  { post_uuid: string },
+  { state: RootState }
+>(
+  "hiring/bookmarkHiring",
+  async ({ post_uuid }, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.post(
+        `/v1/hire/bookmark/${post_uuid}`, 
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Bookmark response:", response.data);
+      return response.data;
+    } catch (err: any) {
+      console.error("bookmarkHiring error", err?.response?.data || err.message);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error bookmarking hiring"
+      );
+    }
+  }
+);
 
 export const createHiring = createAsyncThunk<
   HiringPost,
@@ -179,6 +212,19 @@ const eventsSlice = createSlice({
       .addCase(fetchHiringDetails.rejected, (state, action) => {
         state.loading = false;
         state.error = (action.payload as string) || "Failed to fetch post details";
+      })
+      .addCase(bookmarkHiring.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(bookmarkHiring.fulfilled, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.error = null;
+        state.bookmark = action.payload;
+      })
+      .addCase(bookmarkHiring.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Failed to bookmark hiring";
       });
   },
 });

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/public/trazen-logo-white.svg";
@@ -16,6 +16,7 @@ import { fetchProfile } from "@/redux/slices/userSlice";
 const DashboardNav = ({ pioneer = false }) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
+  const router = useRouter();
   const { show } = useAppSelector((state: RootState) => state.dashboardSidebar);
   const { profile } = useAppSelector((state: RootState) => state.user);
   let title = pathname.slice(1, pathname.length);
@@ -49,10 +50,11 @@ const DashboardNav = ({ pioneer = false }) => {
           </div>
           {profile?.role === "PIONEER" ? (
             <Button
-              disabled
+              // disabled
+              onClick={() => router.push("/dashboard")}
               className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8"
             >
-              Pending Approval
+              Dashboard
             </Button>
           ) : (
             <Button className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8">

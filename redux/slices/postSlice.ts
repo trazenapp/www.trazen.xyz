@@ -28,6 +28,7 @@ const initialState: PostState = {
   publicPosts: [],
   privatePosts: [],
   postDetails: {} as PostItem,
+  bookmark: false,
 };
 
 export const fetchPublicPosts = createAsyncThunk<
@@ -204,6 +205,39 @@ export const commentOnComment = createAsyncThunk<any,
   }
 );
 
+export const bookmarkPost = createAsyncThunk<
+  any,
+  { post_uuid: string },
+  { state: RootState }
+>(
+  "post/bookmarkPost",
+  async ({ post_uuid }, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.post(
+        `/v1/post/bookmark/${post_uuid}`, 
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Bookmark response:", response.data);
+      return response.data;
+    } catch (err: any) {
+      console.error("bookmarkPost error", err?.response?.data || err.message);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error bookmarking post"
+      );
+    }
+  }
+);
+
 export const createPost = createAsyncThunk<Post, { state: RootState }>(
   "post/createPost",
   async (payload, { rejectWithValue, getState }) => {
@@ -331,6 +365,19 @@ const postSlice = createSlice({
         state.postDetails = action.payload;
       })
       .addCase(fetchPostDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || "Something went wrong";
+      })
+      .addCase(bookmarkPost.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(bookmarkPost.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.bookmark = action.payload;
+      })
+      .addCase(bookmarkPost.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string || "Something went wrong";
       });

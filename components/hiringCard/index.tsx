@@ -6,6 +6,7 @@ import { MdOutlineCalendarMonth } from "react-icons/md";
 import { FaRegClock } from "react-icons/fa6";
 import { IoIosTimer } from "react-icons/io";
 import { FiBookmark } from "react-icons/fi";
+import { IoMdBookmark } from "react-icons/io";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { BsPatchCheckFill } from "react-icons/bs";
@@ -18,13 +19,19 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   getProjectDetail,
 } from "@/redux/slices/projectSlice";
+import { bookmarkHiring } from "@/redux/slices/hiringSlice";
 
-const HiringCard = ({ post }: { post: HiringPost }) => {
+interface HiringCardProps {
+  post: HiringPost;
+  bookmark?: boolean;
+}
+
+const HiringCard = ({ post, bookmark }: HiringCardProps) => {
   const dispatch = useAppDispatch();
   const { projectDetail } = useAppSelector((state: RootState) => state.project);
   const timeAgo = useTimeAgo(post.created_at);
   const dateTimeString = "2025-10-07T17:19:45.017Z";
-  console.log(projectDetail);
+  console.log(post);
   useEffect(() => {
     const getPrivateProjects = async () => {
       try {
@@ -36,6 +43,22 @@ const HiringCard = ({ post }: { post: HiringPost }) => {
 
     getPrivateProjects();
   }, []);
+
+  const handleBookmark = async (post_uuid: string) => {
+    if (!post_uuid) {
+      console.log("No post_uuid in state");
+      return;
+    }
+
+    console.log(post_uuid);
+
+    try {
+      const res = await dispatch(bookmarkHiring({ post_uuid })).unwrap();
+      console.log("Bookmark response:", res);
+    } catch (error) {
+      console.error("Bookmark error:", error);
+    }
+  };
 
   return (
     <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0">
@@ -60,8 +83,8 @@ const HiringCard = ({ post }: { post: HiringPost }) => {
           </div>
         </div>
         <div className="flex items-center gap-x-2">
-          <Button className="!w-fit !h-fit p-0">
-            <FiBookmark size={36} />
+          <Button type="button" onClick={() => handleBookmark(post.uuid)} className="!w-fit !h-fit p-0">
+            {bookmark ? <IoMdBookmark size={36} /> : <FiBookmark size={36} />}
           </Button>
           <p className="text-base font-light font-sans text-[#A6A6A6]">
             {timeAgo}

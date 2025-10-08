@@ -53,6 +53,7 @@ export interface PostState {
   publicPosts: PostItem[];
   privatePosts: PostItem[];
   postDetails: PostItem;
+  bookmark: boolean;
 }
 
 export interface Draft {

@@ -13,10 +13,37 @@ import { MdMoreHoriz } from "react-icons/md";
 import { CgFlagAlt } from "react-icons/cg";
 import { PiArrowFatUp, PiArrowFatDown } from "react-icons/pi";
 import { CommentItem } from "@/types/post.types";
+import { Textarea } from "@/components/ui/textarea";
+import { MdOutlineImage } from "react-icons/md";
+import { useFileUpload } from "@/utils/uploadPostMedia";
+import { commentOnPost, commentOnComment, voteOnComment } from "@/redux/slices/postSlice";
+import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
+import Picker, { Theme } from "emoji-picker-react";
+import { Emoji32Regular } from "@fluentui/react-icons";
+import { X } from "lucide-react";
+import { useForm, Controller } from "react-hook-form";
+import { ClipLoader } from "react-spinners";
+import { toast } from "react-toastify";
 
 const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
+  const dispatch = useAppDispatch();
   const [isReply, setIsReply] = useState(false);
   const [isCommentReplied, setIsCommentReplied] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    resetField
+  } = useForm({
+    defaultValues: {
+      content: "",
+    },
+  });
+  const values = watch();
 
   const handleToggleReply = () => setIsReply(!isReply);
   function timeAgo(pastTimeStr: string) {
@@ -51,6 +78,50 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
     return "just now";
   }
 
+  const handleVote = async (
+    voteType: "UPVOTE" | "DOWNVOTE",
+    post_uuid: string
+  ) => {
+    if (!post_uuid) {
+      console.log("No post_uuid in state");
+      return;
+    }
+
+    try {
+      const res = await dispatch(voteOnComment({ voteType, comment_uuid: comment?.uuid as string })).unwrap();
+      console.log("Vote response:", res);
+    } catch (error) {
+      console.error("Vote error:", error);
+    }
+  };
+
+
+  const onSubmit = async (data: any) => {
+    console.log(comment?.uuid, data);
+    setIsLoading(true);
+    if (!data.content.trim()) return;
+    try {
+      const res = await dispatch(
+        commentOnComment({ comment_uuid: comment?.uuid as string, content: data.content })
+      ).unwrap();
+      console.log("Comment success:", res);
+      // setComment(""); // reset
+      setIsLoading(false);
+      toast(<div>Comment added successfully</div>, {
+        theme: "dark",
+        type: "success",
+      });
+      resetField("content");
+    } catch (err: any) {
+      toast(<div>{err.message || "Failed to add comment"}</div>, {
+        theme: "dark",
+        type: "error",
+      });
+      console.error("Comment failed:", err);
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="border border-[#303030] gap-x-2.5 p-3.5 rounded-[10px] flex flex-col gap-y-2.5 font-sans">
       <div className="flex justify-between">
@@ -62,8 +133,12 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
             </AvatarFallback>
           </Avatar>
           <div className="flex gap-x-2">
-            <p className="text-[#F4F4F4F4] font-medium text-sm">{comment?.user?.username}</p>
-            <p className="text-[#A6A6A6] font-light text-sm">{timeAgo(comment?.created_at || "")}</p>
+            <p className="text-[#F4F4F4F4] font-medium text-sm">
+              {comment?.user?.username}
+            </p>
+            <p className="text-[#A6A6A6] font-light text-sm">
+              {timeAgo(comment?.created_at || "")}
+            </p>
           </div>
         </div>
         <DropdownMenu>
@@ -87,17 +162,13 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
           <div className="border border-[#303030] h-full w-[1px] rounded-full" />
         </div>
         <div className="flex-1 flex-col gap-y-2.5 pl-[34px]">
-          <p className="text-sm font-normal">
-            {comment.content}
-          </p>
+          <p className="text-sm font-normal">{comment.content}</p>
           <div className="flex gap-x-2.5 mt-1">
-            <Button className="!w-fit !h-fit !py-1.5 !px-4 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-xs text-[#B7B7B7]">
-              <PiArrowFatUp />
-              0
+            <Button onClick={() => comment?.uuid && handleVote("UPVOTE", comment.uuid)} className="!w-fit !h-fit !py-1.5 !px-4 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-xs text-[#B7B7B7]">
+              <PiArrowFatUp />0
             </Button>
-            <Button className="!w-fit !h-fit !py-1.5 !px-4 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-xs text-[#B7B7B7]">
-              <PiArrowFatDown />
-              0
+            <Button onClick={() => comment?.uuid && handleVote("DOWNVOTE", comment.uuid)} className="!w-fit !h-fit !py-1.5 !px-4 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-xs text-[#B7B7B7]">
+              <PiArrowFatDown />0
             </Button>
             <Button
               onClick={handleToggleReply}
@@ -108,7 +179,50 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
           </div>
           {isReply && (
             <div className="mt-2.5">
-              <FeedsComment isComment={true} />
+              <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="flex items-start gap-x-2.5 border border-[#303030] rounded-[10px] py-2.5 px-3.5"
+              >
+                <div className="flex flex-col gap-y-2.5">
+                  <Avatar>
+                    <AvatarImage src="https://github.com/shadcn.png" />
+                    <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
+                      CN
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex gap-x-1.5">
+                      <Button className="!p-0 !bg-transparent">
+                        <MdOutlineImage />
+                      </Button>
+                      <Button className="!p-0 !bg-transparent">
+                        <Emoji32Regular />
+                      </Button>
+                    </div>
+                </div>
+
+                <Controller
+                  name="content"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Textarea
+                      placeholder="Add a comment"
+                      className="flex-1 border-0 shadow-none font-sans focus-visible:ring-0 font-light text-sm"
+                      {...field}
+                    />
+                  )}
+                />
+                <Button
+                  type="submit"
+                  className="text-[#f4f4f4] text-light text-xs font-sans px-4 py-1.5 rounded-[6px] bg-[#430B68] hover:bg-[#430B68]"
+                >
+                  {isLoading ? (
+                    <ClipLoader color="#F4F4F4F4" size={10} />
+                  ) : (
+                    "Post"
+                  )}
+                </Button>
+              </form>
             </div>
           )}
         </div>

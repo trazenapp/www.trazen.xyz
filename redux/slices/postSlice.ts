@@ -143,6 +143,66 @@ export const commentOnPost = createAsyncThunk<
   }
 );
 
+export const voteOnComment = createAsyncThunk<
+  any,
+  { comment_uuid: string; voteType: string },
+  { state: RootState }
+>(
+  "post/voteOnComment",
+  async ({ comment_uuid, voteType }, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.post(
+        `/v1/comment/vote/${comment_uuid}`,
+        { voteType },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (err: any) {
+      console.error("voteOnComment error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error creating post"
+      );
+    }
+  }
+);
+
+export const commentOnComment = createAsyncThunk<any,
+  { comment_uuid: string; content: string },
+  { state: RootState }
+>(
+  "post/commentOnComment",
+  async ({ comment_uuid, content }, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.post(
+        `/v1/comment/comment/${comment_uuid}`,
+        { content },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (err: any) {
+      console.error("commentOnComment error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error commenting on comment"
+      );
+    }
+  }
+);
 
 export const createPost = createAsyncThunk<Post, { state: RootState }>(
   "post/createPost",

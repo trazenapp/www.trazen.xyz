@@ -55,7 +55,7 @@ const Feeds = ({ isPrivate = false }: FeedsProps) => {
                 uuid={post.uuid as string}
                 content={post.content}
                 medias={post.medias}
-                createdAt={post.createdAt}
+                createdAt={post.created_at}
                 upvoteCount={post.upvoteCount}
                 downvoteCount={post.downvoteCount}
                 commentCount={post.commentCount}
@@ -71,7 +71,7 @@ const Feeds = ({ isPrivate = false }: FeedsProps) => {
                 uuid={post.uuid as string}
                 content={post.content}
                 medias={post.medias}
-                createdAt={post.createdAt}
+                createdAt={post.created_at}
                 upvoteCount={post.upvoteCount}
                 downvoteCount={post.downvoteCount}
                 commentCount={post.commentCount}

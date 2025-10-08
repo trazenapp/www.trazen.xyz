@@ -2,6 +2,17 @@
 import React from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
+import {
+  createHiring,
+  setLoading,
+  updateForm,
+  HiringPostPayload,
+} from "@/redux/slices/hiringSlice";
+import { useForm, Controller } from "react-hook-form";
+import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 import {
   Select,
   SelectContent,
@@ -11,282 +22,294 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Descendant } from "slate";
-import RichTextEditor from "../richTextEditor";
+import { Button } from "../ui/button";
 
 type HiringPostProps = {
-  jobTitle: string;
-  setJobTitle: (value: string) => void;
-  jobType: string;
-  setJobType: (value: string) => void;
-  jobExperienceLevel: string;
-  setJobExperienceLevel: (value: string) => void;
-  jobLocation: string;
-  setJobLocation: (value: string) => void;
-  jobConvenience: string;
-  setJobConvenience: (value: string) => void;
-  jobPayment: string;
-  setJobPayment: (value: string) => void;
-  jobApplicationLink: string;
-  setJobApplicationLink: (value: string) => void;
-  description: Descendant[];
-  setDescription: (value: Descendant[]) => void;
-  editor: any;
+  projectId: string;
 };
 
-function HiringPost({
-  jobTitle,
-  setJobTitle,
-  jobType,
-  setJobType,
-  jobExperienceLevel,
-  setJobExperienceLevel,
-  jobLocation,
-  setJobLocation,
-  jobConvenience,
-  setJobConvenience,
-  jobPayment,
-  setJobPayment,
-  jobApplicationLink,
-  setJobApplicationLink,
-  description,
-  setDescription,
-  editor,
-}: HiringPostProps) {
+function HiringPost({ projectId }: HiringPostProps) {
+  const dispatch = useAppDispatch();
+  const { loading, data, error } = useAppSelector(
+    (state: RootState) => state.events
+  );
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+    resetField,
+  } = useForm<HiringPostPayload>({
+    defaultValues: data,
+  });
+  const values = watch();
+  
+  const onSubmit = async (data: any) => {
+    const formData: HiringPostPayload = {
+      ...data,
+      project_uuid: projectId,
+      location: (values.type === "Onsite" || values.type === "Hybrid") ? values.location : values.location_type,
+      is_published: true,
+      status: "ONGOING",
+    };
+    console.log(formData);
+    try {
+      dispatch(setLoading(true));
+      dispatch(updateForm(data));
+      await dispatch(createHiring(formData)).unwrap();
+      toast(<div>Hiring post created successfully</div>, {
+        theme: "dark",
+        type: "success",
+      });
+      dispatch(setLoading(false));
+      resetField("title");
+      resetField("description");
+      resetField("experience");
+      resetField("type");
+      resetField("location");
+      resetField("location_type");
+      resetField("is_published");
+      resetField("pay_range");
+    } catch (err: any) {
+      dispatch(setLoading(false));
+      toast(<div>{err.message || "Failed to create event"}</div>, {
+        theme: "dark",
+        type: "error",
+      });
+    }
+  };
+
   return (
-    <div>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-2 mt-4">
         <Label
-          htmlFor="job-title"
+          htmlFor="title"
           className="sm:text-[16px] text-[14px] text-[#f4f4f4f2] font-normal w-max"
         >
           Job title
         </Label>
-        <Input
-          id="job-title"
-          name="name"
-          value={jobTitle}
-          onChange={(e) => setJobTitle(e.target.value)}
-          placeholder="Example: Backend developer"
-          className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+        <Controller
+          name="title"
+          control={control}
+          render={({ field }) => (
+            <Input
+              id="title"
+              placeholder="Example: Backend developer"
+              className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              {...field}
+            />
+          )}
         />
       </div>
 
       <div className="flex flex-col gap-2 mt-4">
         <Label
-          htmlFor="job-description"
+          htmlFor="description"
           className="text-[#f4f4f4f2] font-normal sm:text-[16px] text-[14px] w-max"
         >
           Job description
         </Label>
-        <RichTextEditor
-          description={description}
-          setDescription={setDescription}
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <Textarea
+              {...field}
+              className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+            />
+          )}
         />
       </div>
 
       <div className="flex flex-col gap-2 mt-4">
         <Label
-          htmlFor="job-type"
+          htmlFor="type"
           className="sm:text-[16px] text-[14px] text-[#f4f4f4f2] font-normal w-max"
         >
           Job type
         </Label>
-        <Select value={jobType} onValueChange={(val) => setJobType(val)}>
-          <SelectTrigger className="group font-sans w-full py-5 px-4  border-[#434343] text-[#f4f4f4] text-sm">
-            <SelectValue placeholder="Select an option..." />
-          </SelectTrigger>
-          <SelectContent className="font-sans bg-[#161616] border-[#303030] ">
-            <SelectGroup className="w-full">
-              <SelectLabel className="text-[#f4f4f4] text-[16px] "></SelectLabel>
-              <SelectItem
-                className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff] "
-                value="contract"
-              >
-                Contract
-              </SelectItem>
-              <SelectItem
-                className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
-                value="full-time"
-              >
-                Full-time
-              </SelectItem>
-              <SelectItem
-                className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
-                value="internship"
-              >
-                Internship
-              </SelectItem>
-              <SelectItem
-                className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
-                value="volunteer"
-              >
-                Volunteer
-              </SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <Controller
+          name="type"
+          control={control}
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <SelectTrigger className="group font-sans w-full py-5 px-4 border-[#434343] text-[#f4f4f4] text-sm">
+                <SelectValue placeholder="Select an option..." />
+              </SelectTrigger>
+              <SelectContent className="font-sans bg-[#161616] border-[#303030]">
+                <SelectGroup className="w-full">
+                  <SelectLabel className="text-[#f4f4f4] text-[16px]" />
+                  {["contract", "full-time", "internship", "volunteer"].map((v) => (
+                    <SelectItem
+                      key={v}
+                      value={v}
+                      className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
+                    >
+                      {v.charAt(0).toUpperCase() + v.slice(1).replace("-", " ")}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
+        />
       </div>
 
       <div className="flex flex-col gap-2 mt-4">
         <Label
-          htmlFor="experience-level"
+          htmlFor="experience"
           className="sm:text-[16px] text-[14px] text-[#f4f4f4f2] font-normal w-max"
         >
           Experience level
         </Label>
-        <Select
-          value={jobExperienceLevel}
-          onValueChange={(val) => setJobExperienceLevel(val)}
-        >
-          <SelectTrigger className="font-sans w-full py-5 px-4  border-[#434343] text-[#f4f4f4] text-sm ">
-            <SelectValue placeholder="Select an option..." />
-          </SelectTrigger>
-          <SelectContent className="font-sans bg-[#161616] border-[#303030] ">
-            <SelectGroup className="w-full">
-              <SelectLabel className="text-[#f4f4f4] text-[16px] "></SelectLabel>
-              <SelectItem
-                className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff] "
-                value="entry"
-              >
-                Entry
-              </SelectItem>
-              <SelectItem
-                className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
-                value="intermediate"
-              >
-                Intermediate
-              </SelectItem>
-              <SelectItem
-                className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
-                value="expert"
-              >
-                Expert
-              </SelectItem>
-              <SelectItem
-                className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
-                value="none"
-              >
-                None
-              </SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="mt-4 flex flex-col gap-2">
-        <Label
-          htmlFor="job-location"
-          className="sm:text-[16px] text-[14px] text-[#f4f4f4f2] font-normal w-max "
-        >
-          Job location
-        </Label>
-        <Input
-          id="job-location"
-          name="name"
-          value={jobLocation}
-          onChange={(e) => setJobLocation(e.target.value)}
-          placeholder="Example: New York, USA"
-          className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+        <Controller
+          name="experience"
+          control={control}
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <SelectTrigger className="w-full py-5 px-4 border-[#434343] text-[#f4f4f4] text-sm">
+                <SelectValue placeholder="Select an option..." />
+              </SelectTrigger>
+              <SelectContent className="bg-[#161616] border-[#303030]">
+                <SelectGroup>
+                  <SelectLabel className="text-[#f4f4f4] text-base" />
+                  {[
+                    { value: "entry", label: "Entry" },
+                    { value: "intermediate", label: "Intermediate" },
+                    { value: "expert", label: "Expert" },
+                    { value: "none", label: "None" },
+                  ].map((opt) => (
+                    <SelectItem
+                      key={opt.value}
+                      value={opt.value}
+                      className="text-[#bcbcbc] text-xs focus:bg-[#303030] focus:text-white"
+                    >
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
         />
-
-        <div className=" flex gap-18 max-[550px]:gap-0 max-[550px]:justify-between">
-          <div className="flex gap-3 items-center">
-            <Label htmlFor="on-site" className="cursor-pointer">
-              <Input
-                id="on-site"
-                type="radio"
-                name="job-convenience"
-                value="on-site"
-                checked={jobConvenience === "on-site"}
-                onChange={(e) => setJobConvenience(e.target.value)}
-                className="peer hidden"
-              />
-              <span
-                className="w-4 h-4 rounded-full border-1 border-[#434343] flex items-center justify-center
-           before:content-[''] before:w-2 before:h-2 before:rounded-full 
-           before:bg-transparent peer-checked:before:bg-[#430b68] peer-checked:border-2"
-              ></span>
-              <p className="text-[#f4f4f4] sm:text-sm text-[12px] ">On Site</p>
-            </Label>
-          </div>
-
-          <div className="flex gap-3 items-center">
-            <Label htmlFor="remote" className="cursor-pointer">
-              <Input
-                id="remote"
-                type="radio"
-                name="job-convenience"
-                value="remote"
-                checked={jobConvenience === "remote"}
-                onChange={(e) => setJobConvenience(e.target.value)}
-                className="peer hidden"
-              />
-              <span
-                className="w-4 h-4 rounded-full border-1 border-[#434343] flex items-center justify-center
-           before:content-[''] before:w-2 before:h-2 before:rounded-full 
-           before:bg-transparent peer-checked:before:bg-[#430b68] peer-checked:border-2"
-              ></span>
-              <p className="text-[#f4f4f4] sm:text-sm text-[12px]">Remote</p>
-            </Label>
-          </div>
-
-          <div className="flex gap-3 items-center">
-            <Label htmlFor="hybrid" className="cursor-pointer">
-              <Input
-                id="hybrid"
-                type="radio"
-                name="job-convenience"
-                value="hybrid"
-                checked={jobConvenience === "hybrid"}
-                onChange={(e) => setJobConvenience(e.target.value)}
-                className="peer hidden"
-              />
-              <span
-                className="w-4 h-4 rounded-full border-1 border-[#434343] flex items-center justify-center
-           before:content-[''] before:w-2 before:h-2 before:rounded-full 
-           before:bg-transparent peer-checked:before:bg-[#430b68] peer-checked:border-2"
-              ></span>
-              <p className="text-[#f4f4f4] sm:text-sm text-[12px]">Hybrid</p>
-            </Label>
-          </div>
-        </div>
       </div>
+
+      <div className="mt-4 flex flex-col gap-2 max-w-full">
+        <Controller
+          name="location_type"
+          control={control}
+          rules={{ required: "Location type is required" }}
+          render={({ field: { value, onChange } }) => (
+            <div className="flex gap-18 max-[550px]:gap-0 max-[550px]:justify-between">
+              {["Remote", "Onsite", "Hybrid"].map((item) => (
+                <div key={item} className="flex gap-3 items-center">
+                  <Label
+                    htmlFor={item}
+                    className="cursor-pointer flex gap-2 items-center"
+                    onClick={() => onChange(item)} // update value manually
+                  >
+                    <Input
+                      id={item}
+                      type="radio"
+                      name="location_type"
+                      value={item}
+                      checked={value === item}
+                      onChange={() => onChange(item)}
+                      className="peer hidden"
+                    />
+                    <span
+                      className="w-4 h-4 rounded-full border border-[#434343] flex items-center justify-center
+                      before:content-[''] before:w-2 before:h-2 before:rounded-full 
+                      before:bg-transparent peer-checked:before:bg-[#430b68] peer-checked:border-2"
+                    ></span>
+                    <p className="text-[#f4f4f4] sm:text-sm text-[12px] capitalize">
+                      {item.replace("-", " ")}
+                    </p>
+                  </Label>
+                </div>
+              ))}
+            </div>
+          )}
+        />
+      </div>
+
+      {(values.location_type === "Onsite" || values.location_type === "Hybrid") && (
+        <div className="mt-4 flex flex-col gap-2">
+          <Label
+            htmlFor="location"
+            className="sm:text-[16px] text-[14px] text-[#f4f4f4f2] font-normal w-max "
+          >
+            Job location
+          </Label>
+          <Controller
+            name="location"
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                id="location"
+                name="name"
+                placeholder="Example: New York, USA"
+                className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              />
+            )}
+          />
+        </div>
+      )}
 
       <div className="flex flex-col gap-2 mt-4">
         <Label
-          htmlFor="payment"
+          htmlFor="pay_range"
           className="sm:text-[16px] text-[14px] text-[#f4f4f4f2] font-normal w-max"
         >
           Payment
         </Label>
-        <Input
-          id="payment"
-          name="name"
-          value={jobPayment}
-          onChange={(e) => setJobPayment(e.target.value)}
-          placeholder="Example: $150k/year or $35/hr"
-          className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+        <Controller
+          name="pay_range"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="pay_range"
+              name="pay_range"
+              placeholder="Example: $60,000 - $80,000"
+              className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+            />
+          )}
         />
       </div>
 
       <div className="flex flex-col gap-2 mt-4">
         <Label
-          htmlFor="application-link"
+          htmlFor="link"
           className="sm:text-[16px] text-[14px] text-[#f4f4f4f2] font-normal w-max "
         >
           Application link
         </Label>
-        <Input
-          id="application-link"
-          name="name"
-          value={jobApplicationLink}
-          onChange={(e) => setJobApplicationLink(e.target.value)}
-          placeholder="Enter external job link"
-          className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+        <Controller
+          name="link"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="link"
+              name="link"
+              placeholder="Enter external job link"
+              className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+            />
+          )}
         />
       </div>
-    </div>
+      <Button
+        type="submit"
+        disabled={loading}
+        className="bg-[#430B68] py-4 rounded-full w-[130px] text-sm my-3"
+      >
+        
+        {loading ? <ClipLoader size={16} color="#fff" /> : "Post"}
+      </Button>
+    </form>
   );
 }
 

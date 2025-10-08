@@ -80,10 +80,10 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
           <div className="flex items-start gap-x-2.5 font-sans">
             <Link href="/profile" className="flex items-start gap-x-2.5">
               <AvatarProfile
-                createdAt={postDetails?.createdAt}
-                name={postDetails?.name}
-                avatar={postDetails?.avatar}
-                is_approved={postDetails?.is_approved}
+                createdAt={postDetails?.project?.created_at}
+                name={postDetails?.project?.name}
+                avatar={postDetails?.project?.avatar}
+                is_approved={postDetails?.project?.is_approved}
               />
             </Link>
             {/* <Button className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]">
@@ -137,7 +137,7 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
             0
           </Button>
         </div>
-        <FeedsComment isComment={true} />
+        <FeedsComment isComment={true} uuid={postDetails?.uuid} />
         <div className="flex flex-col gap-y-5">
           {postDetails?.comments?.map((comment) => (
             <FeedsCommentItem key={comment.uuid} comment={comment} />

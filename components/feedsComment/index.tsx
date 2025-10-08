@@ -35,6 +35,7 @@ const FeedsComment = ({ isComment = false, uuid }: FeedsCommmentProps) => {
     formState: { errors },
     watch,
     setValue,
+    resetField
   } = useForm({
     defaultValues: {
       content: "",
@@ -74,12 +75,12 @@ const FeedsComment = ({ isComment = false, uuid }: FeedsCommmentProps) => {
   };
 
   const onSubmit = async (data: any) => {
-    console.log(data);
+    console.log(uuid, data);
     setIsLoading(true);
     if (!data.content.trim()) return;
     try {
       const res = await dispatch(
-        commentOnPost({ post_uuid: uuid!, content: data.content })
+        commentOnPost({ post_uuid: uuid as string, content: data.content })
       ).unwrap();
       console.log("Comment success:", res);
       // setComment(""); // reset
@@ -88,6 +89,7 @@ const FeedsComment = ({ isComment = false, uuid }: FeedsCommmentProps) => {
         theme: "dark",
         type: "success",
       });
+      resetField("content");
     } catch (err: any) {
       toast(<div>{err.message || "Failed to add comment"}</div>, {
         theme: "dark",

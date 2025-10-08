@@ -154,11 +154,11 @@ const FeedsCard = ({
           </Button>
           <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <TbShare3 />
-            276
+            0
           </Button>
           <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <PiBookmarkSimpleBold />
-            276
+            0
           </Button>
         </div>
         <FeedsComment uuid={uuid} isComment={false} />

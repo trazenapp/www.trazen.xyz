@@ -17,6 +17,8 @@ import postReducer from "@/redux/slices/postSlice";
 import draftsReducer from "@/redux/slices/draftSlice";
 import profileReducer from "@/redux/slices/userSlice";
 import eventsReducer from "@/redux/slices/eventSlice";
+import hiringReducer from "@/redux/slices/hiringSlice";
+
 
 const persistConfig = {
   key: "root",
@@ -39,6 +41,7 @@ const rootReducer = combineReducers({
   drafts: draftsReducer,
   user: profileReducer,
   events: eventsReducer,
+  hiring: hiringReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

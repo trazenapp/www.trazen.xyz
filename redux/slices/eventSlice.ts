@@ -9,8 +9,10 @@ export type CreateEventPayload = {
   description: string;
   cover_image?: string;
   status?: "ONGOING" | "UPCOMING" | "COMPLETED";
-  start_time: string;
-  end_time: string;
+  date_time: string;
+  type: "ONSITE" | "VIRTUAL" | "HYBRID";
+  location?: string;
+  is_published: boolean;
 };
 
 type EventsState = {
@@ -22,8 +24,10 @@ type EventsState = {
     description: "";
     cover_image?: string;
     status?: "ONGOING";
-    start_time: string;
-    end_time: string;
+    date_time: string;
+    type: "ONSITE";
+    location?: "";
+    is_published: true;
   };
 };
 
@@ -31,6 +35,7 @@ const initialState: EventsState = {
   loading: false,
   error: null,
   lastCreated: undefined,
+  // data: undefined,
 };
 
 export const createEvent = createAsyncThunk<

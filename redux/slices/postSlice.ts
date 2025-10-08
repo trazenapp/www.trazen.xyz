@@ -122,7 +122,7 @@ export const commentOnPost = createAsyncThunk<
 
       const response = await axiosInstance.post(
         `/v1/post/comment/${post_uuid}`,
-        { content }, // ✅ body payload
+        { content }, 
         {
           headers: {
             "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,

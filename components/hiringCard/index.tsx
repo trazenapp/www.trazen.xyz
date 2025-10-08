@@ -1,4 +1,5 @@
-import React from "react";
+"use client"
+import React, { useEffect } from "react";
 import Link from "next/link";
 import Card from "@/components/card";
 import { MdOutlineCalendarMonth } from "react-icons/md";
@@ -8,25 +9,51 @@ import { FiBookmark } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { BsPatchCheckFill } from "react-icons/bs";
+import { MapPin } from 'lucide-react';
+import { HiringPost } from "@/redux/slices/hiringSlice";
+import { useTimeAgo } from "@/hooks/useTimeAgo";
+import { RootState } from "@/redux/store";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import {
+  getProjectDetail,
+} from "@/redux/slices/projectSlice";
 
-const GigsCard = () => {
+const HiringCard = ({ post }: { post: HiringPost }) => {
+  const dispatch = useAppDispatch();
+  const { projectDetail } = useAppSelector((state: RootState) => state.project);
+  const timeAgo = useTimeAgo(post.created_at);
+  const dateTimeString = "2025-10-07T17:19:45.017Z";
+  console.log(projectDetail);
+  useEffect(() => {
+    const getPrivateProjects = async () => {
+      try {
+        await dispatch(getProjectDetail(post.project_uuid)).unwrap();
+      } catch (err: any) {
+        console.log(err);
+      }
+    };
+
+    getPrivateProjects();
+  }, []);
+
   return (
     <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0">
       <div className="flex justify-between items-start">
         <div className="flex items-start gap-x-2.5 font-sans">
           <Avatar className="h-10 w-10 rounded-full overflow-hidden">
-            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarImage src={projectDetail?.avatar} className="w-full h-full" />
             <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
               CN
             </AvatarFallback>
           </Avatar>
           <div>
             <p className="font-medium text-sm md:text-base text-[#f4f4f4]">
-              Senior Backend Developer
+              {post.title}
             </p>
             <p className="flex gap-x-1 items-center">
               <span className="text-[#A6A6A6] text-xs font-light">
-                CyptoMachine
+                {projectDetail?.name}
               </span>
               <BsPatchCheckFill size={12} color="#B348F9" />
             </p>
@@ -37,33 +64,34 @@ const GigsCard = () => {
             <FiBookmark size={36} />
           </Button>
           <p className="text-base font-light font-sans text-[#A6A6A6]">
-            1 day ago
+            {timeAgo}
           </p>
         </div>
       </div>
       <div className="flex flex-col gap-4 justify-between ">
         <div className="flex flex-wrap gap-2.5">
           <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
-            <MdOutlineCalendarMonth /> 14 Jan 2023
+            {post.type}
           </div>
           <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
-            <FaRegClock /> 9:00AM ET
+            {post.experience}
           </div>
           <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
-            <IoIosTimer /> 15 days left
+            {post.location}
           </div>
           <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
-            Virtual
+           {post.pay_range}
+          </div>
+          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
+           {post.location}
           </div>
         </div>
       </div>
-      <p className="cursor-pointer text-[#F4F4F4F4] text-base font-normal font-sans">
-        Big news: We’ve officially opened our first office in New Orleans!
-        ⚜️We’re excited to build the future of Web3 with this vibrant, creative
-        community.Let’s grow together
+      <p className="cursor-pointer text-[#F4F4F4F4] text-base font-normal font-sans line-clamp-4">
+        {post.description}
       </p>
       <Link
-        href="/gigs/senior-backend-development"
+        href={`/gigs/${post.uuid}`}
         className="bg-[#430B68] hover:bg-[#430B68] rounded-full py-2 px-4 text-sm text-center font-sans font-medium"
       >
         View Details
@@ -72,4 +100,4 @@ const GigsCard = () => {
   );
 };
 
-export default GigsCard;
+export default HiringCard;

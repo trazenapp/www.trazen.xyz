@@ -292,26 +292,9 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                         </>
                       )}
                       {formType === "hiring" && (
-                        <></>
-                        // <HiringPost
-                        //   jobTitle={jobTitle}
-                        //   setJobTitle={setJobTitle}
-                        //   jobType={jobType}
-                        //   setJobType={setJobType}
-                        //   jobExperienceLevel={jobExperienceLevel}
-                        //   setJobExperienceLevel={setJobExperienceLevel}
-                        //   jobLocation={jobLocation}
-                        //   setJobLocation={setJobLocation}
-                        //   jobConvenience={jobConvenience}
-                        //   setJobConvenience={setJobConvenience}
-                        //   jobPayment={jobPayment}
-                        //   setJobPayment={setJobPayment}
-                        //   jobApplicationLink={jobApplicationLink}
-                        //   setJobApplicationLink={setJobApplicationLink}
-                        //   description={jobDescription}
-                        //   setDescription={setJobDescription}
-                        //   editor={editor}
-                        // />
+                        <HiringPost
+                          projectId={projectDetail?.uuid}
+                        />
                       )}
                       {formType === "bounties" && (
                         <></>

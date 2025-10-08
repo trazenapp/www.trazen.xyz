@@ -58,7 +58,7 @@ const FileInput = ({ value, onChange }: FileInputProps) => {
   };
 
   return (
-    <div className="border border-dashed border-[#434343] rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-2 w-full max-w-md mx-auto font-sans">
+    <div className="border border-dashed border-[#434343] rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-2 w-full mx-auto font-sans">
       <input
         type="file"
         id="file-upload"

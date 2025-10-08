@@ -3,10 +3,7 @@ import React from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import RichTextEditor from "../richTextEditor";
-import { Descendant } from "slate";
 import { Button } from "../ui/button";
-import { useFileUpload } from "@/utils/uploadPostMedia";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   createEvent,
@@ -14,11 +11,11 @@ import {
   CreateEventPayload,
   updateForm,
 } from "@/redux/slices/eventSlice";
-// import { EventState, FormType, Draft, Event } from "@/types/event.types";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import FileInput from "@/components/ui/FileInput";
+// import { EventState, FormType, Draft, Event } from "@/types/event.types";
 
 type EventPostProps = {
   projectId: string;
@@ -39,15 +36,18 @@ function EventsPost({ projectId }: EventPostProps) {
   } = useForm<CreateEventPayload>({
     defaultValues: data,
   });
-  // const values = watch();
+  const values = watch();
 
   const onSubmit = async (data: any) => {
     const formData: CreateEventPayload = {
       ...data,
       project_uuid: projectId,
       cover_image: data.cover_image,
+      location: (values.type === "ONSITE" || values.type === "HYBRID") ? values.location : values.type,
+      is_published: true,
+      status: "ONGOING",
     };
-    // console.log(formData);
+    console.log(formData);
     try {
       dispatch(setLoading(true));
       dispatch(updateForm(data));
@@ -59,8 +59,10 @@ function EventsPost({ projectId }: EventPostProps) {
       dispatch(setLoading(false));
       resetField("title");
       resetField("description");
-      resetField("start_time");
-      resetField("end_time");
+      resetField("date_time");
+      resetField("type");
+      resetField("location");
+      resetField("is_published");
       resetField("cover_image");
     } catch (err: any) {
       dispatch(setLoading(false));
@@ -110,51 +112,88 @@ function EventsPost({ projectId }: EventPostProps) {
         />
       </div>
 
-      <div className="flex gap-5 max-w-full h-max mt-4">
-        <div className="w-1/2 flex flex-col gap-2">
-          <Label
-            htmlFor="startTime"
-            className="text-[#f4f4f4f2] font-normal sm:text-[16px] text-[14px] w-max"
-          >
-            Start Time
-          </Label>
-          <Controller
-            name="start_time"
-            control={control}
-            render={({ field }) => (
-              <Input
-                {...field}
-                id="startTime"
-                type="datetime-local"
-                className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
-                placeholder="Select date"
-              />
-            )}
-          />
-        </div>
-
-        <div className="w-1/2 flex flex-col gap-2">
-          <Label
-            htmlFor="endTime"
-            className="text-[#f4f4f4f2] font-normal sm:text-[16px] text-[14px] w-max"
-          >
-            End Time
-          </Label>
-          <Controller
-            name="end_time"
-            control={control}
-            render={({ field }) => (
-              <Input
-                {...field}
-                id="endTime"
-                type="datetime-local"
-                className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
-                placeholder="Select time"
-              />
-            )}
-          />
-        </div>
+      <div className="w-5/12 mt-4 flex flex-col gap-2">
+        <Label
+          htmlFor="startTime"
+          className="text-[#f4f4f4f2] font-normal sm:text-[16px] text-[14px] w-max"
+        >
+          Start Time
+        </Label>
+        <Controller
+          name="date_time"
+          control={control}
+          render={({ field }) => (
+            <Input
+              {...field}
+              id="dateTime"
+              type="datetime-local"
+              className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              placeholder="Select date"
+            />
+          )}
+        />
       </div>
+
+      <div className="mt-4 flex flex-col gap-2 max-w-full">
+        <Controller
+          name="type"
+          control={control}
+          rules={{ required: "Type is required" }}
+          render={({ field: { value, onChange } }) => (
+            <div className="flex gap-18 max-[550px]:gap-0 max-[550px]:justify-between">
+              {["ONSITE", "VIRTUAL", "HYBRID"].map((item) => (
+                <div key={item} className="flex gap-3 items-center">
+                  <Label
+                    htmlFor={item}
+                    className="cursor-pointer flex gap-2 items-center"
+                    onClick={() => onChange(item)} // update value manually
+                  >
+                    <Input
+                      id={item}
+                      type="radio"
+                      name="event_type"
+                      value={item}
+                      checked={value === item}
+                      onChange={() => onChange(item)}
+                      className="peer hidden"
+                    />
+                    <span
+                      className="w-4 h-4 rounded-full border border-[#434343] flex items-center justify-center
+                      before:content-[''] before:w-2 before:h-2 before:rounded-full 
+                      before:bg-transparent peer-checked:before:bg-[#430b68] peer-checked:border-2"
+                    ></span>
+                    <p className="text-[#f4f4f4] sm:text-sm text-[12px] capitalize">
+                      {item.replace("-", " ")}
+                    </p>
+                  </Label>
+                </div>
+              ))}
+            </div>
+          )}
+        />
+      </div>
+
+      {(values.type === "ONSITE" || values.type === "HYBRID") && (
+        <div className="flex flex-col gap-2 mt-4 max-w-full">
+          <Label
+            htmlFor="location"
+            className="text-[#f4f4f4f2] font-normal sm:text-[16px] text-[14px] w-max"
+          >
+            Location
+          </Label>
+          <Controller
+            name="location"
+            control={control}
+            render={({ field }) => (
+              <Input
+                id="location"
+                className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+                {...field}
+              />
+            )}
+          />
+        </div>
+      )}
 
       <div className="mt-4 flex flex-col gap-2 max-w-full">
         <Label
@@ -189,7 +228,7 @@ function EventsPost({ projectId }: EventPostProps) {
                     <Input
                       id={type}
                       type="radio"
-                      name="event_type"
+                      name="status"
                       value={type}
                       checked={value === type}
                       onChange={() => onChange(type)}
@@ -210,12 +249,13 @@ function EventsPost({ projectId }: EventPostProps) {
           )}
         />
       </div>
+
       <Button
         type="submit"
         disabled={loading}
         className="bg-[#430B68] py-4 rounded-full w-[130px] text-sm my-3"
       >
-        {loading ? <ClipLoader size={16} color="#fff" /> : "Create Event"}
+        {loading ? <ClipLoader size={16} color="#fff" /> : "Post"}
       </Button>
     </form>
   );

@@ -93,11 +93,11 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
           <div className="flex gap-x-2.5 mt-1">
             <Button className="!w-fit !h-fit !py-1.5 !px-4 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-xs text-[#B7B7B7]">
               <PiArrowFatUp />
-              276
+              0
             </Button>
             <Button className="!w-fit !h-fit !py-1.5 !px-4 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-xs text-[#B7B7B7]">
               <PiArrowFatDown />
-              276
+              0
             </Button>
             <Button
               onClick={handleToggleReply}

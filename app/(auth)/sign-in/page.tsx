@@ -3,7 +3,7 @@ import Card from "@/components/card";
 import FormHeading from "@/components/formHeading";
 import DividerText from "@/components/dividerText";
 import SignInWithGoogle from "@/components/form/signInWithGoogle";
-// import SignInWithWallet from "@/components/form/signInWithWallet";
+import SignInWithWallet from "@/components/form/signInWithWallet";
 import SignInForm from "@/components/form/signInForm";
 
 const SignIn = () => {
@@ -16,7 +16,7 @@ const SignIn = () => {
         />
       </div>
       <div className="flex flex-col gap-y-4 w-full mb-8">
-        {/* <SignInWithWallet /> */}
+        <SignInWithWallet />
         <SignInWithGoogle />
       </div>
       <DividerText text="Or sign in with" />

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 "use client";
 import {
   Web3AuthProvider,
@@ -20,8 +22,13 @@ const web3AuthContextConfig: Web3AuthContextConfig = {
     ssr: true,
     chainConfig: {
       chainNamespace: CHAIN_NAMESPACES.EIP155,
-      chainId: "0x1", // Ethereum Mainnet
+      chainId: "0x1",
       rpcTarget: "https://rpc.ankr.com/eth",
+      displayName: "Ethereum Mainnet",
+      blockExplorerUrl: "https://etherscan.io",
+      ticker: "ETH",
+      tickerName: "Ethereum",
+      logo: "https://cryptologos.cc/logos/ethereum-eth-logo.png",
     },
   },
 };

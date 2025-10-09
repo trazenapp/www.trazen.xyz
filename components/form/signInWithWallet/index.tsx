@@ -41,9 +41,11 @@ const SignInWithWallet = () => {
   //   getAddress();
   // }, [provider]);
 
-  console.log("isConnected", isConnected);
-  console.log("connectLoading", connectLoading);
-  console.log("error ", connectError);
+  React.useEffect(() => {
+    console.log("isConnected", isConnected);
+    console.log("connectLoading", connectLoading);
+    console.log("error ", connectError);
+  }, [isConnected, connectLoading, connectError]);
 
   return (
     <Button

@@ -18,6 +18,8 @@ import draftsReducer from "@/redux/slices/draftSlice";
 import profileReducer from "@/redux/slices/userSlice";
 import eventsReducer from "@/redux/slices/eventSlice";
 import hiringReducer from "@/redux/slices/hiringSlice";
+import bookmarkReducer from "@/redux/slices/bookmarkSlice";
+
 
 
 const persistConfig = {
@@ -42,6 +44,7 @@ const rootReducer = combineReducers({
   user: profileReducer,
   events: eventsReducer,
   hiring: hiringReducer,
+  bookmark: bookmarkReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

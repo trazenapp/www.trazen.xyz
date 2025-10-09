@@ -45,7 +45,8 @@ function EventsPost({ projectId }: EventPostProps) {
       cover_image: data.cover_image,
       location: (values.type === "ONSITE" || values.type === "HYBRID") ? values.location : values.type,
       is_published: true,
-      status: "ONGOING",
+      status: data.status,
+      date_time: new Date(data.date_time).toISOString(),
     };
     console.log(formData);
     try {

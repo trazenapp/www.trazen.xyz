@@ -40,10 +40,16 @@ export default function Provider({
   children: React.ReactNode;
   web3authInitialState: IWeb3AuthState | undefined;
 }) {
+  React.useEffect(() => {
+    console.log("Provider mounted, clientId:", clientId);
+    console.log("Web3Auth initialState:", web3authInitialState);
+    console.log("Web3Auth network:", WEB3AUTH_NETWORK.SAPPHIRE_MAINNET);
+  }, [web3authInitialState]);
   return (
     <Web3AuthProvider
       config={web3AuthContextConfig}
       initialState={web3authInitialState}
+      onError={(error) => console.error("Web3AuthProvider error:", error)}
     >
       <QueryClientProvider client={queryClient}>
         <WagmiProvider>{children}</WagmiProvider>

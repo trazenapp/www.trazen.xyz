@@ -17,7 +17,12 @@ import { BrowserProvider } from "ethers";
 // const SignInWithWallet = ({ onClick }: SignInWithWalletProps) => {
 const SignInWithWallet = () => {
   // const { provider } = useWeb3Auth();
-  const { connect, isConnected, loading: connectLoading, error: connectError } = useWeb3AuthConnect();
+  const {
+    connect,
+    isConnected,
+    loading: connectLoading,
+    error: connectError,
+  } = useWeb3AuthConnect();
 
   // useEffect(() => {
   //   const getAddress = async () => {
@@ -26,7 +31,7 @@ const SignInWithWallet = () => {
   //       const ethersProvider = new BrowserProvider(provider as any);
   //       const signer = await ethersProvider.getSigner();
   //       const addr = await signer.getAddress();
-  //       // setAddress(addr);
+  //       // setAddress(addr);6
   //       console.log("Connected address:", addr);
   //     } catch (err) {
   //       console.error("Failed to get address:", err);
@@ -35,6 +40,10 @@ const SignInWithWallet = () => {
 
   //   getAddress();
   // }, [provider]);
+
+  console.log("isConnected", isConnected);
+  console.log("connectLoading", connectLoading);
+  console.log("error ", connectError);
 
   return (
     <Button

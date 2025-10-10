@@ -46,8 +46,8 @@ const Bookmark = () => {
   return (
     <div>
       {bookmark.map((bookmark) => {
-        if (bookmark?.post_uuid) {
-          const post = publicPosts.find((post) => post.uuid === bookmark.post_uuid);
+        if (bookmark && (bookmark as any).post_uuid) {
+          const post = publicPosts.find((post) => post.uuid === (bookmark as any).post_uuid);
           if (post) {
             return <Feedscard
                 key={post.uuid}
@@ -64,8 +64,8 @@ const Bookmark = () => {
                 project_uuid={post.project_uuid}
               />
           }
-        } else if (bookmark?.hire_uuid) {
-          const hire = hiringPosts.find((hire) => hire.uuid === bookmark.hire_uuid);
+        } else if ((bookmark as any).hire_uuid) {
+          const hire = hiringPosts.find((hire) => hire.uuid === (bookmark as any).hire_uuid);
           if (hire) {
             return <HiringCard key={hire.id} post={hire} bookmark={bookmark} />
           }

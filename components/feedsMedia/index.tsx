@@ -50,8 +50,8 @@ const FeedsMedia = ({ media = [] as string[], maxVisible = 4 }) => {
   const remainingCount = media.length - maxVisible;
 
   const MediaItem = ({
-    item,
-    index,
+    item = "",
+    index = 0,
     showOverlay = false,
     overlayCount = 0,
   }) => {

@@ -3,7 +3,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
-import authReducer from "@/redux/slices/authSlice";
+// import authReducer from "@/redux/slices/authSlice";
 import dashboardSidebarReducer from "@/redux/slices/dashboardSidebarSlice";
 import registerReducer from "@/redux/slices/registerSlice";
 import loginReducer from "@/redux/slices/loginSlice";
@@ -14,7 +14,7 @@ import onboardingReducer from "@/redux/slices/onboardingSlice";
 import fcmNotificationReducer from "@/redux/slices/fcmNotificationSlice";
 import projectReducer from "@/redux/slices/projectSlice";
 import postReducer from "@/redux/slices/postSlice";
-import draftsReducer from "@/redux/slices/draftSlice";
+// import draftsReducer from "@/redux/slices/draftSlice";
 import profileReducer from "@/redux/slices/userSlice";
 import eventsReducer from "@/redux/slices/eventSlice";
 import hiringReducer from "@/redux/slices/hiringSlice";
@@ -29,7 +29,7 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
-  auth: authReducer,
+  // auth: authReducer,
   dashboardSidebar: dashboardSidebarReducer,
   register: registerReducer,
   login: loginReducer,
@@ -40,7 +40,7 @@ const rootReducer = combineReducers({
   onboarding: onboardingReducer,
   project: projectReducer,
   post: postReducer,
-  drafts: draftsReducer,
+  // drafts: draftsReducer,
   user: profileReducer,
   events: eventsReducer,
   hiring: hiringReducer,

@@ -47,7 +47,6 @@ import { FaCheck } from "react-icons/fa6";
 import { LuFilePenLine } from "react-icons/lu";
 import { Pen } from "lucide-react";
 import { FeedPostsMain } from "@/components/feedPost";
-// import { FeedPostsFooter } from "@/components/feedPost";
 import EventsPost from "@/components/eventsPost";
 import HiringPost from "@/components/hiringPost";
 import BountyPost from "@/components/bountyPost";
@@ -675,7 +674,8 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                 content={post.content}
                 medias={post.medias}
                 createdAt={post.created_at}
-                voteCount={post.voteCount}
+                upvoteCount={post.upvoteCount}
+                downvoteCount={post.downvoteCount}
                 commentCount={post.commentCount}
                 name={post.project?.name}
                 avatar={post.project?.avatar}

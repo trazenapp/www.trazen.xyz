@@ -49,7 +49,7 @@ const BookmarkCard = () => {
           </DropdownMenu>
         </div>
         <p
-          onClick={() => handlePageClick(uuid)}
+          // onClick={() => handlePageClick(uuid)}
           className="cursor-pointer text-[#F4F4F4F4] text-sm lg:text-base font-normal font-sans line-clamp-2"
         >
           {/* {content} */}

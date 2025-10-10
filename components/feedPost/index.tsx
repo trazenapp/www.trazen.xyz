@@ -33,7 +33,7 @@ import {
   setLoading,
   resetForm,
 } from "@/redux/slices/postSlice";
-import { PostState, FormType, Draft, Post } from "@/types/post.types";
+import { Post } from "@/types/post.types";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";

@@ -245,7 +245,7 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
           )}
         </div>
       </div>
-      {comment?.comments?.map((item) => (
+      {Array.isArray(comment?.comments) && comment.comments.map((item) => (
         <React.Fragment key={item.uuid}>
           <div className="flex justify-between">
             <div className="flex items-center gap-x-2.5">

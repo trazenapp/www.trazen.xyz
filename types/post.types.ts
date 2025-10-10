@@ -22,6 +22,12 @@ export interface CommentItem {
   user: UserProfile;
   uuid: string;
   id: number;
+  comments: {
+    comment_uuid: string;
+    content: string;
+    created_at: string;
+    uuid: string;
+  }
 }
 
 export interface PostItem {
@@ -30,8 +36,8 @@ export interface PostItem {
   project_uuid?: string;
   content: string;
   medias?: string[];
-  createdAt?: string;
-  updatedAt?: string;
+  created_at?: string;
+  updated_at?: string;
   upvoteCount?: number;
   downvoteCount?: number;
   commentCount?: number;

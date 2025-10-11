@@ -1,23 +1,23 @@
-import type { NextConfig } from 'next';
+import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
+  /* config options here */
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-        pathname: '/photo-**',
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/photo-**", // http://trazenapp.s3-website.eu-west-3.amazonaws.comundefined
       },
       {
-        protocol: 'https',
-        hostname: 'github.com',
-        pathname: '/**',
+        protocol: "https",
+        hostname: "github.com",
+        pathname: "/**",
       },
       {
-        protocol: 'http',
-        hostname: 'trazenapp.s3-website.eu-west-3.amazonaws.com',
-        pathname: '/**',
+        protocol: "http",
+        hostname: "trazenapp.s3-website.eu-west-3.amazonaws.com",
+        pathname: "/**",
       },
     ],
   },
@@ -31,3 +31,5 @@ const nextConfig: NextConfig = {
     return config;
   },
 };
+
+export default nextConfig;

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   Carousel,
@@ -55,8 +55,12 @@ const FeedsMedia = ({ media = [] as string[], maxVisible = 4 }) => {
     showOverlay = false,
     overlayCount = 0,
   }) => {
-    
+
     const imgUrl = `${process.env.NEXT_PUBLIC_FILE_PREVIEW_URL}/${item}`;
+    useEffect(() => {
+      console.log("MediaItem:", item);
+    }, []);
+    
 
     return (
       <div

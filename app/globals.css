@@ -198,3 +198,13 @@ div.select__menu div.select__option--is-focused {
 .animate-fade {
   animation: fade 0.2s ease-out;
 }
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}

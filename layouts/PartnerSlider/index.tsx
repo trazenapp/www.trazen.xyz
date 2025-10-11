@@ -11,6 +11,7 @@ import { Virtual, Autoplay } from "swiper/modules";
 const PartnerSlider = () => {
   return (
     <Swiper
+      className="justify-between"
       modules={[Virtual, Autoplay]}
       spaceBetween={60}
       slidesPerView={4}

@@ -8,6 +8,8 @@ export interface AddProjectData {
   team_emails?: string[];
   isTeam?: "Yes" | "No";
   category?: string[];
+  chains?: string[];
+  niche?: string[];
 }
 
 export interface ProjectDetail {

@@ -4,14 +4,14 @@ import Link from "next/link";
 import Card from "@/components/card";
 import { MdOutlineCalendarMonth } from "react-icons/md";
 import { FaRegClock } from "react-icons/fa6";
-import { IoIosTimer } from "react-icons/io";
+import { IoIosBook, IoIosTimer } from "react-icons/io";
 import { FiBookmark } from "react-icons/fi";
 import { IoMdBookmark } from "react-icons/io";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { BsPatchCheckFill } from "react-icons/bs";
 import { MapPin } from "lucide-react";
-import { HiringPost } from "@/redux/slices/hiringSlice";
+import { HiringPost } from "@/types/hiring.types";
 import { useTimeAgo } from "@/hooks/useTimeAgo";
 import { RootState } from "@/redux/store";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,10 +21,9 @@ import { bookmarkHiring } from "@/redux/slices/hiringSlice";
 
 interface HiringCardProps {
   post: HiringPost;
-  bookmark?: boolean;
 }
 
-const HiringCard = ({ post, bookmark }: HiringCardProps) => {
+const HiringCard = ({ post }: HiringCardProps) => {
   const dispatch = useAppDispatch();
   const { projectDetail } = useAppSelector((state: RootState) => state.project);
   const timeAgo = useTimeAgo(post.created_at);
@@ -89,7 +88,7 @@ const HiringCard = ({ post, bookmark }: HiringCardProps) => {
             onClick={() => handleBookmark(post.uuid)}
             className="!w-fit !h-fit p-0"
           >
-            {bookmark ? <IoMdBookmark size={36} /> : <FiBookmark size={36} />}
+            {post.is_bookmarked ? <IoMdBookmark size={36} /> : <FiBookmark size={36} />}
           </Button>
           <p className="text-base font-light font-sans text-[#A6A6A6]">
             {timeAgo}

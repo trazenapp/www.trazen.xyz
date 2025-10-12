@@ -46,6 +46,7 @@ export interface PostItem {
   avatar?: string;
   name?: string;
   comments?: CommentItem[];
+  isBookmarked?: boolean;
 }
 
 export interface PostState {

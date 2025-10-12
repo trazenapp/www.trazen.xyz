@@ -369,16 +369,16 @@ const postSlice = createSlice({
         state.error = action.payload as string || "Something went wrong";
       })
       .addCase(bookmarkPost.pending, (state) => {
-        state.loading = true;
+        // state.loading = true;
         state.error = null;
       })
       .addCase(bookmarkPost.fulfilled, (state, action) => {
-        state.loading = false;
+        // state.loading = false;
         state.error = null;
         state.bookmark = action.payload;
       })
       .addCase(bookmarkPost.rejected, (state, action) => {
-        state.loading = false;
+        // state.loading = false;
         state.error = action.payload as string || "Something went wrong";
       });
   },

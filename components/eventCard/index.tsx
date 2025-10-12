@@ -55,7 +55,7 @@ const EventCard = ({ event }: EventCardProps) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="bg-[#272727] !min-w-0 !p-0 border-0"
-            align="start"
+            align="end"
           >
             <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-fit flex items-center gap-x-2.5 py-2.5 px-4">
               <CgFlagAlt color="#ddd" /> Report

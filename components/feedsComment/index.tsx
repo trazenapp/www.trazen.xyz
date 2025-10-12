@@ -113,7 +113,7 @@ const FeedsComment = ({ isComment = false, uuid }: FeedsCommmentProps) => {
               CN
             </AvatarFallback>
           </Avatar>
-          {isComment && (
+          {/* {isComment && (
             <div className="flex gap-x-1.5">
               <Button className="!p-0 !bg-transparent">
                 <MdOutlineImage />
@@ -122,7 +122,7 @@ const FeedsComment = ({ isComment = false, uuid }: FeedsCommmentProps) => {
                 <Emoji32Regular />
               </Button>
             </div>
-          )}
+          )} */}
         </div>
 
         <Controller

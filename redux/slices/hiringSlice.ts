@@ -1,59 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "@/utils/axios";
 import type { RootState } from "@/redux/store";
-
-export interface HiringPostPayload {
-  project_uuid: string;
-  title: string;
-  description: string;
-  type: string;
-  experience: string;
-  location: string;
-  location_type: string;
-  pay_range: string;
-  link: string;
-  status: string;
-  is_published: boolean;
-}
-
-export interface HiringPost {
-  id: number;
-  uuid: string;
-  user_uuid: string;
-  project_uuid: string;
-  title: string;
-  description: string;
-  type: string;
-  experience: string;
-  location: string;
-  location_type: string;
-  pay_range: string;
-  link: string;
-  status: string;
-  is_published: boolean;
-  created_at: string;
-}
-
-interface HiringState {
-  loading: boolean;
-  error: string | null;
-  lastCreated?: any;
-  data?: {
-    title: "";
-    description: "";
-    type: "ONSITE";
-    experience?: string;
-    location?: "";
-    location_type?: "";
-    pay_range?: "";
-    link?: "";
-    status?: "ONGOING";
-    is_published: true;
-  };
-  hiringPosts: HiringPost[];
-  hiringPostItem?: HiringPost;
-  bookmark?: boolean;
-}
+import { HiringPostPayload, HiringPost, HiringState } from "@/types/hiring.types";
 
 const initialState: HiringState = {
   loading: false,
@@ -222,19 +170,19 @@ const eventsSlice = createSlice({
           (action.payload as string) || "Failed to fetch post details";
       })
       .addCase(bookmarkHiring.pending, (state) => {
-        state.loading = true;
+        // state.loading = true;
         state.error = null;
       })
       .addCase(
         bookmarkHiring.fulfilled,
         (state, action: PayloadAction<any>) => {
-          state.loading = false;
+          // state.loading = false;
           state.error = null;
           state.bookmark = action.payload;
         }
       )
       .addCase(bookmarkHiring.rejected, (state, action) => {
-        state.loading = false;
+        // state.loading = false;
         state.error = (action.payload as string) || "Failed to bookmark hiring";
       });
   },

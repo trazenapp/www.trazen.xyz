@@ -60,6 +60,7 @@ const Feeds = ({ isPrivate = false }: FeedsProps) => {
                 downvoteCount={post.downvoteCount}
                 commentCount={post.commentCount}
                 name={post.project?.name}
+                isBookmarked={post.isBookmarked}
                 avatar={post.project?.avatar}
                 is_approved={post.project?.is_approved}
                 project_uuid={post.project_uuid}

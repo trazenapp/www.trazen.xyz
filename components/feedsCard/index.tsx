@@ -19,6 +19,7 @@ import {
   PiArrowFatUp,
   PiArrowFatDown,
   PiBookmarkSimpleBold,
+  PiBookmarkSimpleFill,
 } from "react-icons/pi";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import { TbShare3 } from "react-icons/tb";
@@ -51,6 +52,7 @@ interface FeedsCardProps {
   avatar?: string;
   is_approved?: boolean;
   project_uuid?: string;
+  isBookmarked?: boolean;
 }
 
 const FeedsCard = ({
@@ -65,6 +67,7 @@ const FeedsCard = ({
   avatar,
   is_approved,
   project_uuid,
+  isBookmarked,
 }: FeedsCardProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -135,10 +138,14 @@ const FeedsCard = ({
               align="end"
             >
               <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3">
-                <Edit /> Edit
+                <TbShare3 /> Share
               </DropdownMenuItem>
-              <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3">
-                <Trash2 color="red" /> Delete
+              <DropdownMenuItem onClick={() => handleBookmark(uuid)} className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3">
+                {isBookmarked ? (
+                  <PiBookmarkSimpleFill />
+                ) : (
+                  <PiBookmarkSimpleBold />
+                )} Bookmark
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -158,33 +165,24 @@ const FeedsCard = ({
         >
           <Button
             onClick={() => handleVote("UPVOTE", uuid)}
-            className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
+            className="flex-1 !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
           >
             <PiArrowFatUp />
             {upvoteCount}
           </Button>
           <Button
             onClick={() => handleVote("DOWNVOTE", uuid)}
-            className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
+            className="flex-1 !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
           >
             <PiArrowFatDown />
             {downvoteCount}
           </Button>
           <Button
             onClick={() => router.push(`/home/${uuid}`)}
-            className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
+            className="flex-1 !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
           >
             <IoChatbubbleOutline />
             {commentCount}
-          </Button>
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
-            <TbShare3 />0
-          </Button>
-          <Button
-            onClick={() => handleBookmark(uuid)}
-            className={`!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm`}
-          >
-            <PiBookmarkSimpleBold />0
           </Button>
         </div>
         <FeedsComment uuid={uuid} isComment={false} />

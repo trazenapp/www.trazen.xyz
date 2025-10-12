@@ -1,5 +1,12 @@
 "use client";
-import React, { useState, useRef, useMemo, use, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useRef,
+  useMemo,
+  use,
+  useEffect,
+  useCallback,
+} from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -93,8 +100,9 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { projectDetail } = useAppSelector((state: RootState) => state.project);
-  const { privatePosts, loading, pagination, hasMore } =
-    useAppSelector((state) => state.post);
+  const { privatePosts, loading, pagination, hasMore } = useAppSelector(
+    (state) => state.post
+  );
 
   const observer = useRef<IntersectionObserver | null>(null);
   const lastPostRef = useCallback(
@@ -286,27 +294,13 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                         <FeedPostsMain projectId={projectDetail?.uuid} />
                       )}
                       {formType === "events" && (
-                        <>
                           <EventsPost projectId={projectDetail?.uuid} />
-                        </>
                       )}
                       {formType === "hiring" && (
-                        <HiringPost
-                          projectId={projectDetail?.uuid}
-                        />
+                        <HiringPost projectId={projectDetail?.uuid} />
                       )}
                       {formType === "bounties" && (
-                        <></>
-                        // <BountyPost
-                        //   bountyTitle={bountyTitle}
-                        //   setBountyTitle={setBountyTitle}
-                        //   bountyDuration={bountyDuration}
-                        //   setBountyDuration={setBountyDuration}
-                        //   bountyReward={bountyReward}
-                        //   setBountyReward={setBountyReward}
-                        //   bountyLink={bountyLink}
-                        //   setBountyLink={setBountyLink}
-                        // />
+                        <BountyPost projectId={projectDetail?.uuid} />
                       )}
                       {/* {showDrafts && draftItems.length < 1 && (
                         <Drafts>
@@ -664,25 +658,28 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
             <TabsContent className="relative w-full h-full" value="feed-post">
               <div className="w-full h-full">
                 {loading
-        ? privatePosts.map((post) => (
-            <Skeleton key={post.uuid} className="w-full h-[200px] my-4" />
-          ))
-        : privatePosts.map((post) => (
-              <Feedscard
-                key={post.uuid}
-                uuid={post.uuid as string}
-                content={post.content}
-                medias={post.medias}
-                createdAt={post.created_at}
-                upvoteCount={post.upvoteCount}
-                downvoteCount={post.downvoteCount}
-                commentCount={post.commentCount}
-                name={post.project?.name}
-                avatar={post.project?.avatar}
-                is_approved={post.project?.is_approved}
-                project_uuid={post.project_uuid}
-              />
-            ))}
+                  ? privatePosts.map((post) => (
+                      <Skeleton
+                        key={post.uuid}
+                        className="w-full h-[200px] my-4"
+                      />
+                    ))
+                  : privatePosts.map((post) => (
+                      <Feedscard
+                        key={post.uuid}
+                        uuid={post.uuid as string}
+                        content={post.content}
+                        medias={post.medias}
+                        createdAt={post.created_at}
+                        upvoteCount={post.upvoteCount}
+                        downvoteCount={post.downvoteCount}
+                        commentCount={post.commentCount}
+                        name={post.project?.name}
+                        avatar={post.project?.avatar}
+                        is_approved={post.project?.is_approved}
+                        project_uuid={post.project_uuid}
+                      />
+                    ))}
               </div>
             </TabsContent>
             <TabsContent className="relative w-full h-full" value="events">

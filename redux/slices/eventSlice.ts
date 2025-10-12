@@ -78,7 +78,7 @@ const eventsSlice = createSlice({
       state.loading = action.payload;
     },
     updateForm(state, action: PayloadAction) {
-      state.data = action.payload as EventsState['data'];
+      state.data = action.payload as EventsState["data"];
     },
   },
   extraReducers: (builder) => {

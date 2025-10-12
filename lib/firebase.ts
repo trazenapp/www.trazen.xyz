@@ -1,9 +1,7 @@
-// firebase.ts
 import { initializeApp, getApps } from "firebase/app";
-import { getAnalytics, isSupported } from "firebase/analytics";
+import { getAnalytics, isSupported as analyticsSupported } from "firebase/analytics";
 import { getMessaging, Messaging } from "firebase/messaging";
 
-// --- Firebase Config ---
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -14,34 +12,24 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// --- Initialize Firebase App ---
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 
-// --- Initialize Analytics (only on client + supported envs) ---
+// ✅ only initialize analytics in the browser and if supported
 let analytics: ReturnType<typeof getAnalytics> | null = null;
 
 if (typeof window !== "undefined") {
-  isSupported()
-    .then((supported) => {
-      if (supported) {
-        analytics = getAnalytics(app);
-        console.log("✅ Firebase Analytics initialized");
-      } else {
-        console.log("⚠️ Analytics not supported in this environment");
-      }
-    })
-    .catch((err) => {
-      console.warn("⚠️ Analytics initialization skipped:", err);
-    });
+  analyticsSupported().then((supported) => {
+    if (supported) analytics = getAnalytics(app);
+  });
 }
 
-// --- Messaging ---
+// ✅ messaging only in the browser too
 export const initMessaging = (): Messaging | null => {
   if (typeof window === "undefined") return null;
   try {
     return getMessaging(app);
   } catch (e: any) {
-    console.log("⚠️ Firebase Messaging Init Failed:", e);
+    console.log("Firebase Messaging Init Failed:", e);
     return null;
   }
 };

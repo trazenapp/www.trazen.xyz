@@ -43,7 +43,10 @@ function EventsPost({ projectId }: EventPostProps) {
       ...data,
       project_uuid: projectId,
       cover_image: data.cover_image,
-      location: (values.type === "ONSITE" || values.type === "HYBRID") ? values.location : values.type,
+      location:
+        values.type === "ONSITE" || values.type === "HYBRID"
+          ? values.location
+          : values.type,
       is_published: true,
       status: data.status,
       date_time: new Date(data.date_time).toISOString(),

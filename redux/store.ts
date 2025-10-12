@@ -14,6 +14,7 @@ import onboardingReducer from "@/redux/slices/onboardingSlice";
 import fcmNotificationReducer from "@/redux/slices/fcmNotificationSlice";
 import projectReducer from "@/redux/slices/projectSlice";
 import postReducer from "@/redux/slices/postSlice";
+import bountiesReducer from "@/redux/slices/bountiesSlice";
 // import draftsReducer from "@/redux/slices/draftSlice";
 import profileReducer from "@/redux/slices/userSlice";
 import eventsReducer from "@/redux/slices/eventSlice";
@@ -45,6 +46,7 @@ const rootReducer = combineReducers({
   events: eventsReducer,
   hiring: hiringReducer,
   bookmark: bookmarkReducer,
+  bounties: bountiesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

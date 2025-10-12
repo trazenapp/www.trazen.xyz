@@ -27,6 +27,7 @@ const initialState: PostState = {
   hasMore: false,
   publicPosts: [],
   privatePosts: [],
+  followedPosts: [],
   postDetails: {} as PostItem,
   bookmark: false,
 };
@@ -58,6 +59,29 @@ export const fetchPrivatePosts = createAsyncThunk<
 
     // console.log(data)
     return { privatePosts: data.posts, pagination: data.pagination };
+  } catch (err: any) {
+    console.error("fetchPosts error", err);
+    return rejectWithValue(
+      err?.response?.data?.message || "Error fetching posts"
+    );
+  }
+});
+
+export const fetchFollowedPosts = createAsyncThunk<
+  { followedPosts: PostItem[]; pagination: PostPagination },
+  { search: string; page: number; limit: number }
+>("post/fetchFollowedPosts", async ({ search = "", page = 1, limit = 10 }, { rejectWithValue }) => {
+  try {
+    let response;
+    if(search.length > 3){
+      response = await axiosInstance.get(`/v1/post/feed?search=${search}&page=${page}&limit=${limit}`);
+    }else{
+      response = await axiosInstance.get(`/v1/post/feed?page=${page}&limit=${limit}`);
+    }
+    const data = response.data?.data;
+
+    console.log(data)
+    return { followedPosts: data.posts, pagination: data.pagination };
   } catch (err: any) {
     console.error("fetchPosts error", err);
     return rejectWithValue(
@@ -238,6 +262,37 @@ export const bookmarkPost = createAsyncThunk<
   }
 );
 
+export const followPost = createAsyncThunk<any, 
+  { project_uuid: string },
+  { state: RootState}>(
+  "post/followPost",
+  async({ project_uuid }, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.post(
+        `/v1/project/follow/${project_uuid}`, 
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Follow response:", response.data);
+      return response.data;
+    } catch (err: any) {
+      console.error("followPost error", err?.response?.data || err.message);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error following project"
+      );
+    }
+  }
+)
+
 export const createPost = createAsyncThunk<Post, { state: RootState }>(
   "post/createPost",
   async (payload, { rejectWithValue, getState }) => {
@@ -331,6 +386,28 @@ const postSlice = createSlice({
         state.hasMore = pagination.page < pagination.totalPages;
       })
       .addCase(fetchPublicPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string || "Something went wrong";
+      })
+      .addCase(fetchFollowedPosts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchFollowedPosts.fulfilled, (state, action) => {
+        state.loading = false;
+        const newPosts = action.payload.followedPosts;
+        const { pagination } = action.payload;
+
+        if (pagination.page === 1) {
+          state.followedPosts = newPosts;
+        } else {
+          state.followedPosts = [...state.followedPosts, ...newPosts];
+        }
+
+        state.pagination = pagination;
+        state.hasMore = pagination.page < pagination.totalPages;
+      })
+      .addCase(fetchFollowedPosts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string || "Something went wrong";
       })

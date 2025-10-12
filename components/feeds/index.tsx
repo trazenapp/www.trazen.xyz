@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useCallback } from "react";
 import Feedscard from "@/components/feedsCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { fetchPublicPosts, fetchPrivatePosts } from "@/redux/slices/postSlice";
+import { fetchPublicPosts, fetchPrivatePosts, fetchFollowedPosts } from "@/redux/slices/postSlice";
 
 interface FeedsProps {
   isPrivate: boolean;
@@ -11,7 +11,7 @@ interface FeedsProps {
 
 const Feeds = ({ isPrivate = false }: FeedsProps) => {
   const dispatch = useAppDispatch();
-  const { publicPosts, privatePosts, loading, pagination, hasMore } =
+  const { publicPosts, followedPosts, loading, pagination, hasMore } =
     useAppSelector((state) => state.post);
 
   const observer = useRef<IntersectionObserver | null>(null);
@@ -39,17 +39,17 @@ const Feeds = ({ isPrivate = false }: FeedsProps) => {
 
   useEffect(() => {
     dispatch(fetchPublicPosts({ search: "", page: 1, limit: 10 }));
-    dispatch(fetchPrivatePosts({ page: 1, limit: 10 }));
+    dispatch(fetchFollowedPosts({ search: "", page: 1, limit: 10 }));
   }, [dispatch]);
 
   return (
     <>
       {loading
-        ? privatePosts.map((post) => (
+        ? followedPosts.map((post) => (
             <Skeleton key={post.uuid} className="w-full h-[200px] my-4" />
           ))
         : isPrivate
-          ? publicPosts.map((post) => (
+          ? followedPosts.map((post) => (
               <Feedscard
                 key={post.uuid}
                 uuid={post.uuid as string}

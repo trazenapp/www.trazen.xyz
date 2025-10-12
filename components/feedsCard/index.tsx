@@ -26,7 +26,7 @@ import { TbShare3 } from "react-icons/tb";
 import { Edit } from "lucide-react";
 import { Trash2 } from "lucide-react";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
-import { votePost, setLoading, bookmarkPost } from "@/redux/slices/postSlice";
+import { votePost, setLoading, bookmarkPost, followPost } from "@/redux/slices/postSlice";
 import { ClipLoader } from "react-spinners";
 
 // uuid?: string;
@@ -74,6 +74,7 @@ const FeedsCard = ({
   const { loading, bookmark } = useAppSelector(
     (state: RootState) => state.post
   );
+  const [isFollowing, setIsFollowing] = useState(false);
 
   const handlePageClick = (slug: string) => {
     router.push(`/home/${slug}`);
@@ -110,6 +111,18 @@ const FeedsCard = ({
     }
   };
 
+  const handleFollowPost = async (project_uuid: string) => {
+    if (isFollowing) return; 
+  setIsFollowing(true);
+
+    try {
+      const res = await dispatch(followPost({ project_uuid })).unwrap();
+      console.log("Follow response:", res);
+    } catch (error) {
+      console.error("Follow error:", error);
+    }
+  };
+
   return (
     <>
       <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0 mb-4">
@@ -123,9 +136,13 @@ const FeedsCard = ({
                 is_approved={is_approved}
               />
             </Link>
-            {/* <Button className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]">
+            <Button
+              type="button"
+              onClick={() => project_uuid && handleFollowPost(project_uuid)}
+              className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]"
+            >
               Follow
-            </Button> */}
+            </Button>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

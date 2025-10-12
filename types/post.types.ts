@@ -58,6 +58,7 @@ export interface PostState {
   hasMore: boolean;
   publicPosts: PostItem[];
   privatePosts: PostItem[];
+  followedPosts: PostItem[];
   postDetails: PostItem;
   bookmark: boolean;
 }

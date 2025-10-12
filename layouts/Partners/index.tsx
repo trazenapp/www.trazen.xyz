@@ -9,7 +9,7 @@ const Partners = () => {
       <PartnerSlider />
       <div className="pointer-events-none absolute inset-0 z-[999]">
         <div className="absolute top-0 left-0 w-[200px] h-full bg-gradient-to-r from-[#0B0B0B] to-transparent"></div>
-        <div className="absolute top-0 right-0 w-[200px] h-full bg-gradient-to-t from-[#0B0B0B] to-transparent"></div>
+        <div className="absolute top-0 right-0 w-[200px] h-full bg-gradient-to-l from-[#0B0B0B] to-transparent"></div>
       </div>
     </section>
   );

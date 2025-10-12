@@ -13,7 +13,7 @@ import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import { setShow } from "@/redux/slices/dashboardSidebarSlice";
 import { fetchProfile } from "@/redux/slices/userSlice";
 
-const DashboardNav = ({ pioneer = false }) => {
+const DashboardNav = ({ pioneer = false, editProject = false }) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const router = useRouter();
@@ -75,7 +75,7 @@ const DashboardNav = ({ pioneer = false }) => {
       <h3
         className={`lg:hidden text-[#F4F4F4F4] font-sans font-medium text-base capitalize ${pioneer ? "w-[100%] text-center text-[20px] " : ""} `}
       >
-        {title}
+        {editProject ? "Dashboard" : title}
       </h3>
 
       {!pioneer && (

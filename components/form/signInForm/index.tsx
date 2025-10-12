@@ -46,7 +46,7 @@ const SignInForm = () => {
       dispatch(setLoading(true));
       dispatch(updateFormData(data));
       console.log(data);
-      await dispatch(signIn(data)).unwrap();
+      await dispatch(signIn(data as any)).unwrap();
       toast(<div>Login Successful</div>, {
         theme: "dark",
         type: "success",

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Card from "@/components/card";
@@ -25,10 +25,44 @@ import { TbShare3 } from "react-icons/tb";
 import { CgFlagAlt } from "react-icons/cg";
 import { FaArrowLeft } from "react-icons/fa6";
 import FeedsCommentItem from "@/components/feedsCommentItem";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { fetchPostDetails, votePost } from "@/redux/slices/postSlice";
 
-const Page = ({ params }: { params: { slug: string } }) => {
-  const { slug } = params;
+const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
+  const { slug } = use(params);
   const router = useRouter();
+  const { postDetails, loading, error } = useAppSelector((state) => state.post);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(fetchPostDetails({ post_uuid: slug }));
+  }, [dispatch, slug]);
+
+  const handleVote = async (
+    voteType: "UPVOTE" | "DOWNVOTE",
+    post_uuid: string
+  ) => {
+    if (!post_uuid) {
+      console.log("No post_uuid in state");
+      return;
+    }
+
+    try {
+      const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
+      console.log("Vote response:", res);
+    } catch (error) {
+      console.error("Vote error:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="w-full flex items-center justify-center">
+        <Skeleton className="w-full h-[400px]" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -45,11 +79,16 @@ const Page = ({ params }: { params: { slug: string } }) => {
         <div className="flex justify-between items-start">
           <div className="flex items-start gap-x-2.5 font-sans">
             <Link href="/profile" className="flex items-start gap-x-2.5">
-              <AvatarProfile />
+              <AvatarProfile
+                createdAt={postDetails?.project?.created_at}
+                name={postDetails?.project?.name}
+                avatar={postDetails?.project?.avatar}
+                is_approved={postDetails?.project?.is_approved}
+              />
             </Link>
-            <Button className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]">
+            {/* <Button className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]">
               Follow
-            </Button>
+            </Button> */}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -68,41 +107,41 @@ const Page = ({ params }: { params: { slug: string } }) => {
           </DropdownMenu>
         </div>
         <p className="cursor-pointer text-[#F4F4F4F4] text-sm lg:text-base  font-normal font-sans">
-          Big news: We’ve officially opened our first office in New Orleans!
-          ⚜️We’re excited to build the future of Web3 with this vibrant,
-          creative community.Let’s grow together
+          {postDetails?.content}
         </p>
         <div className="overflow-hidden rounded-[12px]">
-          <FeedsMedia media={media} maxVisible={4} />
+          <FeedsMedia media={postDetails?.medias as string[]} maxVisible={4} />
         </div>
         <div
           className="flex justify-between gap-x-2.5 overflow-x-scroll"
           style={{ scrollbarWidth: "none" }}
         >
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button onClick={() => postDetails?.uuid && handleVote("UPVOTE", postDetails.uuid)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <PiArrowFatUp />
-            276
+            {postDetails?.upvoteCount}
           </Button>
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button onClick={() => postDetails?.uuid && handleVote("DOWNVOTE", postDetails.uuid)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <PiArrowFatDown />
-            276
+            {postDetails?.downvoteCount}
           </Button>
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button onClick={() => router.push(`/home/${postDetails?.uuid}`)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <IoChatbubbleOutline />
-            276
+            {postDetails?.commentCount}
           </Button>
           <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <TbShare3 />
-            276
+            0
           </Button>
           <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
             <PiBookmarkSimpleBold />
-            276
+            0
           </Button>
         </div>
-        <FeedsComment isComment={true} />
+        <FeedsComment isComment={true} uuid={postDetails?.uuid} />
         <div className="flex flex-col gap-y-5">
-          <FeedsCommentItem />
+          {postDetails?.comments?.map((comment) => (
+            <FeedsCommentItem key={comment.uuid} comment={comment} />
+          ))}
         </div>
       </Card>
     </>

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { use } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -15,8 +15,12 @@ import {
 } from "@/components/ui/pagination";
 import { FaArrowLeft } from "react-icons/fa6";
 
-const page = ({ params }: { params: { slug: string } }) => {
-  const { slug } = React.use(params);
+const page = ({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}) => {
+  const { slug } = use(params);
   const router = useRouter();
 
   return (

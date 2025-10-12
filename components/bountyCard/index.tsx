@@ -50,7 +50,7 @@ const BountyCard = ({ bounty }: { bounty: BountyItemResponse }) => {
             </div>
           </div>
           <div className="flex justify-end items-start gap-x-2 w-[17%]">
-            {/* <Image src={img} alt="usdc icon" className="w-5 h-5" /> */}
+            <Image src={img} alt="usdc icon" className="w-5 h-5" />
             <p className="text-base font-light font-sans text-[#A6A6A6] line-clamp-1">
               {bounty.reward}
             </p>

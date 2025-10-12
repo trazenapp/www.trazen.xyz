@@ -8,8 +8,8 @@ import {
   createHiring,
   setLoading,
   updateForm,
-  HiringPostPayload,
 } from "@/redux/slices/hiringSlice";
+import { HiringPostPayload } from "@/types/hiring.types";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
@@ -44,12 +44,15 @@ function HiringPost({ projectId }: HiringPostProps) {
     defaultValues: data,
   });
   const values = watch();
-  
+
   const onSubmit = async (data: any) => {
     const formData: HiringPostPayload = {
       ...data,
       project_uuid: projectId,
-      location: (values.type === "Onsite" || values.type === "Hybrid") ? values.location : values.location_type,
+      location:
+        values.type === "Onsite" || values.type === "Hybrid"
+          ? values.location
+          : values.location_type,
       is_published: true,
       status: "ONGOING",
     };
@@ -140,15 +143,18 @@ function HiringPost({ projectId }: HiringPostProps) {
               <SelectContent className="font-sans bg-[#161616] border-[#303030]">
                 <SelectGroup className="w-full">
                   <SelectLabel className="text-[#f4f4f4] text-[16px]" />
-                  {["contract", "full-time", "internship", "volunteer"].map((v) => (
-                    <SelectItem
-                      key={v}
-                      value={v}
-                      className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
-                    >
-                      {v.charAt(0).toUpperCase() + v.slice(1).replace("-", " ")}
-                    </SelectItem>
-                  ))}
+                  {["contract", "full-time", "internship", "volunteer"].map(
+                    (v) => (
+                      <SelectItem
+                        key={v}
+                        value={v}
+                        className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
+                      >
+                        {v.charAt(0).toUpperCase() +
+                          v.slice(1).replace("-", " ")}
+                      </SelectItem>
+                    )
+                  )}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -234,7 +240,8 @@ function HiringPost({ projectId }: HiringPostProps) {
         />
       </div>
 
-      {(values.location_type === "Onsite" || values.location_type === "Hybrid") && (
+      {(values.location_type === "Onsite" ||
+        values.location_type === "Hybrid") && (
         <div className="mt-4 flex flex-col gap-2">
           <Label
             htmlFor="location"
@@ -306,7 +313,6 @@ function HiringPost({ projectId }: HiringPostProps) {
         disabled={loading}
         className="bg-[#430B68] py-4 rounded-full w-[130px] text-sm my-3"
       >
-        
         {loading ? <ClipLoader size={16} color="#fff" /> : "Post"}
       </Button>
     </form>

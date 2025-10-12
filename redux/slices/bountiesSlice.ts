@@ -72,32 +72,6 @@ export const getBounties = createAsyncThunk<
   }
 });
 
-export const getBountyDetails = createAsyncThunk<
-  BountyItemResponse,
-  string,
-  { state: RootState; rejectValue: string }
->("bounties/getBountyDetails", async (task_uuid, { getState, rejectWithValue }) => {
-  try {
-    const state = getState();
-    const token = (state as RootState).register?.token ?? null;
-
-    const res = await axiosInstance.get(`/v1/task/public/${task_uuid}`, {
-      headers: {
-        "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY ?? "",
-        "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY ?? "",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      },
-    });
-
-    console.log(res.data);
-    return res.data;
-  } catch (err: any) {
-    const msg =
-      err?.response?.data?.message || err?.message || "Failed to get bounty details";
-    return rejectWithValue(msg);
-  }
-});
-
 const bountiesSlice = createSlice({
   name: "bounties",
   initialState,
@@ -141,22 +115,7 @@ const bountiesSlice = createSlice({
       .addCase(getBounties.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      })
-      .addCase(getBountyDetails.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(
-        getBountyDetails.fulfilled,
-        (state, action: PayloadAction<BountyItemResponse>) => {
-          state.loading = false;
-          state.data = action.payload;
-        }
-      )
-      .addCase(getBountyDetails.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
+      });
   },
 });
 

@@ -63,7 +63,6 @@ export const getBounties = createAsyncThunk<
       },
     });
 
-    console.log(res.data.data.tasks);
     return res.data.data.tasks as BountyItemResponse[];
   } catch (err: any) {
     const msg =

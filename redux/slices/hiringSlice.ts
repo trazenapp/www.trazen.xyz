@@ -62,7 +62,7 @@ const initialState: HiringState = {
   data: undefined,
   hiringPosts: [],
   hiringPostItem: undefined,
-  bookmark: false
+  bookmark: false,
 };
 
 export const bookmarkHiring = createAsyncThunk<
@@ -77,7 +77,7 @@ export const bookmarkHiring = createAsyncThunk<
       const token = (state as RootState).register.token || null;
 
       const response = await axiosInstance.post(
-        `/v1/hire/bookmark/${post_uuid}`, 
+        `/v1/hire/bookmark/${post_uuid}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -191,37 +191,48 @@ const eventsSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchPublicHiring.fulfilled, (state, action: PayloadAction<any>) => {
-        state.loading = false;
-        state.error = null;
-        state.hiringPosts = action.payload;
-      })
+      .addCase(
+        fetchPublicHiring.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.error = null;
+          state.hiringPosts = action.payload;
+        }
+      )
       .addCase(fetchPublicHiring.rejected, (state, action) => {
         state.loading = false;
-        state.error = (action.payload as string) || "Failed to fetch public hires";
+        state.error =
+          (action.payload as string) || "Failed to fetch public hires";
       })
       .addCase(fetchHiringDetails.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchHiringDetails.fulfilled, (state, action: PayloadAction<any>) => {
-        state.loading = false;
-        state.error = null;
-        state.hiringPostItem = action.payload;
-      })
+      .addCase(
+        fetchHiringDetails.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.error = null;
+          state.hiringPostItem = action.payload;
+        }
+      )
       .addCase(fetchHiringDetails.rejected, (state, action) => {
         state.loading = false;
-        state.error = (action.payload as string) || "Failed to fetch post details";
+        state.error =
+          (action.payload as string) || "Failed to fetch post details";
       })
       .addCase(bookmarkHiring.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(bookmarkHiring.fulfilled, (state, action: PayloadAction<any>) => {
-        state.loading = false;
-        state.error = null;
-        state.bookmark = action.payload;
-      })
+      .addCase(
+        bookmarkHiring.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.error = null;
+          state.bookmark = action.payload;
+        }
+      )
       .addCase(bookmarkHiring.rejected, (state, action) => {
         state.loading = false;
         state.error = (action.payload as string) || "Failed to bookmark hiring";

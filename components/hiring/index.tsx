@@ -20,7 +20,9 @@ import { fetchPrivatePosts } from "@/redux/slices/postSlice";
 
 const Hiring = () => {
   const dispatch = useAppDispatch();
-  const { loading, hiringPosts, bookmark } = useAppSelector((state) => state.hiring);
+  const { loading, hiringPosts, bookmark } = useAppSelector(
+    (state) => state.hiring
+  );
 
   // const observer = useRef<IntersectionObserver | null>(null);
   // const lastPostRef = useCallback(

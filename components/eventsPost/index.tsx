@@ -8,14 +8,13 @@ import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   createEvent,
   setLoading,
-  CreateEventPayload,
   updateForm,
 } from "@/redux/slices/eventSlice";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import FileInput from "@/components/ui/FileInput";
-// import { EventState, FormType, Draft, Event } from "@/types/event.types";
+import { CreateEventPayload } from "@/types/event.types";
 
 type EventPostProps = {
   projectId: string;

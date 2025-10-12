@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useEffect } from "react";
 import Link from "next/link";
 import Card from "@/components/card";
@@ -10,15 +10,13 @@ import { IoMdBookmark } from "react-icons/io";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { BsPatchCheckFill } from "react-icons/bs";
-import { MapPin } from 'lucide-react';
+import { MapPin } from "lucide-react";
 import { HiringPost } from "@/redux/slices/hiringSlice";
 import { useTimeAgo } from "@/hooks/useTimeAgo";
 import { RootState } from "@/redux/store";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import {
-  getProjectDetail,
-} from "@/redux/slices/projectSlice";
+import { getProjectDetail } from "@/redux/slices/projectSlice";
 import { bookmarkHiring } from "@/redux/slices/hiringSlice";
 
 interface HiringCardProps {
@@ -65,7 +63,10 @@ const HiringCard = ({ post, bookmark }: HiringCardProps) => {
       <div className="flex justify-between items-start">
         <div className="flex items-start gap-x-2.5 font-sans">
           <Avatar className="h-10 w-10 rounded-full overflow-hidden">
-            <AvatarImage src={projectDetail?.avatar} className="w-full h-full" />
+            <AvatarImage
+              src={projectDetail?.avatar}
+              className="w-full h-full"
+            />
             <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
               CN
             </AvatarFallback>
@@ -83,7 +84,11 @@ const HiringCard = ({ post, bookmark }: HiringCardProps) => {
           </div>
         </div>
         <div className="flex items-center gap-x-2">
-          <Button type="button" onClick={() => handleBookmark(post.uuid)} className="!w-fit !h-fit p-0">
+          <Button
+            type="button"
+            onClick={() => handleBookmark(post.uuid)}
+            className="!w-fit !h-fit p-0"
+          >
             {bookmark ? <IoMdBookmark size={36} /> : <FiBookmark size={36} />}
           </Button>
           <p className="text-base font-light font-sans text-[#A6A6A6]">
@@ -103,10 +108,10 @@ const HiringCard = ({ post, bookmark }: HiringCardProps) => {
             {post.location}
           </div>
           <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
-           {post.pay_range}
+            {post.pay_range}
           </div>
           <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
-           {post.location}
+            {post.location}
           </div>
         </div>
       </div>

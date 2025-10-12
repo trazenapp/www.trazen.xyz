@@ -1,9 +1,8 @@
-import { Descendant } from "slate";
 import { ProjectDetail } from "./project.types";
 import { UserProfile } from "./user.types";
 export type FormType = "feed" | "events" | "hiring" | "bounties";
 
-export interface  Post {
+export interface Post {
   project_uuid: string;
   content: string;
   medias: string[];
@@ -27,7 +26,7 @@ export interface CommentItem {
     content: string;
     created_at: string;
     uuid: string;
-  }
+  };
 }
 
 export interface PostItem {

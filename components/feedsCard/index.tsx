@@ -68,7 +68,9 @@ const FeedsCard = ({
 }: FeedsCardProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { loading, bookmark } = useAppSelector((state: RootState) => state.post);
+  const { loading, bookmark } = useAppSelector(
+    (state: RootState) => state.post
+  );
 
   const handlePageClick = (slug: string) => {
     router.push(`/home/${slug}`);
@@ -154,25 +156,35 @@ const FeedsCard = ({
           className="flex justify-between gap-x-2.5 overflow-x-scroll md:overflow-x-hidden"
           style={{ scrollbarWidth: "none" }}
         >
-          <Button onClick={() => handleVote("UPVOTE", uuid)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button
+            onClick={() => handleVote("UPVOTE", uuid)}
+            className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
+          >
             <PiArrowFatUp />
             {upvoteCount}
           </Button>
-          <Button onClick={() => handleVote("DOWNVOTE", uuid)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button
+            onClick={() => handleVote("DOWNVOTE", uuid)}
+            className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
+          >
             <PiArrowFatDown />
             {downvoteCount}
           </Button>
-          <Button onClick={() => router.push(`/home/${uuid}`)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button
+            onClick={() => router.push(`/home/${uuid}`)}
+            className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
+          >
             <IoChatbubbleOutline />
             {commentCount}
           </Button>
           <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
-            <TbShare3 />
-            0
+            <TbShare3 />0
           </Button>
-          <Button onClick={() => handleBookmark(uuid)} className={`!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm`}>
-            <PiBookmarkSimpleBold />
-            0
+          <Button
+            onClick={() => handleBookmark(uuid)}
+            className={`!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm`}
+          >
+            <PiBookmarkSimpleBold />0
           </Button>
         </div>
         <FeedsComment uuid={uuid} isComment={false} />

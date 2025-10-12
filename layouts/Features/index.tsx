@@ -10,7 +10,10 @@ import { ArrowRight } from "lucide-react";
 
 const Features = () => {
   return (
-    <section id="features" className="w-11/12 md:w-10/12 relative overflow-hidden mt-[120px] flex flex-col justify-center items-center">
+    <section
+      id="features"
+      className="w-11/12 md:w-10/12 relative overflow-hidden mt-[120px] flex flex-col justify-center items-center"
+    >
       <div className="w-full md:w-6/12 flex flex-col gap-y-6 mb-[60px]">
         <Badge>Core features</Badge>
         <Heading
@@ -26,7 +29,9 @@ const Features = () => {
             className="flex flex-col lg:flex-row gap-y-20 lg:gap-y-0 lg:gap-x-10 font-sans"
             key={item.title}
           >
-            <div className={`w-full lg:w-1/2 flex flex-col gap-y-6 md:gap-y-8 ${index === 1 && "order-1 lg:order-2"}`}>
+            <div
+              className={`w-full lg:w-1/2 flex flex-col gap-y-6 md:gap-y-8 ${index === 1 && "order-1 lg:order-2"}`}
+            >
               <h4 className="font-semibold text-[32px] md:text-[40px]">
                 {item.title}
               </h4>
@@ -44,10 +49,16 @@ const Features = () => {
                 index === 1 ? "order-2 lg:order-1 lg:pr-10" : "lg:pl-10"
               }`}
             >
-              <div className={`w-[250px] md:w-[400px] h-[250px] md:h-[400px] rounded-full bg-radial/decreasing from-[#7212AF] from-15% to-transparent to-68% absolute bottom-[40%] md:-bottom-[1%] ${index === 1 ? "lg:-right-6 right-1/2 translate-x-1/2 lg:translate-x-0" : "lg:-left-6 left-1/2 -translate-x-1/2 lg:-translate-x-0"}`}></div>
+              <div
+                className={`w-[250px] md:w-[400px] h-[250px] md:h-[400px] rounded-full bg-radial/decreasing from-[#7212AF] from-15% to-transparent to-68% absolute bottom-[40%] md:-bottom-[1%] ${index === 1 ? "lg:-right-6 right-1/2 translate-x-1/2 lg:translate-x-0" : "lg:-left-6 left-1/2 -translate-x-1/2 lg:-translate-x-0"}`}
+              ></div>
 
               <div className="w-full h-full bg-[#1B1B1B] rounded-3xl flex flex-col justify-end items-center relative z-10 px-3 pt-10 md:p-0">
-                <Image src={item.image} alt={item.title} />
+                <Image
+                  className={`${index === 0 && "w-[90%] h-[80%]"} ${index === 2 && "w-[90%] h-[90%] "}`}
+                  src={item.image}
+                  alt={item.title}
+                />
               </div>
             </div>
           </Card>

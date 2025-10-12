@@ -18,18 +18,18 @@ const Hero = () => {
       <Image
         src={imgLeft}
         alt="Header background image"
-        className="absolute top-1/2 -translate-1/2 lg:left-[7%] md:left-[4%] left-[3%] w-[18%]"
+        className="absolute top-1/2 -translate-1/2 md:left-[11%] lg:left-[10%] left-[3%] lg:w-[20%] md:w-[22%] w-[27%] "
       />
       <Image
         src={imgRight}
         alt="Header background image"
-        className="absolute top-1/2 -translate-1/2 lg:-right-[12%] md:-right-[12%] -right-[16%] w-[18%]"
+        className="absolute top-1/2 -translate-1/2 lg:-right-[9.5%] md:-right-[10.5%] -right-[21.6%] lg:w-[19%] md:w-[21%] w-[24%]"
       />
       <div className="mt-[118px] flex flex-col items-center text-center relative z-10">
-        <h1 className="text-[48px] md:text-[54px] lg:text-6xl font-clash-display font-semibold w-10/12 md:w-[79%] lg:w-8/12 mb-6">
+        <h1 className="text-[38px] sm:text-[40px] md:text-[45px] lg:text-[50px] xl:text-6xl font-clash-display font-semibold w-10/12 md:w-[79%] lg:w-8/12 mb-6">
           Stay Ahead in Web3 Easily. Without all the hassle
         </h1>
-        <p className="text-lg font-sans font-normal lg:w-[43%] md:w-[40%] w-[75%] mb-8">
+        <p className="lg:text-[16px] xl:text-lg font-sans font-normal lg:w-[45%] md:w-[45%] w-[75%] mb-8">
           Your personalized Web3 feed with curated updates, real conversations,
           and real projects in one dynamic hub.
         </p>
@@ -47,7 +47,7 @@ const Hero = () => {
           </Button>
         </div>
       </div>
-      <div className="w-10/12 md:w-9/12 relative z-10">
+      <div className="w-10/12  xl:w-[76%] relative z-10">
         <Image src={bgDashboard} alt="Header background image" className="" />
       </div>
     </header>

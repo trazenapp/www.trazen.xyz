@@ -1,3 +1,4 @@
+import { UserProfile } from "@/types/user.types";
 export interface AddProjectData {
   name: string;
   description: string;
@@ -16,6 +17,7 @@ export interface ProjectDetail {
   id: number;
   uuid: string;
   user_uuid: string;
+  user: UserProfile | null;
   wallet_uuid: string | null;
   name: string;
   description: string;

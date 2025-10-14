@@ -1,20 +1,25 @@
-ARG NODE_VERSION=22.14.0
+# Use the official Node.js image.
+# https://hub.docker.com/_/node
+FROM node:22-alpine
 
-FROM node:${NODE_VERSION}-slim
+# Create and change to the app directory.
+WORKDIR /usr/src/app
 
-# RUN apk add --no-cache libc6-compat
-
-# Use production node environment by default.
-# ENV NODE_ENV production
-
-WORKDIR /app
-
+# Copy application dependency manifests to the container image.
+# A wildcard is used to ensure both package.json AND package-lock.json are copied.
 COPY package*.json ./
 
-RUN npm install --legacy-peer-deps
+# Install production dependencies.
+RUN npm ci
 
+# Copy the local code to the container image.
 COPY . .
 
+# Build the Next.js application
+RUN npm run build
+
+# Expose the port the app runs on
 EXPOSE 3000
 
-CMD npm run dev
+# Run the web service on container startup.
+CMD ["npm", "run", "start"]

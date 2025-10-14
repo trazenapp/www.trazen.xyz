@@ -1,12 +1,7 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp, getApps } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import { getAnalytics, isSupported as analyticsSupported } from "firebase/analytics";
 import { getMessaging, Messaging } from "firebase/messaging";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -17,16 +12,26 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
+// ✅ only initialize analytics in the browser and if supported
+let analytics: ReturnType<typeof getAnalytics> | null = null;
+
+if (typeof window !== "undefined") {
+  analyticsSupported().then((supported) => {
+    if (supported) analytics = getAnalytics(app);
+  });
+}
+
+// ✅ messaging only in the browser too
 export const initMessaging = (): Messaging | null => {
-  if(typeof window === "undefined") return null;
+  if (typeof window === "undefined") return null;
   try {
     return getMessaging(app);
-  } catch(e: any) {
-    console.log("Firebase Messaging Init Failed: ", e);
+  } catch (e: any) {
+    console.log("Firebase Messaging Init Failed:", e);
     return null;
   }
-}
+};
+
+export { app, analytics };

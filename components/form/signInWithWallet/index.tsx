@@ -16,8 +16,13 @@ import { BrowserProvider } from "ethers";
 
 // const SignInWithWallet = ({ onClick }: SignInWithWalletProps) => {
 const SignInWithWallet = () => {
-  // const { provider } = useWeb3Auth();
-  const { connect, isConnected, loading: connectLoading, error: connectError } = useWeb3AuthConnect();
+  const { web3Auth } = useWeb3Auth();
+  const {
+    connect,
+    isConnected,
+    loading: connectLoading,
+    error: connectError,
+  } = useWeb3AuthConnect();
 
   // useEffect(() => {
   //   const getAddress = async () => {
@@ -26,7 +31,7 @@ const SignInWithWallet = () => {
   //       const ethersProvider = new BrowserProvider(provider as any);
   //       const signer = await ethersProvider.getSigner();
   //       const addr = await signer.getAddress();
-  //       // setAddress(addr);
+  //       // setAddress(addr);6
   //       console.log("Connected address:", addr);
   //     } catch (err) {
   //       console.error("Failed to get address:", err);
@@ -36,11 +41,28 @@ const SignInWithWallet = () => {
   //   getAddress();
   // }, [provider]);
 
+  useEffect(() => {
+    console.log("Web3Auth instance:", web3Auth);
+    console.log("isConnected", isConnected);
+    console.log("connectLoading", connectLoading);
+    console.log("error ", connectError);
+  }, [web3Auth, isConnected, connectLoading, connectError]);
+
+  const handleConnect = async () => {
+    try {
+      console.log("Attempting to open Web3Auth modal...");
+      await connect();
+      console.log("Modal connect triggered");
+    } catch (err) {
+      console.error("Connect failed:", err);
+    }
+  };
+
   return (
     <Button
       type="button"
       variant="outline"
-      onClick={() => connect()}
+      onClick={handleConnect}
       className="bg-transparent border-[#303030] rounded-full w-full flex justify-center items-center gap-x-2.5 hover:bg-transparent text-[#F4F4F4F4] hover:text-[#F4F4F4F4] font-sans text-base md:text-xl font-medium"
     >
       <Image src={wallet} alt="wallet" width={24} />

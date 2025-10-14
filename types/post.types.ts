@@ -1,5 +1,6 @@
-import { Descendant } from "slate";
-export type FormType = "feed" | "event" | "hiring" | "bounty";
+import { ProjectDetail } from "./project.types";
+import { UserProfile } from "./user.types";
+export type FormType = "feed" | "events" | "hiring" | "bounties";
 
 export interface Post {
   project_uuid: string;
@@ -7,18 +8,64 @@ export interface Post {
   medias: string[];
   is_published: boolean;
 }
+export interface PostPagination {
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface CommentItem {
+  content: string;
+  created_at: string;
+  user: UserProfile;
+  uuid: string;
+  id: number;
+  comments: {
+    comment_uuid: string;
+    content: string;
+    created_at: string;
+    uuid: string;
+  };
+}
+
+export interface PostItem {
+  uuid?: string;
+  user_uuid?: string;
+  project_uuid?: string;
+  content: string;
+  medias?: string[];
+  created_at?: string;
+  updated_at?: string;
+  upvoteCount?: number;
+  downvoteCount?: number;
+  commentCount?: number;
+  isPublished?: boolean;
+  project?: ProjectDetail;
+  is_approved?: boolean;
+  avatar?: string;
+  name?: string;
+  comments?: CommentItem[];
+  isBookmarked?: boolean;
+}
 
 export interface PostState {
   loading: boolean;
   error: string | null;
   drafts: Record<FormType, Draft | null>;
   data: Post;
+  pagination: PostPagination;
+  hasMore: boolean;
+  publicPosts: PostItem[];
+  privatePosts: PostItem[];
+  postDetails: PostItem;
+  bookmark: boolean;
 }
 
 export interface Draft {
   type: FormType;
   data: Record<string, any>;
-};
+}
 
 export interface Event {
   project_uuid: string;

@@ -16,10 +16,7 @@ import { Button } from "@/components/ui/button";
 import Card from "@/components/card";
 import FormHeading from "@/components/formHeading";
 import { OnboardingData } from "@/types/auth.types";
-import {
-  chainOptions,
-  nicheOptions,
-} from "@/constants/options";
+import { chainOptions, nicheOptions } from "@/constants/options";
 import FormCheckbox from "@/components/form/formCheckbox";
 import { FaCheck } from "react-icons/fa6";
 import { toast } from "react-toastify";
@@ -47,10 +44,7 @@ const ProjectCategory = () => {
       avatar: formData.avatar,
       social: formData.social,
       whitepaper: formData.whitepaper,
-      categories: [
-        ...(formData.chains || []),
-        ...(formData.niche || []),
-      ],
+      categories: [...(formData.chains || []), ...(formData.niche || [])],
       team_emails: formData.team_emails,
     };
   };
@@ -148,7 +142,7 @@ const ProjectCategory = () => {
         </Button>
       </form>
     </Card>
-  )
-}
+  );
+};
 
-export default ProjectCategory
+export default ProjectCategory;

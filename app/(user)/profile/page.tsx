@@ -96,11 +96,11 @@ const Profile = () => {
         </div>
         <TabsContent className="relative w-full h-full" value="announcements">
           <div className="w-full h-full">
-            <Feedscard />
+            {/* <Feedscard /> */}
           </div>
         </TabsContent>
         <TabsContent className="relative w-full h-full" value="all-posts">
-          <Feedscard />
+          {/* <Feedscard /> */}
         </TabsContent>
       </Tabs>
     </>

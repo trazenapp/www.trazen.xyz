@@ -7,19 +7,17 @@ import { cookieToWeb3AuthState } from "@web3auth/modal";
 
 interface ClientProviderProps {
   cookie: string;
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
-const ClientProvider = ({
-  children, cookie
-}: ClientProviderProps) => {
+const ClientProvider = ({ children, cookie }: ClientProviderProps) => {
   const web3authInitialState = cookieToWeb3AuthState(cookie);
   return (
     <ReduxProvider>
-      {/* <Provider web3authInitialState={web3authInitialState}> */}
+      <Provider web3authInitialState={web3authInitialState}>
         {children}
         <ToastContainer />
-      {/* </Provider> */}
+      </Provider>
     </ReduxProvider>
   );
 };

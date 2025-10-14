@@ -49,10 +49,16 @@ const SignUpForm = () => {
   const passwordType = showPassword ? "text" : "password";
 
   const onSubmit = async (data: SignUpData) => {
+    console.log(data);
+    const formData = {
+      role: data.role,
+      email: data.email,
+      password: data.password,
+    }
     try {
       dispatch(setLoading(true));
       dispatch(updateFormData({ ...data }));
-      await dispatch(signUp(data)).unwrap();
+      await dispatch(signUp(formData)).unwrap();
       toast(<div>Account Created</div>, {
         theme: "dark",
         type: "success",
@@ -66,6 +72,9 @@ const SignUpForm = () => {
         theme: "dark",
         type: "error",
       });
+      dispatch(setLoading(false));
+    // }
+    } finally {
       dispatch(setLoading(false));
     }
   };

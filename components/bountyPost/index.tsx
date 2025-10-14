@@ -2,44 +2,105 @@
 import React from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Textarea } from "../ui/textarea";
+import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
+import {
+  createBounty,
+  setLoading,
+  resetForm,
+  updateForm,
+} from "@/redux/slices/bountiesSlice";
+import { BountyItem } from "@/types/bounties.types";
+import { useForm, Controller } from "react-hook-form";
+import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 
 type BountyPostProps = {
-  bountyTitle: string;
-  setBountyTitle: (value: string) => void;
-  bountyDuration: string;
-  setBountyDuration: (value: string) => void;
-  bountyReward: string;
-  setBountyReward: (value: string) => void;
-  bountyLink: string;
-  setBountyLink: (value: string) => void;
+  projectId: string;
 };
 
 function BountyPost({
-  bountyTitle,
-  setBountyTitle,
-  bountyDuration,
-  setBountyDuration,
-  bountyReward,
-  setBountyReward,
-  bountyLink,
-  setBountyLink,
+  projectId
 }: BountyPostProps) {
+  const dispatch = useAppDispatch();
+  const { loading, data, error } = useAppSelector(
+    (state: RootState) => state.bounties
+  );
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<BountyItem>({
+    defaultValues: data,
+  });
+
+  const onSubmit = async (data: any) => {
+    const formData: BountyItem = {
+      ...data,
+      project_uuid: projectId,
+      is_published: true,
+    };
+    try {
+      dispatch(setLoading(true));
+      dispatch(updateForm(data));
+      await dispatch(createBounty(formData)).unwrap();
+      toast(<div>Bounty created successfully</div>, {
+        theme: "dark",
+        type: "success",
+      });
+      dispatch(setLoading(false));
+
+      dispatch(resetForm());
+    } catch (err: any) {
+      dispatch(setLoading(false));
+      toast(<div>{err.message || "Failed to create bounty"}</div>, {
+        theme: "dark",
+        type: "error",
+      });
+    }
+  };
+
   return (
-    <div>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-2 mt-4">
         <Label
-          htmlFor="bounty-title"
+          htmlFor="title"
           className="sm:text-[16px] text-[14px] text-[#f4f4f4f2] font-normal w-max "
         >
           Bounty title
         </Label>
-        <Input
-          id="bounty-title"
-          name="name"
-          value={bountyTitle}
-          onChange={(e) => setBountyTitle(e.target.value)}
-          placeholder="Example: Street art challenge"
-          className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+        <Controller
+          name="title"
+          control={control}
+          render={({ field }) => (
+            <Input
+              id="title"
+              className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              {...field}
+              placeholder="Enter bounty title"
+            />
+          )}
+        />
+      </div>
+
+      <div className="flex flex-col gap-2 mt-4 max-w-full">
+        <Label
+          htmlFor="description"
+          className="text-[#f4f4f4f2] font-normal sm:text-[16px] text-[14px] w-max"
+        >
+          Description
+        </Label>
+        <Controller
+          name="description"
+          control={control}
+          render={({ field }) => (
+            <Textarea
+              {...field}
+              className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              placeholder="Enter bounty description"
+            />
+          )}
         />
       </div>
 
@@ -50,13 +111,17 @@ function BountyPost({
         >
           Duration
         </Label>
-        <Input
-          id="duration"
-          name="name"
-          value={bountyDuration}
-          onChange={(e) => setBountyDuration(e.target.value)}
-          placeholder="Enter duration"
-          className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+        <Controller
+          name="duration"
+          control={control}
+          render={({ field }) => (
+            <Input
+              id="duration"
+              className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              {...field}
+              placeholder="E.g 2 weeks"
+            />
+          )}
         />
       </div>
 
@@ -67,33 +132,88 @@ function BountyPost({
         >
           Reward
         </Label>
-        <Input
-          id="reward"
-          name="name"
-          value={bountyReward}
-          onChange={(e) => setBountyReward(e.target.value)}
-          placeholder="Example: $350"
-          className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+        <Controller
+          name="reward"
+          control={control}
+          render={({ field }) => (
+            <Input
+              id="reward"
+              placeholder="E.g $350"
+              className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              {...field}
+            />
+          )}
         />
       </div>
 
       <div className="flex flex-col gap-2 mt-4">
         <Label
-          htmlFor="bounty-link"
+          htmlFor="link"
           className="sm:text-[16px] text-[14px] text-[#f4f4f4f2] font-normal w-max "
         >
           Bounty link
         </Label>
-        <Input
-          id="bounty-link"
-          name="name"
-          value={bountyLink}
-          onChange={(e) => setBountyLink(e.target.value)}
-          placeholder="Enter external job link"
-          className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+        <Controller
+          name="link"
+          control={control}
+          render={({ field }) => (
+            <Input
+              id="link"
+              className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              {...field}
+              placeholder="E.g https://example.com/tasks"
+            />
+          )}
         />
       </div>
-    </div>
+      
+      <div className="mt-4 flex flex-col gap-2 max-w-full">
+        <Controller
+          name="status"
+          control={control}
+          rules={{ required: "Status is required" }}
+          render={({ field: { value, onChange } }) => (
+            <div className="flex gap-18 max-[550px]:gap-0 max-[550px]:justify-between">
+              {["ONGOING", "UPCOMING", "COMPLETED"].map((type) => (
+                <div key={type} className="flex gap-3 items-center">
+                  <Label
+                    htmlFor={type}
+                    className="cursor-pointer flex gap-2 items-center"
+                    onClick={() => onChange(type)} // update value manually
+                  >
+                    <Input
+                      id={type}
+                      type="radio"
+                      name="status"
+                      value={type}
+                      checked={value === type}
+                      onChange={() => onChange(type)}
+                      className="peer hidden"
+                    />
+                    <span
+                      className="w-4 h-4 rounded-full border border-[#434343] flex items-center justify-center
+                      before:content-[''] before:w-2 before:h-2 before:rounded-full 
+                      before:bg-transparent peer-checked:before:bg-[#430b68] peer-checked:border-2"
+                    ></span>
+                    <p className="text-[#f4f4f4] sm:text-sm text-[12px] capitalize">
+                      {type.replace("-", " ")}
+                    </p>
+                  </Label>
+                </div>
+              ))}
+            </div>
+          )}
+        />
+      </div>
+
+      <Button
+        type="submit"
+        disabled={loading}
+        className="bg-[#430B68] py-4 rounded-full w-[130px] text-sm my-3"
+      >
+        {loading ? <ClipLoader size={16} color="#fff" /> : "Post"}
+      </Button>
+    </form>
   );
 }
 

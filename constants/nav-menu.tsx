@@ -9,5 +9,6 @@ export const footerMenu = [
   { label: "Whitepaper", href: "#" },
   { label: "Documentation", href: "#" },
   { label: "Pricing", href: "#" },
-  { label: "Get started", href: "/sign-up" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms and Conditions", href: "/terms" },
 ];

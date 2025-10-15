@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
         hostname: "trazenapp.s3-website.eu-west-3.amazonaws.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "website.com",
+        pathname: "/**",
+      },
     ],
   },
   webpack: (config) => {

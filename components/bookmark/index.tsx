@@ -5,7 +5,7 @@ import Feedscard from "@/components/feedsCard";
 import HiringCard from "@/components/hiringCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { fetchBookmark } from "@/redux/slices/bookmarkSlice";
+import { fetchBookmark, deleteBookmark } from "@/redux/slices/bookmarkSlice";
 import { fetchPublicPosts } from "@/redux/slices/postSlice";
 import { fetchPublicHiring } from "@/redux/slices/hiringSlice";
 
@@ -17,6 +17,23 @@ const Bookmark = () => {
   const dispatch = useAppDispatch();
 
   console.log(bookmark, publicPosts, hiringPosts);
+  
+  // delete bookmark
+  const handleDeleteBookmark = async (bookmark_uuid: string) => {
+    console.log("hello world")
+    if (!bookmark_uuid) {
+      console.log("No bookmark_uuid in state");
+      return;
+    }
+
+    try {
+      const res = await dispatch(deleteBookmark({ bookmark_uuid })).unwrap();
+      console.log("Delete bookmark response:", res);
+    } catch (error) {
+      console.error("Delete bookmark error:", error);
+    }
+  }; 
+
   useEffect(() => {
     const getBookmark = async () => {
       try {
@@ -53,30 +70,14 @@ const Bookmark = () => {
             (post) => post.uuid === (bookmark as any).post_uuid
           );
           if (post) {
-            return (
-              <Feedscard
-                key={post.uuid}
-                uuid={post.uuid as string}
-                content={post.content}
-                medias={post.medias}
-                createdAt={post.created_at}
-                upvoteCount={post.upvoteCount}
-                downvoteCount={post.downvoteCount}
-                commentCount={post.commentCount}
-                name={post.project?.name}
-                avatar={post.project?.avatar}
-                is_approved={post.project?.is_approved}
-                project_uuid={post.project_uuid}
-                isBookmarked={post.isBookmarked}
-              />
-            );
+            return <Feedscard post={post} removeBookmark={() => handleDeleteBookmark((bookmark as any).uuid || "")} />;
           }
         } else if ((bookmark as any).hire_uuid) {
           const hire = hiringPosts.find(
             (hire) => hire.uuid === (bookmark as any).hire_uuid
           );
           if (hire) {
-            return <HiringCard key={hire.uuid} post={hire} />;
+            return <HiringCard key={hire.uuid} post={hire} removeBookmark={() => handleDeleteBookmark((bookmark as any).uuid || "")} />;
           }
         }
       })}

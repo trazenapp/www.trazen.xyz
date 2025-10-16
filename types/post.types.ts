@@ -29,6 +29,16 @@ export interface CommentItem {
   };
 }
 
+export interface VoteItem {
+  uuid?: string;
+  user_uuid?: string;
+  value?: "UPVOTE" | "DOWNVOTE";
+}
+
+export interface BookmarkItem {
+  uuid?: string;
+}
+
 export interface PostItem {
   uuid?: string;
   user_uuid?: string;
@@ -41,12 +51,16 @@ export interface PostItem {
   downvoteCount?: number;
   commentCount?: number;
   isPublished?: boolean;
+  voteStatus?: "UPVOTE" | "DOWNVOTE" | null;
   project?: ProjectDetail;
   is_approved?: boolean;
   avatar?: string;
   name?: string;
   comments?: CommentItem[];
+  bookmarks?: BookmarkItem[];
+  votes?: VoteItem[];
   isBookmarked?: boolean;
+  isFollowing?: boolean;
 }
 
 export interface PostState {

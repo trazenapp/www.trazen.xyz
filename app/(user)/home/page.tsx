@@ -23,7 +23,7 @@ const Home = () => {
   return (
     <div className="">
       <Tabs
-        defaultValue="personal-feed"
+        defaultValue="general-feed"
         className="w-full flex flex-col items-center"
       >
         <div className="flex flex-row items-center gap-x-5 fixed top-[83px] w-11/12 lg:w-[48.5%] bg-[#0B0B0B]/[50%] backdrop-blur-md z-10 h-20">

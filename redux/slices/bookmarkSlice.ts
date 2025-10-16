@@ -54,6 +54,24 @@ export const fetchBookmarkDetails = createAsyncThunk<
   }
 });
 
+export const deleteBookmark = createAsyncThunk<
+  any,
+  { bookmark_uuid: string },
+  { state: RootState }
+>("bookmark/deleteBookmark", async ({ bookmark_uuid }, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.delete(`/v1/bookmark/${bookmark_uuid}`);
+    const data = response.data;
+    console.log(data);
+    return data;
+  } catch (err: any) {
+    console.error("deleteBookmark error", err);
+    return rejectWithValue(
+      err?.response?.data?.message || "Error deleting bookmark"
+    );
+  }
+});
+
 const bookmarkSlice = createSlice({
   name: "bookmark",
   initialState,

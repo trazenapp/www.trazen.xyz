@@ -1,3 +1,5 @@
+import { BookmarkItem } from "./post.types";
+
 export interface HiringPostPayload {
   project_uuid: string;
   title: string;
@@ -29,6 +31,7 @@ export interface HiringPost {
   is_published: boolean;
   created_at: string;
   is_bookmarked: boolean;
+  bookmarks: BookmarkItem[];
 }
 
 export interface HiringState {

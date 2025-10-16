@@ -29,6 +29,7 @@ export interface ProjectDetail {
   is_approved: boolean;
   created_at: string;
   updated_at: string;
+  isBookmarked: boolean;
 }
 
 export interface AddProjectState {

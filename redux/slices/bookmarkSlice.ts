@@ -22,7 +22,7 @@ export const fetchBookmark = createAsyncThunk(
   "bookmark/fetchBookmark",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/v1/bookmark`);
+      const response = await axiosInstance.get(`/v1/bookmark?page=1&limit=10`);
       const data = response.data?.data.bookmarks;
 
       console.log(data);

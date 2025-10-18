@@ -20,6 +20,7 @@ import profileReducer from "@/redux/slices/userSlice";
 import eventsReducer from "@/redux/slices/eventSlice";
 import hiringReducer from "@/redux/slices/hiringSlice";
 import bookmarkReducer from "@/redux/slices/bookmarkSlice";
+import dashboardReducer from "@/redux/slices/dashboardSlice";
 
 
 
@@ -47,6 +48,7 @@ const rootReducer = combineReducers({
   hiring: hiringReducer,
   bookmark: bookmarkReducer,
   bounties: bountiesReducer,
+  dashboard: dashboardReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

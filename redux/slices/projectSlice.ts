@@ -53,6 +53,7 @@ export const getProject = createAsyncThunk(
     try {
       const response = await axiosInstance.get("/v1/project/private");
 
+      console.log(response.data.data.projects);
       return response.data.data.projects;
     } catch (error: any) {
       return rejectWithValue(

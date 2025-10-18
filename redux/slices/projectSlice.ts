@@ -47,6 +47,21 @@ export const addProject = createAsyncThunk<AddProjectResponse, AddProjectData>(
   }
 );
 
+export const editProject = createAsyncThunk(
+  "project/editProject",
+  async ({editProjectData, project_uuid}: { project_uuid: string; editProjectData: AddProjectData }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.patch(`/v1/project/${project_uuid}`, editProjectData);
+      console.log(response.data)
+      return response.data
+    } catch (err: any) {
+      return rejectWithValue(
+        err?.response?.data?.message || "Error editing project"
+      );
+    }
+  }
+);
+
 export const getProject = createAsyncThunk(
   "project/getProject",
   async (_, { rejectWithValue }) => {
@@ -67,10 +82,9 @@ export const getProjectDetail = createAsyncThunk(
   "project/getProjectDetail",
   async (project_uuid: string, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        `/v1/project/${project_uuid}`
-      );
+      const response = await axiosInstance.get(`/v1/project/${project_uuid}`);
 
+      console.log(response.data.data.project);
       return response.data.data.project;
     } catch (error: any) {
       return rejectWithValue(
@@ -108,6 +122,18 @@ const projectSlice = createSlice({
         state.error = null;
       })
       .addCase(addProject.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+      .addCase(editProject.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(editProject.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(editProject.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       })

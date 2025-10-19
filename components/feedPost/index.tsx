@@ -20,6 +20,7 @@ import {
   ImageIcon,
   X,
 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { LuFilePenLine } from "react-icons/lu";
 import Picker, { Theme } from "emoji-picker-react";
 import { text } from "stream/consumers";
@@ -245,13 +246,24 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
               )}
             </div>
             <div className="flex gap-x-5">
-              <Button
-                type="button"
-                onClick={onSaveDraft}
-                className="bg-transparent text-[#a6a6a6] hover:bg-transparent"
-              >
-                Save Draft
-              </Button>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-md">
+                <Controller
+                  name="is_published"
+                  control={control}
+                  defaultValue={false}
+                  render={({ field }) => (
+                    <>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={(checked) => field.onChange(checked)}
+                      />
+                      <Label className="text-sm text-gray-400">
+                        {field.value ? "Publish post" : "Save as draft"}
+                      </Label>
+                    </>
+                  )}
+                />
+              </div>
               <Button className="bg-transparent !p-0 hover:bg-transparent">
                 <MdDoneAll
                   style={{ width: 20, height: 20, color: "#a6a6a6" }}

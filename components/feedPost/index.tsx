@@ -148,10 +148,10 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
         type: "success",
       });
       dispatch(setLoading(false));
-      resetField("content")
-      resetField("medias")
-      resetField("is_published")
-      resetField("project_uuid")
+      resetField("content");
+      resetField("medias");
+      resetField("is_published");
+      resetField("project_uuid");
     } catch (err: any) {
       dispatch(setLoading(false));
       toast(<div>{err.message || "Failed to publish post"}</div>, {
@@ -211,26 +211,26 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
         <div className="sm:flex-1 flex sm:flex-row flex-col items-start gap-7 sm:items-center sm:justify-between">
           <div className="w-full flex justify-between items-center">
             <div className="flex items-center gap-x-4">
-              {!uploading && <Label
-                htmlFor="imgInput"
-                className="bg-transparent !p-0 hover:bg-transparent"
-              >
-                <Input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  className="hidden"
-                  id="imgInput"
-                  onChange={handleFileChange}
-                />
-                <ImageIcon
-                  style={{ width: 20, height: 20, color: "#a6a6a6" }}
-                />
-              </Label>}
-              {uploading && (
-                <ClipLoader color="#F4F4F4F4" size={10} />
+              {!uploading && (
+                <Label
+                  htmlFor="imgInput"
+                  className="bg-transparent !p-0 hover:bg-transparent"
+                >
+                  <Input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    id="imgInput"
+                    onChange={handleFileChange}
+                  />
+                  <ImageIcon
+                    style={{ width: 20, height: 20, color: "#a6a6a6" }}
+                  />
+                </Label>
               )}
+              {uploading && <ClipLoader color="#F4F4F4F4" size={10} />}
               <Button
                 type="button"
                 onClick={() => setShowEmojiPicker((prev) => !prev)}

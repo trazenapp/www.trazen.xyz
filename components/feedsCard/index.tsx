@@ -33,6 +33,7 @@ import {
 } from "@/redux/slices/postSlice";
 import { PostItem } from "@/types/post.types";
 import { ClipLoader } from "react-spinners";
+import { useShare } from "@/hooks/useShareOptions";
 
 interface FeedsCardProps {
   post?: PostItem;
@@ -42,9 +43,9 @@ interface FeedsCardProps {
 const FeedsCard = ({ post, removeBookmark }: FeedsCardProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { loading } = useAppSelector(
-    (state: RootState) => state.post);
-  
+  const { shareContent } = useShare();
+  const { loading } = useAppSelector((state: RootState) => state.post);
+
   const [isFollowing, setIsFollowing] = useState(false);
   const [upVoteCount, setUpVoteCount] = useState(post?.upvoteCount);
   const [downVoteCount, setDownVoteCount] = useState(post?.downvoteCount);
@@ -52,6 +53,14 @@ const FeedsCard = ({ post, removeBookmark }: FeedsCardProps) => {
   const handlePageClick = (slug: string) => {
     router.push(`/home/${slug}`);
   };
+
+  const handleShareClick = () => {
+    shareContent({
+      title: post?.name || "",
+      text: post?.content || "",
+      url: window.location.href,
+    })
+  }
 
   // vote post
   const handleVote = async (
@@ -114,20 +123,22 @@ const FeedsCard = ({ post, removeBookmark }: FeedsCardProps) => {
             <Link href="/profile" className="flex items-start gap-x-2.5">
               <AvatarProfile
                 createdAt={post?.created_at}
-                name={post?.name}
-                avatar={post?.avatar}
-                is_approved={post?.is_approved}
+                name={post?.project?.name}
+                avatar={post?.project?.avatar}
+                is_approved={post?.project?.is_approved}
               />
             </Link>
-            {!post?.isFollowing && <Button
-              type="button"
-              onClick={() =>
-                post?.project_uuid && handleFollowPost(post?.project_uuid)
-              }
-              className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]"
-            >
-              Follow
-            </Button>}
+            {!post?.isFollowing && (
+              <Button
+                type="button"
+                onClick={() =>
+                  post?.project_uuid && handleFollowPost(post?.project_uuid)
+                }
+                className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]"
+              >
+                Follow
+              </Button>
+            )}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -139,7 +150,7 @@ const FeedsCard = ({ post, removeBookmark }: FeedsCardProps) => {
               className="bg-[#272727] !min-w-0 !p-0 border-0 w-32"
               align="end"
             >
-              <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3">
+              <DropdownMenuItem onClick={handleShareClick} className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3">
                 <TbShare3 /> Share
               </DropdownMenuItem>
               <DropdownMenuItem

@@ -73,7 +73,7 @@ export const fetchPrivatePosts = createAsyncThunk<
       );
       const data = response.data?.data;
 
-      // console.log(data)
+      console.log(data)
       return { privatePosts: data.posts, pagination: data.pagination };
     } catch (err: any) {
       console.error("fetchPosts error", err);

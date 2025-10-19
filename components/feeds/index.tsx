@@ -23,7 +23,7 @@ const Feeds = ({ isPrivate = false }: FeedsProps) => {
 
   // delete bookmark
   const handleDeleteBookmark = async (bookmark_uuid: string) => {
-    console.log("hello world")
+    console.log("hello world");
     if (!bookmark_uuid) {
       console.log("No bookmark_uuid in state");
       return;
@@ -35,7 +35,7 @@ const Feeds = ({ isPrivate = false }: FeedsProps) => {
     } catch (error) {
       console.error("Delete bookmark error:", error);
     }
-  }; 
+  };
 
   useEffect(() => {
     setPage(1);

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, use } from "react";
+import React, { useEffect, use, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Card from "@/components/card";
@@ -19,6 +19,7 @@ import {
   PiArrowFatUp,
   PiArrowFatDown,
   PiBookmarkSimpleBold,
+  PiBookmarkSimpleFill,
 } from "react-icons/pi";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import { TbShare3 } from "react-icons/tb";
@@ -27,18 +28,42 @@ import { FaArrowLeft } from "react-icons/fa6";
 import FeedsCommentItem from "@/components/feedsCommentItem";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { fetchPostDetails, votePost } from "@/redux/slices/postSlice";
+import {
+  votePost,
+  setLoading,
+  bookmarkPost,
+  followPost,
+  fetchPostDetails,
+} from "@/redux/slices/postSlice";
+import { deleteBookmark } from "@/redux/slices/bookmarkSlice";
+import { useShare } from "@/hooks/useShareOptions";
 
 const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
   const router = useRouter();
   const { postDetails, loading, error } = useAppSelector((state) => state.post);
   const dispatch = useAppDispatch();
+  const { shareContent } = useShare();
+
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [upVoteCount, setUpVoteCount] = useState(postDetails?.upvoteCount);
+  const [downVoteCount, setDownVoteCount] = useState(
+    postDetails?.downvoteCount
+  );
 
   useEffect(() => {
     dispatch(fetchPostDetails({ post_uuid: slug }));
   }, [dispatch, slug]);
 
+  const handleShareClick = () => {
+    shareContent({
+      title: postDetails?.name || "",
+      text: postDetails?.content || "",
+      url: window.location.href,
+    });
+  };
+
+  // vote post
   const handleVote = async (
     voteType: "UPVOTE" | "DOWNVOTE",
     post_uuid: string
@@ -50,9 +75,60 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
 
     try {
       const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
+      if (voteType === "UPVOTE") {
+        console.log(res?.upvoteCount);
+        setUpVoteCount(res?.upvoteCount);
+      } else if (voteType === "DOWNVOTE") {
+        console.log(res?.downvoteCount);
+        setDownVoteCount(res?.downvoteCount);
+      }
       console.log("Vote response:", res);
     } catch (error) {
       console.error("Vote error:", error);
+    }
+  };
+
+  // bookmark post
+  const handleBookmark = async (post_uuid: string) => {
+    if (!post_uuid) {
+      console.log("No post_uuid in state");
+      return;
+    }
+
+    try {
+      const res = await dispatch(bookmarkPost({ post_uuid })).unwrap();
+      console.log("Bookmark response:", res);
+    } catch (error) {
+      console.error("Bookmark error:", error);
+    }
+  };
+
+  // delete bookmark
+  const handleDeleteBookmark = async (bookmark_uuid: string) => {
+    console.log("hello world");
+    if (!bookmark_uuid) {
+      console.log("No bookmark_uuid in state");
+      return;
+    }
+
+    try {
+      const res = await dispatch(deleteBookmark({ bookmark_uuid })).unwrap();
+      console.log("Delete bookmark response:", res);
+    } catch (error) {
+      console.error("Delete bookmark error:", error);
+    }
+  };
+
+  // follow post
+  const handleFollowPost = async (project_uuid: string) => {
+    if (isFollowing) return;
+    setIsFollowing(true);
+
+    try {
+      const res = await dispatch(followPost({ project_uuid })).unwrap();
+      console.log("Follow response:", res);
+    } catch (error) {
+      console.error("Follow error:", error);
     }
   };
 
@@ -86,9 +162,16 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
                 is_approved={postDetails?.project?.is_approved}
               />
             </Link>
-            {/* <Button className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]">
+            <Button
+              type="button"
+              onClick={() =>
+                postDetails?.project_uuid &&
+                handleFollowPost(postDetails?.project_uuid)
+              }
+              className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]"
+            >
               Follow
-            </Button> */}
+            </Button>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -97,11 +180,37 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="bg-[#272727] !min-w-0 !p-0 border-0"
-              align="start"
+              className="bg-[#272727] !min-w-0 !p-0 border-0 w-32"
+              align="end"
             >
-              <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-fit flex items-center gap-x-2.5 py-2.5 px-4">
-                <CgFlagAlt color="#ddd" /> Report
+              <DropdownMenuItem
+                onClick={handleShareClick}
+                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+              >
+                <TbShare3 /> Share
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  if (postDetails?.isBookmarked) {
+                    if (handleDeleteBookmark && postDetails?.bookmarks) {
+                      handleDeleteBookmark(
+                        postDetails?.bookmarks[0]?.uuid || ""
+                      );
+                    } else {
+                      console.warn("No bookmark_uuid found for this post");
+                    }
+                  } else {
+                    handleBookmark(postDetails?.uuid || "");
+                  }
+                }}
+                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+              >
+                {postDetails?.isBookmarked ? (
+                  <PiBookmarkSimpleFill color="#430B68" />
+                ) : (
+                  <PiBookmarkSimpleBold />
+                )}{" "}
+                Bookmark
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -113,28 +222,29 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
           <FeedsMedia media={postDetails?.medias as string[]} maxVisible={4} />
         </div>
         <div
-          className="flex justify-between gap-x-2.5 overflow-x-scroll"
+          className="flex justify-between gap-x-2.5 overflow-x-scroll md:overflow-x-hidden"
           style={{ scrollbarWidth: "none" }}
         >
-          <Button onClick={() => postDetails?.uuid && handleVote("UPVOTE", postDetails.uuid)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button
+            onClick={() => handleVote("UPVOTE", postDetails?.uuid || "")}
+            className={`flex-1 !h-fit !py-1.5 !px-6 rounded-full ${postDetails?.voteStatus === "UPVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm`}
+          >
             <PiArrowFatUp />
-            {postDetails?.upvoteCount}
+            {upVoteCount}
           </Button>
-          <Button onClick={() => postDetails?.uuid && handleVote("DOWNVOTE", postDetails.uuid)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button
+            onClick={() => handleVote("DOWNVOTE", postDetails?.uuid || "")}
+            className={`flex-1 !h-fit !py-1.5 !px-6 rounded-full ${postDetails?.voteStatus === "DOWNVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm`}
+          >
             <PiArrowFatDown />
-            {postDetails?.downvoteCount}
+            {downVoteCount}
           </Button>
-          <Button onClick={() => router.push(`/home/${postDetails?.uuid}`)} className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
+          <Button
+            onClick={() => router.push(`/home/${postDetails?.uuid || ""}`)}
+            className="flex-1 !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
+          >
             <IoChatbubbleOutline />
             {postDetails?.commentCount}
-          </Button>
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
-            <TbShare3 />
-            0
-          </Button>
-          <Button className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm">
-            <PiBookmarkSimpleBold />
-            0
           </Button>
         </div>
         <FeedsComment isComment={true} uuid={postDetails?.uuid} />

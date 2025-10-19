@@ -59,8 +59,8 @@ const FeedsCard = ({ post, removeBookmark }: FeedsCardProps) => {
       title: post?.name || "",
       text: post?.content || "",
       url: window.location.href,
-    })
-  }
+    });
+  };
 
   // vote post
   const handleVote = async (
@@ -150,7 +150,10 @@ const FeedsCard = ({ post, removeBookmark }: FeedsCardProps) => {
               className="bg-[#272727] !min-w-0 !p-0 border-0 w-32"
               align="end"
             >
-              <DropdownMenuItem onClick={handleShareClick} className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3">
+              <DropdownMenuItem
+                onClick={handleShareClick}
+                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+              >
                 <TbShare3 /> Share
               </DropdownMenuItem>
               <DropdownMenuItem

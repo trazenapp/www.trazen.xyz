@@ -7,7 +7,7 @@ const initialState: DashboardState = {
     followers: {
       OverviewCount: 0,
       chart: [],
-      projects: [],
+      project: [],
     },
   error: null,
 };

@@ -1,9 +1,11 @@
 "use client";
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
+import { useInView } from "react-intersection-observer";
 import Feedscard from "@/components/feedsCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { fetchPublicPosts, fetchPrivatePosts } from "@/redux/slices/postSlice";
+import { fetchPublicPosts, fetchFollowedPosts } from "@/redux/slices/postSlice";
+import { deleteBookmark } from "@/redux/slices/bookmarkSlice";
 
 interface FeedsProps {
   isPrivate: boolean;
@@ -11,77 +13,85 @@ interface FeedsProps {
 
 const Feeds = ({ isPrivate = false }: FeedsProps) => {
   const dispatch = useAppDispatch();
-  const { publicPosts, privatePosts, loading, pagination, hasMore } =
+  const { publicPosts, followedPosts, loading, pagination, hasMore } =
     useAppSelector((state) => state.post);
 
-  const observer = useRef<IntersectionObserver | null>(null);
-  const lastPostRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
+  const [page, setPage] = useState(1);
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+  });
 
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
+  // delete bookmark
+  const handleDeleteBookmark = async (bookmark_uuid: string) => {
+    console.log("hello world");
+    if (!bookmark_uuid) {
+      console.log("No bookmark_uuid in state");
+      return;
+    }
+
+    try {
+      const res = await dispatch(deleteBookmark({ bookmark_uuid })).unwrap();
+      console.log("Delete bookmark response:", res);
+    } catch (error) {
+      console.error("Delete bookmark error:", error);
+    }
+  };
+
+  useEffect(() => {
+    setPage(1);
+    if (isPrivate) {
+      dispatch(fetchFollowedPosts({ search: "", page: 1, limit: 10 }));
+    } else {
+      dispatch(fetchPublicPosts({ search: "", page: 1, limit: 10 }));
+    }
+  }, [dispatch, isPrivate]);
+
+  useEffect(() => {
+    if (inView && hasMore && !loading) {
+      setPage((prev: number) => {
+        const nextPage = prev + 1;
+        if (isPrivate) {
+          dispatch(
+            fetchFollowedPosts({
+              search: "",
+              page: nextPage,
+              limit: pagination.limit,
+            })
+          );
+        } else {
           dispatch(
             fetchPublicPosts({
               search: "",
-              page: pagination.page + 1,
+              page: nextPage,
               limit: pagination.limit,
             })
           );
         }
+        return nextPage;
       });
+    }
+  }, [inView, hasMore, dispatch, page, pagination.limit, loading, isPrivate]);
 
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore, pagination.page, pagination.limit, dispatch]
-  );
-
-  useEffect(() => {
-    dispatch(fetchPublicPosts({ search: "", page: 1, limit: 10 }));
-    dispatch(fetchPrivatePosts({ page: 1, limit: 10 }));
-  }, [dispatch]);
+  const posts = isPrivate ? followedPosts : publicPosts;
 
   return (
     <>
-      {loading
-        ? privatePosts.map((post) => (
-            <Skeleton key={post.uuid} className="w-full h-[200px] my-4" />
+      {loading && posts.length === 0
+        ? [...Array(5)].map((_, i) => (
+            <Skeleton key={i} className="w-full h-[200px] my-4" />
           ))
-        : isPrivate
-          ? publicPosts.map((post) => (
-              <Feedscard
-                key={post.uuid}
-                uuid={post.uuid as string}
-                content={post.content}
-                medias={post.medias}
-                createdAt={post.created_at}
-                upvoteCount={post.upvoteCount}
-                downvoteCount={post.downvoteCount}
-                commentCount={post.commentCount}
-                name={post.project?.name}
-                isBookmarked={post.isBookmarked}
-                avatar={post.project?.avatar}
-                is_approved={post.project?.is_approved}
-                project_uuid={post.project_uuid}
-              />
-            ))
-          : publicPosts.map((post) => (
-              <Feedscard
-                key={post.uuid}
-                uuid={post.uuid as string}
-                content={post.content}
-                medias={post.medias}
-                createdAt={post.created_at}
-                upvoteCount={post.upvoteCount}
-                downvoteCount={post.downvoteCount}
-                commentCount={post.commentCount}
-                name={post.project?.name}
-                avatar={post.project?.avatar}
-                is_approved={post.project?.is_approved}
-                project_uuid={post.project_uuid}
-              />
-            ))}
+        : posts.map((post, index) => (
+            <div
+              key={post.uuid}
+              ref={index === posts.length - 1 ? ref : undefined}
+            >
+              <Feedscard post={post} removeBookmark={handleDeleteBookmark} />
+            </div>
+          ))}
+
+      {loading && posts.length > 0 && (
+        <Skeleton className="w-full h-[200px] my-4" />
+      )}
     </>
   );
 };

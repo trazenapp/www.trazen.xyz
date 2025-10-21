@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef, useEffect } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/public/trazen-logo-white.svg";
@@ -11,10 +11,12 @@ import { Button } from "@/components/ui/button";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import { setShow } from "@/redux/slices/dashboardSidebarSlice";
 import { fetchProfile } from "@/redux/slices/userSlice";
+import { ArrowRight } from "lucide-react";
 
 const DashboardSidebar = ({ pioneer = false }) => {
   const dispatch = useAppDispatch();
   const pathname = usePathname();
+  const router = useRouter();
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   const { show } = useAppSelector((state: RootState) => state.dashboardSidebar);
@@ -52,7 +54,7 @@ const DashboardSidebar = ({ pioneer = false }) => {
       )}
       <div
         ref={sidebarRef}
-        className={`lg:top-[90px] lg:self-start lg:border lg:border-[#303030] lg:rounded-2xl xl:p-6 px-4 py-6 bg-[#0B0B0B] lg:bg-[#161616] w-9/12 lg:w-[20%] md:w-4/12 lg:h-[85%] h-screen fixed top-0 lg:left-4 left-0 z-20 lg:z-5 transition-all duration-200 ${show ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} ${pioneer ? "xl:!w-[19%]" : ""} `}
+        className={`lg:top-[90px] lg:self-start lg:border lg:border-[#303030] lg:rounded-2xl xl:p-6 px-4 py-6 bg-[#0B0B0B] lg:bg-[#161616] w-9/12 lg:w-[20%] md:w-4/12 lg:h-[85%] h-screen fixed top-0 lg:left-4 left-0 z-20 lg:z-5 transition-all duration-200 ${show ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} ${pioneer ? "xl:!w-[19%]" : ""}`}
       >
         <Link href="/" className="flex lg:hidden mb-5">
           <Image src={logo} alt="logo" width={100} />
@@ -91,6 +93,21 @@ const DashboardSidebar = ({ pioneer = false }) => {
             </li>
           ))}
         </ul>
+        <div className="absolute bottom-1/12 left-0 w-full px-4 lg:hidden">
+          {profile?.role === "PIONEER" ? (
+            <Button
+              // disabled
+              onClick={() => router.push("/dashboard")}
+              className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8 w-full"
+            >
+              Dashboard
+            </Button>
+          ) : (
+            <Button className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8 w-full">
+              Create Project <ArrowRight />
+            </Button>
+          )}
+        </div>
       </div>
     </>
   );

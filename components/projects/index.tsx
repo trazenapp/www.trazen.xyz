@@ -19,19 +19,19 @@ export function Projects() {
     (state: RootState) => state.project
   );
 
-  useEffect(() => {
-    const getPrivateProjects = async () => {
-      try {
-        dispatch(setLoading(true));
-        await dispatch(getProject()).unwrap();
-        dispatch(setLoading(false));
-      } catch (err: any) {
-        console.log(err);
-      }
-    };
+  // useEffect(() => {
+  //   const getPrivateProjects = async () => {
+  //     try {
+  //       dispatch(setLoading(true));
+  //       await dispatch(getProject()).unwrap();
+  //       dispatch(setLoading(false));
+  //     } catch (err: any) {
+  //       console.log(err);
+  //     }
+  //   };
 
-    getPrivateProjects();
-  }, []);
+  //   getPrivateProjects();
+  // }, []);
 
   function handleToggleOptions(projectName: any) {
     setActiveProject((prev) => (prev === projectName ? null : projectName));

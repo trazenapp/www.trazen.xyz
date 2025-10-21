@@ -42,17 +42,19 @@ const Event = () => {
       <h4 className="mb-6 text-white text-xl font-medium font-sans lg:flex hidden">
         Events
       </h4>
-      {events &&
-        events.map((event) =>
-          loading ? (
-            <Skeleton
-              key={event.uuid}
-              className="w-full h-[150px] rounded-[16px]"
-            />
-          ) : (
-            <EventCard key={event.uuid} event={event as EventsItem} />
-          )
-        )}
+      <div className="grid grid-cols-1 gap-y-4">
+        {events &&
+          events.map((event) =>
+            loading ? (
+              <Skeleton
+                key={event.uuid}
+                className="w-full h-[150px] rounded-[16px]"
+              />
+            ) : (
+              <EventCard key={event.uuid} event={event as EventsItem} />
+            )
+          )}
+      </div>
     </>
   );
 };

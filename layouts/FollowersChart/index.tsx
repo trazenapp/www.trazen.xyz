@@ -1,6 +1,5 @@
 "use client";
-import React, { useState } from "react";
-
+import React, { useEffect, useMemo, useState } from "react";
 import Card from "@/components/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowUpRight } from "lucide-react";
@@ -12,22 +11,27 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { TooltipProps } from "recharts";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TooltipProps } from "recharts";
+import { FollowersData } from "@/types/dashboard.types";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import {
+  fetchProjectOverview,
+} from "@/redux/slices/dashboardSlice";
+import { RootState } from "@/redux/store";
 
 type CustomTooltipProps = TooltipProps<number, string> & {
   payload?: {
     value: number;
     name: string;
-    payload: { date: string; followers: number };
+    payload: { month: number; count: number };
   }[];
   label?: string;
 };
@@ -44,85 +48,112 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
   return null;
 };
 
-const data = [
-  { date: "1 Jul", followers: 100 },
-  { date: "3 Jul", followers: 150 },
-  { date: "7 Jul", followers: 300 },
-  { date: "11 Jul", followers: 500 },
-  { date: "17 Jul", followers: 900 },
-  { date: "22 Jul", followers: 800 },
-  { date: "25 Jul", followers: 1150 },
-  { date: "29 Jul", followers: 2100 },
-  { date: "31 Jul", followers: 2600 },
-];
+interface FollowersChartProps {
+  followersData: FollowersData;
+}
 
-const tempProjectsList = [
-  { logo: "https://github.com/shadcn.png", name: "CryptoMachine" },
-  { logo: "https://github.com/shadcn.png", name: "CryptoProject1" },
-  { logo: "https://github.com/shadcn.png", name: "CryptoProject2" },
-  { logo: "https://github.com/shadcn.png", name: "CryptoProject3" },
-  { logo: "https://github.com/shadcn.png", name: "CryptoProject4" },
-  { logo: "https://github.com/shadcn.png", name: "CryptoProject5" },
-];
+function FollowersChart({ followersData }: FollowersChartProps) {
+  const dispatch = useAppDispatch();
+  const { loading: dashboardLoading, followers } = useAppSelector(
+    (state: RootState) => state.dashboard
+  );
 
-const monthsOfTheYear = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
-const date = new Date();
-const currentMonth = date.toLocaleString("default", { month: "long" });
-const startYear = 2025;
-const currentYear = date.getFullYear();
+  const projects = followersData?.project || [];
+  const chartData = followersData?.chart || [];
 
-const years = Array.from(
-  { length: currentYear - startYear + 1 },
-  (_, i) => startYear + i
-);
+  const monthsOfTheYear = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
 
-console.log(years);
+  const availableYears = [...new Set(chartData.map((c) => c.year))];
+  const currentYear = availableYears[0] || new Date().getFullYear();
 
-function FollowersChart() {
-  const [selectedMonth, setSelectedMonth] = useState(currentMonth);
   const [selectedProject, setSelectedProject] = useState(
-    tempProjectsList[0].name
+    projects[0]?.uuid || ""
   );
-  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [selectedMonth, setSelectedMonth] = useState(
+    monthsOfTheYear[new Date().getMonth()]
+  );
+  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
 
-  const index = tempProjectsList.findIndex(
-    (project) => project.name === selectedProject
-  );
+  const selectedProjectData = projects.find((p) => p.uuid === selectedProject);
+
+  // 🔁 Fetch project overview whenever filters change
+  useEffect(() => {
+    if (!selectedProject) return;
+
+    const monthIndex = monthsOfTheYear.indexOf(selectedMonth) + 1;
+
+    const getProjectOverview = async () => {
+      try {
+        const res = await dispatch(
+          fetchProjectOverview({
+            uuid: selectedProject,
+            month: monthIndex,
+            year: selectedYear,
+          })
+        ).unwrap();
+
+        console.log("Overview fetched:", res);
+      } catch (err: any) {
+        console.error("Failed to fetch overview:", err);
+      }
+    };
+
+    getProjectOverview();
+  }, [dispatch, selectedProject, selectedMonth, selectedYear]);
+
+  // 🔹 Use followers from Redux if available, otherwise fallback to props
+  const chartToUse = followers?.chart || chartData;
+
+  const filteredData = useMemo(() => {
+    return chartToUse
+      .filter((c: { year: number }) => c.year === selectedYear)
+      .map((item: { month: number; count: number }) => ({
+        month: monthsOfTheYear[item.month - 1],
+        followers: item.count,
+      }));
+  }, [chartToUse, selectedYear]);
+
+  const totalFollowers = filteredData.reduce((sum: number, d: { followers: number }) => sum + d.followers, 0);
 
   return (
-    <Card className=" rounded-xl md:!p-6 hidden md:flex flex-col h-150">
-      <div className="w-full flex justify-between">
+    <Card className="rounded-xl md:!p-6 hidden md:flex flex-col h-150">
+      {/* Header Controls */}
+      <div className="w-full flex justify-between flex-wrap gap-4">
+        {/* ✅ Project Selector */}
         <Select
           value={selectedProject}
-          onValueChange={(val) => setSelectedProject(val)}
+          onValueChange={setSelectedProject}
+          disabled={projects.length <= 1}
         >
-          <SelectTrigger className="font-sans w-max !h-max md:!py-2.5 md:!px-4 !mt-0 gap-4 border-[#434343] text-[#f4f4f4] rounded-[10px]">
+          <SelectTrigger className="font-sans w-max !h-max md:!py-2.5 md:!px-4 gap-4 border-[#434343] text-[#f4f4f4] rounded-[10px]">
             <Avatar className="w-7 h-max rounded-full">
-              <AvatarImage src={tempProjectsList[index].logo} />
-              <AvatarFallback>CN</AvatarFallback>
+              <AvatarImage src={selectedProjectData?.avatar} />
+              <AvatarFallback>PR</AvatarFallback>
             </Avatar>
-            <SelectValue />
+            <SelectValue
+              placeholder={selectedProjectData?.name || "Select project"}
+            />
           </SelectTrigger>
           <SelectContent className="font-sans bg-[#161616] border-[#303030]">
             <SelectGroup>
-              {tempProjectsList.map((project) => (
+              {projects.map((project) => (
                 <SelectItem
-                  key={project.name}
-                  className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff] "
-                  value={project.name}
+                  key={project.uuid}
+                  className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
+                  value={project.uuid}
                 >
                   {project.name}
                 </SelectItem>
@@ -130,12 +161,11 @@ function FollowersChart() {
             </SelectGroup>
           </SelectContent>
         </Select>
-        <div className="flex gap-3 items-center">
-          <Select
-            value={selectedMonth}
-            onValueChange={(val) => setSelectedMonth(val)}
-          >
-            <SelectTrigger className="font-sans w-max p-3  border-[#434343] text-[#f4f4f4] rounded-[10px]">
+
+        {/* ✅ Month + Year Selector */}
+        <div className="flex gap-3 items-center flex-wrap">
+          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+            <SelectTrigger className="font-sans w-max p-3 border-[#434343] text-[#f4f4f4] rounded-[10px]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="font-sans bg-[#161616] border-[#303030]">
@@ -143,7 +173,7 @@ function FollowersChart() {
                 {monthsOfTheYear.map((month) => (
                   <SelectItem
                     key={month}
-                    className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff] "
+                    className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
                     value={month}
                   >
                     {month}
@@ -152,53 +182,38 @@ function FollowersChart() {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Select
-            value={`${selectedYear}`}
-            onValueChange={(val) => setSelectedYear(+val)}
-          >
-            <SelectTrigger className="font-sans w-max p-3  border-[#434343] text-[#f4f4f4] rounded-[10px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="font-sans bg-[#161616] border-[#303030]">
-              <SelectGroup>
-                {years.map((year) => (
-                  <SelectItem
-                    key={year}
-                    className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff] "
-                    value={`${year}`}
-                  >
-                    {`${year}`}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          {/* <DropMenuCard>
-            <button className="w-full flex items-center gap-2 justify-between hover:cursor-pointer">
-              <span className="text-sm font-light text-[#f4f4f4]">2025</span>
-              <ChevronDownIcon className="h-3 w-3 text-[#ddd]-600" />
-            </button>
-          </DropMenuCard> */}
+
+          {/* ✅ Year Input */}
+          <input
+            type="number"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(Number(e.target.value))}
+            className="w-24 py-1 px-2 bg-transparent border border-[#434343] text-[#f4f4f4] rounded-[10px] focus:outline-none focus:border-[#A01AF7]"
+          />
         </div>
       </div>
-      <div className=" mt-9 flex flex-col gap-2 ">
+
+      {/* Followers Summary */}
+      <div className="mt-9 flex flex-col gap-2">
         <p className="text-xs font-light text-[#a6a6a6]">Followers</p>
         <div className="flex items-center gap-4">
-          <p className="font-semibold text-[34px] ">2,153</p>
-          <div className="bg-[#00bd1c29] py-1 px-2 rounded-sm text-[#00bc1c] ">
+          <p className="font-semibold text-[34px]">
+            {dashboardLoading ? "..." : totalFollowers}
+          </p>
+          <div className="bg-[#00bd1c29] py-1 px-2 rounded-sm text-[#00bc1c]">
             <p className="flex items-center gap-1">
               <ArrowUpRight className="w-5 h-5 font-bold" />
-              <span>4.37%</span>
+              <span>+0%</span>
             </p>
           </div>
         </div>
       </div>
 
+      {/* Chart Display */}
       <div className="w-full h-full bg-[#161616] mt-4 rounded-xl">
         <ResponsiveContainer>
           <AreaChart
-            className="[&_svg]:outline-none [&_svg]:focus:outline-none"
-            data={data}
+            data={filteredData}
             margin={{ top: 20, right: 30, left: 0, bottom: 0 }}
           >
             <defs>
@@ -209,18 +224,21 @@ function FollowersChart() {
             </defs>
 
             <XAxis
-              dataKey="date"
+              dataKey="month"
               stroke="#aaa"
               axisLine={false}
               tickLine={false}
             />
-            <YAxis stroke="#aaa" axisLine={false} tickLine={false} />
-
+            <YAxis
+              stroke="#aaa"
+              axisLine={false}
+              tickLine={false}
+              dataKey="followers"
+            />
             <Tooltip
               content={<CustomTooltip />}
               cursor={{ stroke: "#A01AF74D", strokeWidth: 2 }}
             />
-
             <Area
               type="monotone"
               dataKey="followers"

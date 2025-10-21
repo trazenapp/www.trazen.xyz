@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "../ui/button";
+import { Switch } from "../ui/switch";
 
 type HiringPostProps = {
   projectId: string;
@@ -305,6 +306,24 @@ function HiringPost({ projectId }: HiringPostProps) {
               placeholder="Enter external job link"
               className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
             />
+          )}
+        />
+      </div>
+      <div className="flex items-center gap-2 px-3 py-2 my-2.5 rounded-md">
+        <Controller
+          name="is_published"
+          control={control}
+          defaultValue={false}
+          render={({ field }) => (
+            <>
+              <Switch
+                checked={field.value}
+                onCheckedChange={(checked) => field.onChange(checked)}
+              />
+              <Label className="text-sm text-gray-400">
+                {field.value ? "Publish hiring post" : "Save as draft"}
+              </Label>
+            </>
           )}
         />
       </div>

@@ -16,36 +16,27 @@ import { Label } from "@radix-ui/react-label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { fetchPublicHiring } from "@/redux/slices/hiringSlice";
-import { fetchPrivatePosts } from "@/redux/slices/postSlice";
+import { deleteBookmark } from "@/redux/slices/bookmarkSlice";
 
 const Hiring = () => {
   const dispatch = useAppDispatch();
-  const { loading, hiringPosts } = useAppSelector(
-    (state) => state.hiring
-  );
+  const { loading, hiringPosts } = useAppSelector((state) => state.hiring);
 
-  // const observer = useRef<IntersectionObserver | null>(null);
-  // const lastPostRef = useCallback(
-  //   (node: HTMLDivElement | null) => {
-  //     if (loading) return;
-  //     if (observer.current) observer.current.disconnect();
+  // delete bookmark
+  const handleDeleteBookmark = async (bookmark_uuid: string) => {
+    console.log("hello world")
+    if (!bookmark_uuid) {
+      console.log("No bookmark_uuid in state");
+      return;
+    }
 
-  //     observer.current = new IntersectionObserver((entries) => {
-  //       if (entries[0].isIntersecting && hasMore) {
-  //         dispatch(
-  //           fetchPublicPosts({
-  //             search: "",
-  //             page: pagination.page + 1,
-  //             limit: pagination.limit,
-  //           })
-  //         );
-  //       }
-  //     });
-
-  //     if (node) observer.current.observe(node);
-  //   },
-  //   [loading, hasMore, pagination.page, pagination.limit, dispatch]
-  // );
+    try {
+      const res = await dispatch(deleteBookmark({ bookmark_uuid })).unwrap();
+      console.log("Delete bookmark response:", res);
+    } catch (error) {
+      console.error("Delete bookmark error:", error);
+    }
+  };
 
   useEffect(() => {
     dispatch(fetchPublicHiring());
@@ -272,7 +263,7 @@ const Hiring = () => {
           return loading ? (
             <Skeleton key={post.uuid} className="w-full h-[200px] my-4" />
           ) : (
-            <HiringCard key={post.uuid} post={post} />
+            <HiringCard key={post.uuid} post={post}  removeBookmark={handleDeleteBookmark} />
           );
         })}
       </div>

@@ -1,6 +1,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "@/utils/axios";
-import { PostState, FormType, Draft, Post, PostItem, PostPagination } from "@/types/post.types";
+import {
+  PostState,
+  FormType,
+  Draft,
+  Post,
+  PostItem,
+  PostPagination,
+} from "@/types/post.types";
 import { RootState } from "@/redux/store";
 
 const initialState: PostState = {
@@ -27,6 +34,7 @@ const initialState: PostState = {
   hasMore: false,
   publicPosts: [],
   privatePosts: [],
+  followedPosts: [],
   postDetails: {} as PostItem,
   bookmark: false,
 };
@@ -34,37 +42,77 @@ const initialState: PostState = {
 export const fetchPublicPosts = createAsyncThunk<
   { publicPosts: PostItem[]; pagination: PostPagination },
   { search: string; page: number; limit: number }
->("post/fetchPublicPosts", async ({ search = "", page = 1, limit = 10 }, { rejectWithValue }) => {
-  try {
-    const response = await axiosInstance.get(`/v1/post/public?search=${search}&page=${page}&limit=${limit}`);
-    const data = response.data?.data;
-console.log(data);
-    return { publicPosts: data.posts, pagination: data.pagination };
-  } catch (err: any) {
-    console.error("fetchPosts error", err);
-    return rejectWithValue(
-      err?.response?.data?.message || "Error fetching posts"
-    );
+>(
+  "post/fetchPublicPosts",
+  async ({ search = "", page = 1, limit = 10 }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `/v1/post/public?search=${search}&page=${page}&limit=${limit}`
+      );
+      const data = response.data?.data;
+      console.log(data);
+      return { publicPosts: data.posts, pagination: data.pagination };
+    } catch (err: any) {
+      console.error("fetchPosts error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error fetching posts"
+      );
+    }
   }
-});
+);
 
 export const fetchPrivatePosts = createAsyncThunk<
   { privatePosts: PostItem[]; pagination: PostPagination },
   { page: number; limit: number }
->("post/fetchPrivatePosts", async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
-  try {
-    const response = await axiosInstance.get(`/v1/post/private?status=status&page=${page}&limit=${limit}`);
-    const data = response.data?.data;
+>(
+  "post/fetchPrivatePosts",
+  async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `/v1/post/private?status=status&page=${page}&limit=${limit}`
+      );
+      const data = response.data?.data;
 
-    // console.log(data)
-    return { privatePosts: data.posts, pagination: data.pagination };
-  } catch (err: any) {
-    console.error("fetchPosts error", err);
-    return rejectWithValue(
-      err?.response?.data?.message || "Error fetching posts"
-    );
+      console.log(data)
+      return { privatePosts: data.posts, pagination: data.pagination };
+    } catch (err: any) {
+      console.error("fetchPosts error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error fetching posts"
+      );
+    }
   }
-});
+);
+
+export const fetchFollowedPosts = createAsyncThunk<
+  { followedPosts: PostItem[]; pagination: PostPagination },
+  { search: string; page: number; limit: number }
+>(
+  "post/fetchFollowedPosts",
+  async ({ search = "", page = 1, limit = 10 }, { rejectWithValue }) => {
+    try {
+      let response;
+      if (search.length > 3) {
+        response = await axiosInstance.get(
+          `/v1/post/feed?search=${search}&page=${page}&limit=${limit}`
+        );
+      } else {
+        response = await axiosInstance.get(
+          `/v1/post/feed?page=${page}&limit=${limit}`
+        );
+      }
+      const data = response.data?.data;
+
+      console.log(data);
+      return { followedPosts: data.posts, pagination: data.pagination };
+    } catch (err: any) {
+      console.error("fetchPosts error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error fetching posts"
+      );
+    }
+  }
+);
 
 export const fetchPostDetails = createAsyncThunk<
   PostItem,
@@ -84,31 +132,39 @@ export const fetchPostDetails = createAsyncThunk<
   }
 });
 
-export const votePost = createAsyncThunk<any, { post_uuid: string; voteType: string },
-  { state: RootState }>(
+export const votePost = createAsyncThunk<
+  any,
+  { post_uuid: string; voteType: string },
+  { state: RootState }
+>(
   "post/votePost",
   async ({ post_uuid, voteType }, { rejectWithValue, getState }) => {
-    try {const state = getState();
-    const token = (state as RootState).register.token || null;
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
 
-    const response = await axiosInstance.post(`/v1/post/vote/${post_uuid}`, {voteType}, {
-        headers: {
-          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
-          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axiosInstance.post(
+        `/v1/post/vote/${post_uuid}`,
+        { voteType },
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       console.log(response.data);
-      return response.data
-  } catch(err: any) {
-    console.error("votePost error", err);
+      return response.data;
+    } catch (err: any) {
+      console.error("votePost error", err);
       return rejectWithValue(
         err?.response?.data?.message || "Error voting on post"
       );
+    }
   }
-  }
-)
+);
 
 export const commentOnPost = createAsyncThunk<
   any,
@@ -123,7 +179,7 @@ export const commentOnPost = createAsyncThunk<
 
       const response = await axiosInstance.post(
         `/v1/post/comment/${post_uuid}`,
-        { content }, 
+        { content },
         {
           headers: {
             "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
@@ -175,7 +231,8 @@ export const voteOnComment = createAsyncThunk<
   }
 );
 
-export const commentOnComment = createAsyncThunk<any,
+export const commentOnComment = createAsyncThunk<
+  any,
   { comment_uuid: string; content: string },
   { state: RootState }
 >(
@@ -209,15 +266,45 @@ export const bookmarkPost = createAsyncThunk<
   any,
   { post_uuid: string },
   { state: RootState }
+>("post/bookmarkPost", async ({ post_uuid }, { rejectWithValue, getState }) => {
+  try {
+    const state = getState();
+    const token = (state as RootState).register.token || null;
+
+    const response = await axiosInstance.post(
+      `/v1/post/bookmark/${post_uuid}`,
+      {
+        headers: {
+          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("Bookmark response:", response.data);
+    return response.data;
+  } catch (err: any) {
+    console.error("bookmarkPost error", err?.response?.data || err.message);
+    return rejectWithValue(
+      err?.response?.data?.message || "Error bookmarking post"
+    );
+  }
+});
+
+export const followPost = createAsyncThunk<
+  any,
+  { project_uuid: string },
+  { state: RootState }
 >(
-  "post/bookmarkPost",
-  async ({ post_uuid }, { rejectWithValue, getState }) => {
+  "post/followPost",
+  async ({ project_uuid }, { rejectWithValue, getState }) => {
     try {
       const state = getState();
       const token = (state as RootState).register.token || null;
 
       const response = await axiosInstance.post(
-        `/v1/post/bookmark/${post_uuid}`, 
+        `/v1/project/follow/${project_uuid}`,
         {
           headers: {
             "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
@@ -227,12 +314,12 @@ export const bookmarkPost = createAsyncThunk<
         }
       );
 
-      console.log("Bookmark response:", response.data);
+      console.log("Follow response:", response.data);
       return response.data;
     } catch (err: any) {
-      console.error("bookmarkPost error", err?.response?.data || err.message);
+      console.error("followPost error", err?.response?.data || err.message);
       return rejectWithValue(
-        err?.response?.data?.message || "Error bookmarking post"
+        err?.response?.data?.message || "Error following project"
       );
     }
   }
@@ -332,7 +419,29 @@ const postSlice = createSlice({
       })
       .addCase(fetchPublicPosts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string || "Something went wrong";
+        state.error = (action.payload as string) || "Something went wrong";
+      })
+      .addCase(fetchFollowedPosts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchFollowedPosts.fulfilled, (state, action) => {
+        state.loading = false;
+        const newPosts = action.payload.followedPosts;
+        const { pagination } = action.payload;
+
+        if (pagination.page === 1) {
+          state.followedPosts = newPosts;
+        } else {
+          state.followedPosts = [...state.followedPosts, ...newPosts];
+        }
+
+        state.pagination = pagination;
+        state.hasMore = pagination.page < pagination.totalPages;
+      })
+      .addCase(fetchFollowedPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Something went wrong";
       })
       .addCase(fetchPrivatePosts.pending, (state) => {
         state.loading = true;
@@ -354,7 +463,7 @@ const postSlice = createSlice({
       })
       .addCase(fetchPrivatePosts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string || "Something went wrong";
+        state.error = (action.payload as string) || "Something went wrong";
       })
       .addCase(fetchPostDetails.pending, (state) => {
         state.loading = true;
@@ -366,7 +475,7 @@ const postSlice = createSlice({
       })
       .addCase(fetchPostDetails.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload as string || "Something went wrong";
+        state.error = (action.payload as string) || "Something went wrong";
       })
       .addCase(bookmarkPost.pending, (state) => {
         // state.loading = true;
@@ -379,7 +488,7 @@ const postSlice = createSlice({
       })
       .addCase(bookmarkPost.rejected, (state, action) => {
         // state.loading = false;
-        state.error = action.payload as string || "Something went wrong";
+        state.error = (action.payload as string) || "Something went wrong";
       });
   },
 });

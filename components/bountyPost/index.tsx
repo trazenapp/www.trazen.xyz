@@ -15,14 +15,13 @@ import { BountyItem } from "@/types/bounties.types";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
+import { Switch } from "../ui/switch";
 
 type BountyPostProps = {
   projectId: string;
 };
 
-function BountyPost({
-  projectId
-}: BountyPostProps) {
+function BountyPost({ projectId }: BountyPostProps) {
   const dispatch = useAppDispatch();
   const { loading, data, error } = useAppSelector(
     (state: RootState) => state.bounties
@@ -166,7 +165,7 @@ function BountyPost({
           )}
         />
       </div>
-      
+
       <div className="mt-4 flex flex-col gap-2 max-w-full">
         <Controller
           name="status"
@@ -202,6 +201,25 @@ function BountyPost({
                 </div>
               ))}
             </div>
+          )}
+        />
+      </div>
+
+      <div className="flex items-center gap-2 px-3 py-2 my-2.5 rounded-md">
+        <Controller
+          name="is_published"
+          control={control}
+          defaultValue={false}
+          render={({ field }) => (
+            <>
+              <Switch
+                checked={field.value}
+                onCheckedChange={(checked) => field.onChange(checked)}
+              />
+              <Label className="text-sm text-gray-400">
+                {field.value ? "Publish bounty" : "Save as draft"}
+              </Label>
+            </>
           )}
         />
       </div>

@@ -21,9 +21,10 @@ import { bookmarkHiring } from "@/redux/slices/hiringSlice";
 
 interface HiringCardProps {
   post: HiringPost;
+  removeBookmark?: (bookmark_uuid: string) => void;
 }
 
-const HiringCard = ({ post }: HiringCardProps) => {
+const HiringCard = ({ post, removeBookmark }: HiringCardProps) => {
   const dispatch = useAppDispatch();
   const { projectDetail } = useAppSelector((state: RootState) => state.project);
   const timeAgo = useTimeAgo(post.created_at);
@@ -85,10 +86,24 @@ const HiringCard = ({ post }: HiringCardProps) => {
         <div className="flex items-center gap-x-2">
           <Button
             type="button"
-            onClick={() => handleBookmark(post.uuid)}
+            onClick={() => {
+              if (post?.is_bookmarked) {
+                if (removeBookmark && post?.bookmarks) {
+                  removeBookmark(post?.bookmarks[0]?.uuid || "");
+                } else {
+                  console.warn("No bookmark_uuid found for this post");
+                }
+              } else {
+                handleBookmark(post?.uuid || "");
+              }
+            }}
             className="!w-fit !h-fit p-0"
           >
-            {post.is_bookmarked ? <IoMdBookmark size={36} /> : <FiBookmark size={36} />}
+            {post.is_bookmarked ? (
+              <IoMdBookmark size={36} color="#430B68" />
+            ) : (
+              <FiBookmark size={36} />
+            )}
           </Button>
           <p className="text-base font-light font-sans text-[#A6A6A6]">
             {timeAgo}

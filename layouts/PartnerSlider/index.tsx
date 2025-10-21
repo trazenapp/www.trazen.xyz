@@ -11,7 +11,7 @@ import { Virtual, Autoplay } from "swiper/modules";
 const PartnerSlider = () => {
   return (
     <Swiper
-      className="justify-between"
+      className="justify-between max-md:w-170"
       modules={[Virtual, Autoplay]}
       spaceBetween={60}
       slidesPerView={4}
@@ -20,7 +20,7 @@ const PartnerSlider = () => {
     >
       {partnerSliderData.map((item) => (
         <SwiperSlide key={item.alt}>
-          <Image src={item.img} alt={item.alt} />
+          <Image src={item.src} alt={item.alt} />
         </SwiperSlide>
       ))}
     </Swiper>

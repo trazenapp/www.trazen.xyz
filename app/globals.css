@@ -207,4 +207,68 @@ div.select__menu div.select__option--is-focused {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  .card::before,
+  .card::after {
+    content: "";
+    position: absolute;
+  }
+  .card::before {
+    width: 200%;
+    height: 200%;
+    top: 30rem;
+    background-image: conic-gradient(
+      #69095c 0deg,
+      transparent 100deg,
+      transparent 180deg,
+      #69095c 180deg,
+      transparent 280deg
+    );
+    inset: -50%;
+    z-index: -2;
+    animation: border-animation 4s linear infinite;
+  }
+  .card::after {
+    --inset: 4px;
+    inset: var(--inset);
+    background-color: #111;
+    border-radius: calc(var(--radius-4xl) - var(--inset));
+    transition: all 0.3s linear;
+    z-index: -1;
+  }
+
+  .accordion-card::before,
+  .accordion-card::after {
+    content: "";
+    position: absolute;
+  }
+  .accordion-card::before {
+    width: 200%;
+    height: 200%;
+    top: 30rem;
+    background-image: conic-gradient(
+      #69095c 0deg,
+      transparent 85deg,
+      transparent 180deg,
+      #69095c 180deg,
+      transparent 265deg
+    );
+    inset: -50%;
+    z-index: -2;
+    animation: border-animation 4s linear infinite;
+  }
+  .accordion-card::after {
+    --inset: 4px;
+    inset: var(--inset);
+    background-color: #111;
+    border-radius: calc(12px - var(--inset));
+    transition: all 0.3s linear;
+    z-index: -1;
+  }
+
+  @keyframes border-animation {
+    to {
+      transform: rotate(-360deg);
+    }
+  }
 }

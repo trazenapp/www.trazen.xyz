@@ -1,8 +1,8 @@
-"use client"
+"use client";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { navMenu } from "@/constants/nav-menu";
 import logo from "@/public/trazen-logo.svg";
@@ -10,7 +10,7 @@ import logo from "@/public/trazen-logo.svg";
 const Navbar = () => {
   const router = useRouter();
   return (
-    <nav className="w-10/12 border border-[#5E5E5E] py-3 px-4 rounded-full bg-linear-to-b from-[#A8A8A826] to-[#7A7A7A00] hidden lg:flex justify-between items-center">
+    <nav className="xl:w-10/12 w-11/12 border border-[#5E5E5E] py-3 px-4 rounded-full bg-linear-to-b from-[#A8A8A826] to-[#7A7A7A00] hidden lg:flex justify-between items-center">
       <Link href="/">
         <Image src={logo} alt="Trazen Logo" />
       </Link>
@@ -32,7 +32,12 @@ const Navbar = () => {
         >
           Login
         </Link>
-        <Button onClick={() => router.push('/sign-up')} className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#9218E1] border border-[#D9D9D9]">Get started</Button>
+        <Button
+          onClick={() => router.push("/sign-up")}
+          className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#9218E1] border border-[#D9D9D9]"
+        >
+          Get started
+        </Button>
       </div>
     </nav>
   );

@@ -23,7 +23,7 @@ const Footer = () => {
         <div className="border-[0.5px] border-white w-full" />
         <div className="flex flex-col md:flex-row gap-y-3 md:gap-y-0 items-center md:justify-between mt-10 w-full">
           <Link
-            href="#"
+            href="https://x.com/trazenxyz/"
             className="h-[42px] w-[42px] rounded-full border flex justify-center items-center"
           >
             <Image src={X} alt="x icon" />

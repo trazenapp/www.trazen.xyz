@@ -7,7 +7,7 @@ const TermsFooter = () => {
       <div className="">© 2025 Trazen</div>
       <ul className="flex gap-x-10">
         <li>
-          <Link href="/privacy">Privacy</Link>
+          <Link href="/privacy">Privacy Policy</Link>
         </li>
         <li>
           <Link href="#">Support</Link>

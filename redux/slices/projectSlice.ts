@@ -49,11 +49,20 @@ export const addProject = createAsyncThunk<AddProjectResponse, AddProjectData>(
 
 export const editProject = createAsyncThunk(
   "project/editProject",
-  async ({editProjectData, project_uuid}: { project_uuid: string; editProjectData: AddProjectData }, { rejectWithValue }) => {
+  async (
+    {
+      editProjectData,
+      project_uuid,
+    }: { project_uuid: string; editProjectData: AddProjectData },
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await axiosInstance.patch(`/v1/project/${project_uuid}`, editProjectData);
-      console.log(response.data)
-      return response.data
+      const response = await axiosInstance.patch(
+        `/v1/project/${project_uuid}`,
+        editProjectData
+      );
+      console.log(response.data);
+      return response.data;
     } catch (err: any) {
       return rejectWithValue(
         err?.response?.data?.message || "Error editing project"

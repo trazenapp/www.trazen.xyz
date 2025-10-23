@@ -21,9 +21,8 @@ import {
   PiBookmarkSimpleFill,
 } from "react-icons/pi";
 import { IoChatbubbleOutline } from "react-icons/io5";
-import { TbShare3 } from "react-icons/tb";
-import { Edit } from "lucide-react";
-import { Trash2 } from "lucide-react";
+import { TbShare3, TbFlag3 } from "react-icons/tb";
+import { Edit, Trash2 } from "lucide-react";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   votePost,
@@ -34,13 +33,26 @@ import {
 import { PostItem } from "@/types/post.types";
 import { ClipLoader } from "react-spinners";
 import { useShare } from "@/hooks/useShareOptions";
+import EditPost from "../editPost";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+  DialogDescription,
+  DialogFooter,
+} from "../ui/dialog";
+import DeletePost from "../deletePost";
+import ReportPost from "../reportPost";
 
 interface FeedsCardProps {
   post?: PostItem;
   removeBookmark?: (bookmark_uuid: string) => void;
+  isPrivate?: boolean;
 }
 
-const FeedsCard = ({ post, removeBookmark }: FeedsCardProps) => {
+const FeedsCard = ({ post, removeBookmark, isPrivate }: FeedsCardProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { shareContent } = useShare();
@@ -49,6 +61,9 @@ const FeedsCard = ({ post, removeBookmark }: FeedsCardProps) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [upVoteCount, setUpVoteCount] = useState(post?.upvoteCount);
   const [downVoteCount, setDownVoteCount] = useState(post?.downvoteCount);
+  const [editPostModal, setEditPostModal] = useState(false);
+  const [deletePostModal, setDeletePostModal] = useState(false);
+  const [reportPostModal, setReportPostModal] = useState(false);
 
   const handlePageClick = (slug: string) => {
     router.push(`/home/${slug}`);
@@ -150,11 +165,17 @@ const FeedsCard = ({ post, removeBookmark }: FeedsCardProps) => {
               className="bg-[#272727] !min-w-0 !p-0 border-0 w-32"
               align="end"
             >
-              <DropdownMenuItem
+              {/* <DropdownMenuItem
                 onClick={handleShareClick}
                 className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
               >
                 <TbShare3 /> Share
+              </DropdownMenuItem> */}
+              <DropdownMenuItem
+                onSelect={() => setReportPostModal(true)}
+                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+              >
+                <TbFlag3 /> Report
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
@@ -177,8 +198,63 @@ const FeedsCard = ({ post, removeBookmark }: FeedsCardProps) => {
                 )}{" "}
                 Bookmark
               </DropdownMenuItem>
+              {isPrivate && (
+                <>
+                  <DropdownMenuItem
+                    onSelect={() => setEditPostModal(true)}
+                    className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                  >
+                    <Edit /> Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onSelect={() => setDeletePostModal(true)}
+                    className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                  >
+                    <Trash2 className="text-[#FF5151]" /> Delete
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
+          <Dialog open={editPostModal} onOpenChange={setEditPostModal}>
+            <DialogContent
+              className="sm:w-10/12 md:w-10/12 lg:10/12 font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[50vw] lg:max-w-[65vw] md:max-w-[85vw] max-md:!max-w-[95vw]  md:max-h-[95vh] max-h-[98vh] min-h-[45vh] overflow-auto"
+              style={{ scrollbarWidth: "none" }}
+            >
+              <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+                <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
+                  <p className="max-sm:text-[16px]">Edit Post</p>
+                </DialogTitle>
+              </DialogHeader>
+              <EditPost post={post} />
+            </DialogContent>
+          </Dialog>
+          <Dialog open={deletePostModal} onOpenChange={setDeletePostModal}>
+            <DialogContent
+              className="font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-5/12 lg:w-10/12 md:w-[85vw] overflow-auto"
+              style={{ scrollbarWidth: "none" }}
+            >
+              <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+                <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
+                  <p className="max-sm:text-[16px]">Delete Post</p>
+                </DialogTitle>
+              </DialogHeader>
+              <DeletePost post={post} />
+            </DialogContent>
+          </Dialog>
+          <Dialog open={reportPostModal} onOpenChange={setReportPostModal}>
+            <DialogContent
+              className="font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-7/12 lg:w-10/12 md:w-[85vw] overflow-auto"
+              style={{ scrollbarWidth: "none" }}
+            >
+              <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+                <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
+                  <p className="max-sm:text-[16px]">Report Post</p>
+                </DialogTitle>
+              </DialogHeader>
+              <ReportPost post={post} />
+            </DialogContent>
+          </Dialog>
         </div>
         <p
           onClick={() => handlePageClick(post?.uuid || "")}

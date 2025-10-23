@@ -27,9 +27,7 @@ import FileInput from "@/components/ui/FileInput";
 import InputFile from "@/components/ui/inputFile";
 import InputList from "@/components/ui/InputList";
 import { ProjectDetail } from "@/types/project.types";
-import {
-  editProject
-} from "@/redux/slices/projectSlice";
+import { editProject } from "@/redux/slices/projectSlice";
 import { toast } from "react-toastify";
 import { FaCheck } from "react-icons/fa6";
 import { RootState } from "@/redux/store";
@@ -47,11 +45,15 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
     (state: RootState) => state.project
   );
 
-  const chains = chainOptions.map(item => item.value)
-  const projectChains = chains.some(chain => projectDetail.categories.includes(chain))
+  const chains = chainOptions.map((item) => item.value);
+  const projectChains = chains.some((chain) =>
+    projectDetail.categories.includes(chain)
+  );
 
-  const niches = nicheOptions.map(item => item.value)
-  const projectNiche = niches.some(niche => projectDetail.categories.includes(niche))
+  const niches = nicheOptions.map((item) => item.value);
+  const projectNiche = niches.some((niche) =>
+    projectDetail.categories.includes(niche)
+  );
 
   const editProjectData = {
     name: projectDetail.name || "",

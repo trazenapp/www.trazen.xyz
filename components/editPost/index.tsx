@@ -6,38 +6,42 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { MdDoneAll } from "react-icons/md";
 import { Button } from "@/components/ui/button";
-import {
-  Smile,
-  ImageIcon,
-  X,
-} from "lucide-react";
+import { Smile, ImageIcon, X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import Picker, { Theme } from "emoji-picker-react";
 import { useFileUpload } from "@/utils/uploadPostMedia";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import {
-  createPost,
   saveDraft,
-  publishPost,
-  setLoading,
+  editPost,
 } from "@/redux/slices/postSlice";
-import { Post } from "@/types/post.types";
+import { Post, PostItem } from "@/types/post.types";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 
-interface FeedsPostMainProps {
-  projectId: string;
+interface EditPostProps {
+  post?: PostItem;
 }
 
-export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
+const EditPost = ({ post }: EditPostProps) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [localPreviews, setLocalPreviews] = useState<string[]>([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { loading, data, error } = useAppSelector(
     (state: RootState) => state.post
   );
+
+  const editPostData = {
+    project_uuid: post?.project_uuid || "",
+    content: post?.content || "",
+    medias: post?.medias || [],
+    is_published: post?.is_published,
+  };
+
+
   const {
     control,
     handleSubmit,
@@ -46,9 +50,18 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
     setValue,
     resetField,
   } = useForm<Post>({
-    defaultValues: data,
+    defaultValues: editPostData,
   });
   const values = watch();
+  
+  const finalData = (formData: Post) => {
+    return {
+      project_uuid: formData.project_uuid,
+      content: formData.content,
+      medias: formData.medias,
+      is_published: formData.is_published,
+    };
+  };
 
   const { result, uploading, uploadFiles, reset } = useFileUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -122,35 +135,27 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
 
   const onSubmit = async (data: Post) => {
     try {
-      dispatch(setLoading(true));
-      const payload = {
-        project_uuid: projectId,
-        is_published: true,
-        content: data.content,
-        medias: data.medias,
-      };
-      dispatch(publishPost({ type: "feed", data: payload }));
-      await dispatch(createPost(payload as any)).unwrap();
-      toast(<div>Post published successfully</div>, {
+      console.log(finalData(data));
+      setIsLoading(true);
+      await dispatch(editPost({ post_uuid: post?.uuid as string, data: finalData(data)})).unwrap();
+      toast(<div>Post edited successfully</div>, {
         theme: "dark",
         type: "success",
       });
-      dispatch(setLoading(false));
-      resetField("content");
-      resetField("medias");
-      resetField("is_published");
-      resetField("project_uuid");
+      setIsLoading(false);
     } catch (err: any) {
-      dispatch(setLoading(false));
+      setIsLoading(false);
       toast(<div>{err.message || "Failed to publish post"}</div>, {
         theme: "dark",
         type: "error",
       });
     }
   };
-
   return (
-    <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="font-sans text-[#F4F4F4F4] w-full flex flex-col gap-y-8 px-5"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="w-full flex flex-col gap-4 mb-4">
         <Controller
           name="content"
@@ -238,7 +243,8 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
                   name="is_published"
                   control={control}
                   defaultValue={false}
-                  render={({ field }) => (
+                  render={({ field }) => {
+                    return (
                     <>
                       <Switch
                         checked={field.value}
@@ -248,7 +254,7 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
                         {field.value ? "Publish post" : "Save as draft"}
                       </Label>
                     </>
-                  )}
+                  )}}
                 />
               </div>
               <Button className="bg-transparent !p-0 hover:bg-transparent">
@@ -260,7 +266,7 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
                 </p>
               </Button>
               <Button className="bg-[#430B68] rounded-full w-[111px] text-sm py-2.5">
-                {loading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Post"}
+                {isLoading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Post"}
               </Button>
             </div>
           </div>
@@ -299,3 +305,5 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
     </form>
   );
 };
+
+export default EditPost;

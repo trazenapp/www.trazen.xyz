@@ -1,10 +1,5 @@
 "use client";
-import React, {
-  useRef,
-  use,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { useRef, use, useEffect, useCallback } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -224,10 +219,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                         className="w-full h-[200px] my-4"
                       />
                     ))
-                  : privatePosts.map((post) => (
-                      <Feedscard post={post}
-                      />
-                    ))}
+                  : privatePosts.map((post) => <Feedscard post={post} isPrivate />)}
               </div>
             </TabsContent>
             <TabsContent className="relative w-full h-full" value="events">

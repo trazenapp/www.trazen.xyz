@@ -7,8 +7,10 @@ import {
   Post,
   PostItem,
   PostPagination,
+  ReportItem,
 } from "@/types/post.types";
 import { RootState } from "@/redux/store";
+import { string } from "slate";
 
 const initialState: PostState = {
   loading: false,
@@ -37,6 +39,10 @@ const initialState: PostState = {
   followedPosts: [],
   postDetails: {} as PostItem,
   bookmark: false,
+  reportData: {
+    reason: "SCAM",
+    details: ""
+  }
 };
 
 export const fetchPublicPosts = createAsyncThunk<
@@ -73,7 +79,7 @@ export const fetchPrivatePosts = createAsyncThunk<
       );
       const data = response.data?.data;
 
-      console.log(data)
+      console.log(data);
       return { privatePosts: data.posts, pagination: data.pagination };
     } catch (err: any) {
       console.error("fetchPosts error", err);
@@ -292,6 +298,36 @@ export const bookmarkPost = createAsyncThunk<
   }
 });
 
+export const reportPost = createAsyncThunk(
+  "post/reportPost",
+  async({ data, post_uuid }: { post_uuid: string, data: ReportItem }, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.post(
+        `/v1/post/report/${post_uuid}`,
+        data,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Follow response:", response.data);
+      return response.data;
+    } catch(err: any) {
+      console.error("reportPost error", err?.response?.data || err.message);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error reporting project"
+      );
+    }
+  }
+)
+
 export const followPost = createAsyncThunk<
   any,
   { project_uuid: string },
@@ -350,6 +386,63 @@ export const createPost = createAsyncThunk<Post, { state: RootState }>(
   }
 );
 
+export const editPost = createAsyncThunk(
+  "post/editPost",
+  async (
+    { data, post_uuid }: { post_uuid: string; data: Post },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.patch(`/v1/post/${post_uuid}`, data, {
+        headers: {
+          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (err: any) {
+      console.error("editPost error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error editing post"
+      );
+    }
+  }
+);
+
+export const deletePost = createAsyncThunk<
+  string, 
+  string, 
+  { state: RootState } // thunk API type
+>(
+  "post/deletePost",
+  async (post_uuid, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.delete(`/v1/post/${post_uuid}`, {
+        headers: {
+          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      return response.data;
+    } catch (err: any) {
+      console.error("deletePost error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error deleting post"
+      );
+    }
+  }
+);
+
 const postSlice = createSlice({
   name: "post",
   initialState,
@@ -398,6 +491,53 @@ const postSlice = createSlice({
       .addCase(createPost.rejected, (state, action) => {
         state.loading = false;
         state.error = (action.payload as string) || "Failed to create post";
+      })
+      .addCase(editPost.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(editPost.fulfilled, (state, action) => {
+        state.error = null;
+        state.data = action.payload;
+      })
+      .addCase(editPost.rejected, (state, action) => {
+        state.error = (action.payload as string) || "Failed to edit post";
+      })
+      .addCase(reportPost.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(reportPost.fulfilled, (state, action) => {
+        state.error = null;
+        state.reportData = action.payload;
+      })
+      .addCase(reportPost.rejected, (state, action) => {
+        state.error = (action.payload as string) || "Failed to edit post";
+      })
+      .addCase(deletePost.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.error = null;
+
+        const deletedPostUuid = action.payload;
+
+        // Remove deleted post from all relevant lists
+        state.publicPosts = state.publicPosts.filter(
+          (post) => post.uuid !== (deletedPostUuid as string)
+        );
+        state.privatePosts = state.privatePosts.filter(
+          (post) => post.uuid !== (deletedPostUuid as string)
+        );
+        state.followedPosts = state.followedPosts.filter(
+          (post) => post.uuid !== (deletedPostUuid as string)
+        );
+
+        // If the deleted post was currently loaded in details, clear it
+        if (state.postDetails?.uuid === (deletedPostUuid as string)) {
+          state.postDetails = {} as PostItem;
+        }
+      })
+      .addCase(deletePost.rejected, (state, action) => {
+        state.error = (action.payload as string) || "Failed to edit post";
       })
       .addCase(fetchPublicPosts.pending, (state) => {
         state.loading = true;

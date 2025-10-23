@@ -22,7 +22,7 @@ import {
   PiBookmarkSimpleFill,
 } from "react-icons/pi";
 import { IoChatbubbleOutline } from "react-icons/io5";
-import { TbShare3 } from "react-icons/tb";
+import { TbFlag3, TbShare3 } from "react-icons/tb";
 import { CgFlagAlt } from "react-icons/cg";
 import { FaArrowLeft } from "react-icons/fa6";
 import FeedsCommentItem from "@/components/feedsCommentItem";
@@ -37,6 +37,16 @@ import {
 } from "@/redux/slices/postSlice";
 import { deleteBookmark } from "@/redux/slices/bookmarkSlice";
 import { useShare } from "@/hooks/useShareOptions";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import ReportPost from "@/components/reportPost";
 
 const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
@@ -50,6 +60,7 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
   const [downVoteCount, setDownVoteCount] = useState(
     postDetails?.downvoteCount
   );
+  const [reportPostModal, setReportPostModal] = useState(false);
 
   useEffect(() => {
     dispatch(fetchPostDetails({ post_uuid: slug }));
@@ -212,8 +223,27 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
                 )}{" "}
                 Bookmark
               </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={() => setReportPostModal(true)}
+                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+              >
+                <TbFlag3 /> Report
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <Dialog open={reportPostModal} onOpenChange={setReportPostModal}>
+            <DialogContent
+              className="font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-8/12 lg:w-10/12 md:w-[85vw] overflow-auto"
+              style={{ scrollbarWidth: "none" }}
+            >
+              <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+                <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
+                  <p className="max-sm:text-[16px]">Report Post</p>
+                </DialogTitle>
+              </DialogHeader>
+              <ReportPost post={postDetails} />
+            </DialogContent>
+          </Dialog>
         </div>
         <p className="cursor-pointer text-[#F4F4F4F4] text-sm lg:text-base  font-normal font-sans">
           {postDetails?.content}

@@ -39,6 +39,11 @@ export interface BookmarkItem {
   uuid?: string;
 }
 
+export interface ReportItem {
+  reason: "SCAM"|"FAKE"|"INAPPROPRIATE"|"MISLEADING"|"OTHER";
+  details: string;
+}
+
 export interface PostItem {
   uuid?: string;
   user_uuid?: string;
@@ -50,7 +55,7 @@ export interface PostItem {
   upvoteCount?: number;
   downvoteCount?: number;
   commentCount?: number;
-  isPublished?: boolean;
+  is_published?: boolean;
   voteStatus?: "UPVOTE" | "DOWNVOTE" | null;
   project?: ProjectDetail;
   is_approved?: boolean;
@@ -75,6 +80,7 @@ export interface PostState {
   followedPosts: PostItem[];
   postDetails: PostItem;
   bookmark: boolean;
+  reportData: ReportItem;
 }
 
 export interface Draft {

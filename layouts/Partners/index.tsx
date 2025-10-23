@@ -1,15 +1,25 @@
 import React from "react";
 import Heading from "@/components/heading";
 import PartnerSlider from "@/layouts/PartnerSlider";
+import LogoLoop from "@/components/LogoLoop";
+import { partnerSliderData } from "@/constants/partner-slider";
 
 const Partners = () => {
   return (
     <section className="w-11/12 relative p-10 overflow-hidden">
       <Heading className="text-center mb-14">Trusted By</Heading>
-      <PartnerSlider />
-      <div className="pointer-events-none absolute inset-0 z-[999]">
-        <div className="absolute top-0 left-0 w-[200px] h-full bg-gradient-to-r from-[#0B0B0B] to-transparent"></div>
-        <div className="absolute top-0 right-0 w-[200px] h-full bg-gradient-to-l from-[#0B0B0B] to-transparent"></div>
+      <div className="relative overflow-hidden">
+        <LogoLoop
+          logos={partnerSliderData}
+          speed={120}
+          direction="left"
+          logoHeight={2.3}
+          gap={50}
+          pauseOnHover={false}
+          fadeOut
+          fadeOutColor="#0b0b0b"
+          ariaLabel="Partners"
+        />
       </div>
     </section>
   );

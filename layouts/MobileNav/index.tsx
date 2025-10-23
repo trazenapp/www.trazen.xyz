@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,7 +14,7 @@ import hamburger from "@/public/mobile-menu.svg";
 import logo from "@/public/trazen-logo.svg";
 import { navMenu } from "@/constants/nav-menu";
 import { Button } from "@/components/ui/button";
-import {useRouter} from "next/navigation";
+import { useRouter } from "next/navigation";
 
 const MobileNav = () => {
   const router = useRouter();
@@ -23,7 +23,7 @@ const MobileNav = () => {
       <Sheet>
         <div className="flex justify-between items-center w-full">
           <Link href="/">
-            <Image src={logo} alt="Trazen Logo" />
+            <Image src={logo} alt="Trazen Logo" width={145} />
           </Link>
           <SheetTrigger>
             <Image src={hamburger} alt="Trazen Logo" width={30} height={40} />
@@ -51,7 +51,12 @@ const MobileNav = () => {
                 >
                   Login
                 </Link>
-                <Button onClick={() => router.push('/sign-in')} className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#9218E1] border border-[#D9D9D9]">Get started</Button>
+                <Button
+                  onClick={() => router.push("/sign-in")}
+                  className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#9218E1] border border-[#D9D9D9]"
+                >
+                  Get started
+                </Button>
               </div>
             </SheetDescription>
           </SheetHeader>

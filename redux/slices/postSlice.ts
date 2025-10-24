@@ -41,8 +41,8 @@ const initialState: PostState = {
   bookmark: false,
   reportData: {
     reason: "SCAM",
-    details: ""
-  }
+    details: "",
+  },
 };
 
 export const fetchPublicPosts = createAsyncThunk<
@@ -300,7 +300,10 @@ export const bookmarkPost = createAsyncThunk<
 
 export const reportPost = createAsyncThunk(
   "post/reportPost",
-  async({ data, post_uuid }: { post_uuid: string, data: ReportItem }, { rejectWithValue, getState }) => {
+  async (
+    { data, post_uuid }: { post_uuid: string; data: ReportItem },
+    { rejectWithValue, getState }
+  ) => {
     try {
       const state = getState();
       const token = (state as RootState).register.token || null;
@@ -319,14 +322,14 @@ export const reportPost = createAsyncThunk(
 
       console.log("Follow response:", response.data);
       return response.data;
-    } catch(err: any) {
+    } catch (err: any) {
       console.error("reportPost error", err?.response?.data || err.message);
       return rejectWithValue(
         err?.response?.data?.message || "Error reporting project"
       );
     }
   }
-)
+);
 
 export const followPost = createAsyncThunk<
   any,
@@ -396,13 +399,17 @@ export const editPost = createAsyncThunk(
       const state = getState();
       const token = (state as RootState).register.token || null;
 
-      const response = await axiosInstance.patch(`/v1/post/${post_uuid}`, data, {
-        headers: {
-          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
-          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axiosInstance.patch(
+        `/v1/post/${post_uuid}`,
+        data,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       return response.data;
     } catch (err: any) {
@@ -415,33 +422,30 @@ export const editPost = createAsyncThunk(
 );
 
 export const deletePost = createAsyncThunk<
-  string, 
-  string, 
+  string,
+  string,
   { state: RootState } // thunk API type
->(
-  "post/deletePost",
-  async (post_uuid, { rejectWithValue, getState }) => {
-    try {
-      const state = getState();
-      const token = (state as RootState).register.token || null;
+>("post/deletePost", async (post_uuid, { rejectWithValue, getState }) => {
+  try {
+    const state = getState();
+    const token = (state as RootState).register.token || null;
 
-      const response = await axiosInstance.delete(`/v1/post/${post_uuid}`, {
-        headers: {
-          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
-          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-      });
+    const response = await axiosInstance.delete(`/v1/post/${post_uuid}`, {
+      headers: {
+        "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+        "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      return response.data;
-    } catch (err: any) {
-      console.error("deletePost error", err);
-      return rejectWithValue(
-        err?.response?.data?.message || "Error deleting post"
-      );
-    }
+    return response.data;
+  } catch (err: any) {
+    console.error("deletePost error", err);
+    return rejectWithValue(
+      err?.response?.data?.message || "Error deleting post"
+    );
   }
-);
+});
 
 const postSlice = createSlice({
   name: "post",

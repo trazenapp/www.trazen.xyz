@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 import Image from "next/image";
 // import Link from "next/link";
@@ -22,9 +22,10 @@ import { useGoogleCalendarLink } from "@/hooks/useGoogleCalendarLink";
 
 interface EventCardProps {
   event: EventsItem;
+  isPrivate?: boolean
 }
 
-const EventCard = ({ event }: EventCardProps) => {
+const EventCard = ({ event, isPrivate }: EventCardProps) => {
   const dateString = event?.date_time?.toString();
   const [datePart, timePartRaw] = dateString.split("T");
   const timePart = timePartRaw.replace("Z", "").split(".")[0];
@@ -43,7 +44,10 @@ const EventCard = ({ event }: EventCardProps) => {
           <AvatarProfile
             createdAt={event.created_at}
             name={event?.project?.user?.username}
-            avatar={event?.project?.user?.avatar as string || "https://github.com/shadcn.png"}
+            avatar={
+              (event?.project?.user?.avatar as string) ||
+              "https://github.com/shadcn.png"
+            }
             is_approved={event?.project?.is_approved}
           />
         </div>
@@ -91,7 +95,12 @@ const EventCard = ({ event }: EventCardProps) => {
           className="rounded-[12px] w-full h-full object-cover"
         />
       </div>
-      <a href={googleCalendarLink} target="_blank" rel="noopener noreferrer" className="flex justify-center items-center bg-[#430B68] hover:bg-[#430B68] rounded-full py-2 px-4 text-sm font-sans font-medium">
+      <a
+        href={googleCalendarLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex justify-center items-center bg-[#430B68] hover:bg-[#430B68] rounded-full py-2 px-4 text-sm font-sans font-medium"
+      >
         Add to calendar
       </a>
     </Card>

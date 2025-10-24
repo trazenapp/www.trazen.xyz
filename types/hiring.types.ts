@@ -1,4 +1,5 @@
 import { BookmarkItem } from "./post.types";
+import { PostPagination } from "@/types/post.types";
 
 export interface HiringPostPayload {
   project_uuid: string;
@@ -53,4 +54,6 @@ export interface HiringState {
   hiringPosts: HiringPost[];
   hiringPostItem?: HiringPost;
   bookmark?: boolean;
+  pagination: PostPagination;
+  hasMore: boolean;
 }

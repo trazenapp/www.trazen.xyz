@@ -1,11 +1,14 @@
 "use client";
-import React, { useRef, use, useEffect, useCallback } from "react";
+import React, { useState, useMemo, use, useEffect, useCallback } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Feedscard from "@/components/feedsCard";
+import EventCard from "@/components/eventCard";
+import BountyCard from "@/components/bountyCard";
+import HiringCard from "@/components/hiringCard";
 import { FaArrowLeft, FaSquareXTwitter } from "react-icons/fa6";
 import { BsPatchCheckFill } from "react-icons/bs";
 import { HiOutlineCube } from "react-icons/hi";
@@ -19,13 +22,32 @@ import NewPost from "@/components/newPost";
 import EditProject from "@/components/editProject";
 import { RootState } from "@/redux/store";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useInView } from "react-intersection-observer";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { fetchPublicPosts, fetchPrivatePosts } from "@/redux/slices/postSlice";
+import { fetchPrivatePosts } from "@/redux/slices/postSlice";
+import { getEventsPrivate } from "@/redux/slices/eventSlice";
+import { fetchPrivateHiring } from "@/redux/slices/hiringSlice"
 import {
   getProject,
   setLoading,
   getProjectDetail,
 } from "@/redux/slices/projectSlice";
+import FeedsCard from "@/components/feedsCard";
+
+const MemoizedFeedsCard = React.memo(FeedsCard);
+const MemoizedEventCard = React.memo(EventCard);
+const MemoizedHiringCard = React.memo(HiringCard);
+const MemoizedBountyCard = React.memo(BountyCard);
+
+const LoadingSkeleton = React.memo(() => {
+  return (
+    <>
+      {[...Array(5)].map((_, i) => (
+        <Skeleton key={i} className="w-full h-[200px] my-4" />
+      ))}
+    </>
+  );
+});
 
 const tempProjectsList = [
   { logo: "https://github.com/shadcn.png", name: "CryptoMachine" },
@@ -36,63 +58,72 @@ const tempProjectsList = [
   { logo: "https://github.com/shadcn.png", name: "CryptoProject5" },
 ];
 
-type FormValues = {
-  content: string;
-  is_published: boolean;
-};
-
 const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { projectDetail } = useAppSelector((state: RootState) => state.project);
+  const projectDetail = useAppSelector(
+    (state: RootState) => state.project.projectDetail
+  );
   const { privatePosts, loading, pagination, hasMore } = useAppSelector(
     (state) => state.post
   );
-
-  const observer = useRef<IntersectionObserver | null>(null);
-  const lastPostRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (loading) return;
-      if (observer.current) observer.current.disconnect();
-
-      observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          dispatch(
-            fetchPublicPosts({
-              search: "",
-              page: pagination.page + 1,
-              limit: pagination.limit,
-            })
-          );
-        }
-      });
-
-      if (node) observer.current.observe(node);
-    },
-    [loading, hasMore, pagination.page, pagination.limit, dispatch]
+  const events = useAppSelector((state: RootState) => state.events.events);
+  const hiringPosts = useAppSelector(
+    (state: RootState) => state.hiring.hiringPosts
+  );
+  const bountyData = useAppSelector(
+    (state: RootState) => state.bounties.bountyData
   );
 
-  useEffect(() => {
-    dispatch(fetchPrivatePosts({ page: 1, limit: 10 }));
-  }, [dispatch]);
+  const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState("feed-post");
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+  });
+
+  const fetchInitialData = async () => {
+    try {
+      await Promise.all([
+        dispatch(getProjectDetail(slug)).unwrap(),
+        dispatch(fetchPrivatePosts({ page: 1, limit: 10 })).unwrap(),
+        dispatch(getEventsPrivate({ page: 1, limit: 10 })).unwrap(),
+        dispatch(fetchPrivateHiring({ status: "", page: 1, limit: 10 })).unwrap(),
+      ]);
+    } catch (err: any) {
+      console.log("Error fetching initial data:", err);
+    }
+  };
 
   useEffect(() => {
-    const getPrivateProjects = async () => {
-      try {
-        dispatch(setLoading(true));
-        await dispatch(getProjectDetail(slug)).unwrap();
-        dispatch(setLoading(false));
-      } catch (err: any) {
-        console.log(err);
-      }
-    };
+    fetchInitialData();
+  }, [dispatch, slug]);
 
-    getPrivateProjects();
-  }, []);
+  const loadMore = useCallback(() => {
+    if (page && hasMore && !loading) {
+      setPage((prev: number) => {
+        const nextPage = prev + 1;
+        dispatch(
+          fetchPrivatePosts({ page: nextPage, limit: pagination.limit })
+        );
+        dispatch(getEventsPrivate({ page: nextPage, limit: pagination.limit }));
+        return nextPage;
+      });
+    }
+  }, [inView, hasMore, dispatch, page, pagination.limit, loading])
+
+  useEffect(() => {
+    if (inView) {
+      loadMore();
+    }
+  }, [inView, loadMore]);
 
   if (!projectDetail) {
-    return null;
+    return (
+      <div className="xl:w-[50%] lg:w-[50%]">
+        <Skeleton className="w-full h-[400px]" />
+      </div>
+    );
   }
 
   return (
@@ -212,14 +243,24 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
             </div>
             <TabsContent className="relative w-full h-full" value="feed-post">
               <div className="w-full h-full">
-                {loading
-                  ? privatePosts.map((post) => (
-                      <Skeleton
-                        key={post.uuid}
-                        className="w-full h-[200px] my-4"
-                      />
+                {loading && privatePosts.length === 0
+                  ? [...Array(5)].map((_, i) => (
+                      <Skeleton key={i} className="w-full h-[200px] my-4" />
                     ))
-                  : privatePosts.map((post) => <Feedscard post={post} isPrivate />)}
+                  : privatePosts.map((post, index) => (
+                      <div
+                        key={post.uuid}
+                        ref={
+                          index === privatePosts.length - 1 ? ref : undefined
+                        }
+                      >
+                        <Feedscard post={post} isPrivate />
+                      </div>
+                    ))}
+
+                {loading && privatePosts.length > 0 && (
+                  <Skeleton className="w-full h-[200px] my-4" />
+                )}
               </div>
             </TabsContent>
             <TabsContent className="relative w-full h-full" value="events">

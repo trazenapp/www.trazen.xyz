@@ -11,7 +11,7 @@ export interface CreateEventPayload {
   type: "ONSITE" | "VIRTUAL" | "HYBRID";
   location?: string;
   is_published: boolean;
-};
+}
 
 export interface EventsItem {
   cover_image?: string;

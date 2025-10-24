@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "NODE_OPTIONS='--max-old-space-size=4096' next build",
+    "build": "set NODE_OPTIONS=--max-old-space-size=4096 && next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -52,6 +52,7 @@
     "emoji-picker-react": "^4.13.2",
     "ethers": "^6.15.0",
     "firebase": "^12.2.1",
+    "framer-motion": "^12.23.24",
     "gsap": "^3.13.0",
     "iconsax-reactjs": "^0.0.8",
     "input-otp": "^1.4.2",

@@ -22,14 +22,14 @@ import { bookmarkHiring } from "@/redux/slices/hiringSlice";
 interface HiringCardProps {
   post: HiringPost;
   removeBookmark?: (bookmark_uuid: string) => void;
+  isPrivate?: boolean;
 }
 
-const HiringCard = ({ post, removeBookmark }: HiringCardProps) => {
+const HiringCard = ({ post, removeBookmark, isPrivate }: HiringCardProps) => {
   const dispatch = useAppDispatch();
   const { projectDetail } = useAppSelector((state: RootState) => state.project);
   const timeAgo = useTimeAgo(post.created_at);
   const dateTimeString = "2025-10-07T17:19:45.017Z";
-  console.log(post);
   useEffect(() => {
     const getPrivateProjects = async () => {
       try {

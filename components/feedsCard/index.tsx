@@ -171,34 +171,8 @@ const FeedsCard = ({ post, removeBookmark, isPrivate }: FeedsCardProps) => {
               >
                 <TbShare3 /> Share
               </DropdownMenuItem> */}
-              <DropdownMenuItem
-                onSelect={() => setReportPostModal(true)}
-                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
-              >
-                <TbFlag3 /> Report
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  if (post?.isBookmarked) {
-                    if (removeBookmark && post?.bookmarks) {
-                      removeBookmark(post?.bookmarks[0]?.uuid || "");
-                    } else {
-                      console.warn("No bookmark_uuid found for this post");
-                    }
-                  } else {
-                    handleBookmark(post?.uuid || "");
-                  }
-                }}
-                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
-              >
-                {post?.isBookmarked ? (
-                  <PiBookmarkSimpleFill color="#430B68" />
-                ) : (
-                  <PiBookmarkSimpleBold />
-                )}{" "}
-                Bookmark
-              </DropdownMenuItem>
-              {isPrivate && (
+
+              {isPrivate ? (
                 <>
                   <DropdownMenuItem
                     onSelect={() => setEditPostModal(true)}
@@ -211,6 +185,36 @@ const FeedsCard = ({ post, removeBookmark, isPrivate }: FeedsCardProps) => {
                     className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
                   >
                     <Trash2 className="text-[#FF5151]" /> Delete
+                  </DropdownMenuItem>
+                </>
+              ) : (
+                <>
+                  <DropdownMenuItem
+                    onSelect={() => setReportPostModal(true)}
+                    className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                  >
+                    <TbFlag3 /> Report
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      if (post?.isBookmarked) {
+                        if (removeBookmark && post?.bookmarks) {
+                          removeBookmark(post?.bookmarks[0]?.uuid || "");
+                        } else {
+                          console.warn("No bookmark_uuid found for this post");
+                        }
+                      } else {
+                        handleBookmark(post?.uuid || "");
+                      }
+                    }}
+                    className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                  >
+                    {post?.isBookmarked ? (
+                      <PiBookmarkSimpleFill color="#430B68" />
+                    ) : (
+                      <PiBookmarkSimpleBold />
+                    )}{" "}
+                    Bookmark
                   </DropdownMenuItem>
                 </>
               )}

@@ -3,7 +3,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Hiring from "@/components/hiring";
 import Bounty from "@/components/bounty";
 
-
 const Gigs = () => {
   return (
     <div>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,17 +14,104 @@ import { IoLocationOutline } from "react-icons/io5";
 import { Checkbox } from "@radix-ui/react-checkbox";
 import { Label } from "@radix-ui/react-label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useInView } from "react-intersection-observer";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { fetchPublicHiring } from "@/redux/slices/hiringSlice";
 import { deleteBookmark } from "@/redux/slices/bookmarkSlice";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowUp } from "lucide-react";
 
 const Hiring = () => {
   const dispatch = useAppDispatch();
-  const { loading, hiringPosts } = useAppSelector((state) => state.hiring);
+  const { loading, hiringPosts, pagination, hasMore } = useAppSelector(
+    (state) => state.hiring
+  );
+
+  const [filter, setFilter] = useState({
+    country: "",
+    job_type: "",
+    experience: "",
+    location_type: "",
+    search: "",
+  });
+
+  const [page, setPage] = useState(1);
+  const [displayedPost, setDisplayedPost] = useState<any[]>([]);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [scrollUp, setScrollUp] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const itemsPerPage = 10;
+
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+  });
+
+  const handleFilterChange = (key: string, value: string) => {
+    console.log("this checkbox was clicked");
+    setFilter((prev) => ({
+      ...prev,
+      [key]: prev[key as keyof typeof prev] === value ? "" : value,
+    }));
+  };
+
+  useEffect(() => {
+    dispatch(fetchPublicHiring({ page: 1, limit: 100 }));
+  }, [dispatch]);
+
+  // filter hiring
+  const filteredPosts = useMemo(() => {
+    return hiringPosts.filter((post) => {
+      return (
+        (!filter.country ||
+          post.location
+            ?.toLowerCase()
+            .includes(filter.country.toLowerCase())) &&
+        (!filter.job_type || post.type === filter.job_type) &&
+        (!filter.experience || post.experience === filter.experience) &&
+        (!filter.location_type ||
+          post.location_type === filter.location_type) &&
+        (!filter.search ||
+          post.title.toLowerCase().includes(filter.search.toLowerCase()) ||
+          post.description.toLowerCase().includes(filter.search.toLowerCase()))
+      );
+    });
+  }, [hiringPosts, filter]);
+
+  useEffect(() => {
+    const startIndex = 0;
+    const endIndex = itemsPerPage * page;
+    setDisplayedPost(filteredPosts.slice(startIndex, endIndex));
+  }, [filteredPosts, page]);
+
+  useEffect(() => {
+    if (inView && displayedPost.length < filteredPosts.length && !loading) {
+      setPage((prev: number) => {
+        const nextPage = prev + 1;
+        dispatch(
+          fetchPublicHiring({
+            page: nextPage,
+            limit: pagination.limit,
+          })
+        );
+        return nextPage;
+      });
+    }
+  }, [inView, hasMore, dispatch, page, pagination.limit, loading]);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      setShowScrollTop(currentY > 400);
+      setScrollUp(currentY < lastScrollY);
+      setLastScrollY(currentY);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   // delete bookmark
   const handleDeleteBookmark = async (bookmark_uuid: string) => {
-    console.log("hello world")
+    console.log("hello world");
     if (!bookmark_uuid) {
       console.log("No bookmark_uuid in state");
       return;
@@ -38,9 +125,9 @@ const Hiring = () => {
     }
   };
 
-  useEffect(() => {
-    dispatch(fetchPublicHiring());
-  }, [dispatch]);
+  const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 
   return (
     <div className="w-full h-full">
@@ -48,7 +135,9 @@ const Hiring = () => {
         <div className="border border-[#303030] flex-1 flex items-center gap-x-2 rounded-full py-1 px-4">
           <FiSearch color="#9F9F9F" className="text-xl" />
           <Input
-            type="text"
+            type="search"
+            value={filter.search}
+            onChange={(e) => handleFilterChange("search", e.target.value)}
             placeholder="Search job title or keyword"
             className="font-sans border-0 focus-visible:ring-0 p-0"
           />
@@ -66,7 +155,19 @@ const Hiring = () => {
             <div className="w-full flex flex-col gap-y-4">
               <div className="flex justify-between items-center">
                 <h5 className="font-medium text-xl">Filter</h5>
-                <Button className="!p-0 !bg-transparent text-[#D396FB]">
+                <Button
+                  type="button"
+                  onClick={() =>
+                    setFilter({
+                      country: "",
+                      job_type: "",
+                      experience: "",
+                      location_type: "",
+                      search: "",
+                    })
+                  }
+                  className="!p-0 !bg-transparent text-[#D396FB]"
+                >
                   Clear all
                 </Button>
               </div>
@@ -78,8 +179,12 @@ const Hiring = () => {
                 <div className="border border-[#303030] flex-1 flex items-center gap-x-2 rounded-full py-1 px-4">
                   <IoLocationOutline color="#9F9F9F" className="text-xl" />
                   <Input
-                    type="text"
+                    type="search"
                     className="font-sans border-0 focus-visible:ring-0 p-0"
+                    value={filter.country}
+                    onChange={(e) =>
+                      handleFilterChange("country", e.target.value)
+                    }
                   />
                 </div>
               </div>
@@ -87,65 +192,28 @@ const Hiring = () => {
               <div className="flex flex-col gap-y-3">
                 <h5 className="font-medium text-lg">Job Type</h5>
                 <div className="flex flex-col gap-y-4">
-                  <div className="flex justify-between">
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        id="terms-2"
-                        className="border w-4 h-4 rounded-[2px]"
-                      />
-                      <div className="grid gap-2">
-                        <Label
-                          htmlFor="terms-2"
-                          className="text-sm text-[#A6A6A6] font-normal"
-                        >
-                          Full Time
-                        </Label>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        id="terms-2"
-                        className="border w-4 h-4 rounded-[2px]"
-                      />
-                      <div className="grid gap-2">
-                        <Label
-                          htmlFor="terms-2"
-                          className="text-sm text-[#A6A6A6] font-normal"
-                        >
-                          Internship
-                        </Label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between">
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        id="terms-2"
-                        className="border w-4 h-4 rounded-[2px]"
-                      />
-                      <div className="grid gap-2">
-                        <Label
-                          htmlFor="terms-2"
-                          className="text-sm text-[#A6A6A6] font-normal"
-                        >
-                          Freelance
-                        </Label>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        id="terms-2"
-                        className="border w-4 h-4 rounded-[2px]"
-                      />
-                      <div className="grid gap-2">
-                        <Label
-                          htmlFor="terms-2"
-                          className="text-sm text-[#A6A6A6] font-normal"
-                        >
-                          Volunteer
-                        </Label>
-                      </div>
-                    </div>
+                  <div className="grid grid-cols-2 items-center gap-y-4">
+                    {["full-time", "internship", "part-time", "volunteer"].map(
+                      (type) => (
+                        <div key={type} className="flex items-center gap-3">
+                          <Checkbox
+                            checked={filter.job_type === type}
+                            onCheckedChange={() =>
+                              handleFilterChange("job_type", type)
+                            }
+                            className="data-[state='checked']:bg-white border w-4 h-4 rounded-[2px]"
+                          />
+                          <div className="grid gap-2">
+                            <Label
+                              htmlFor="terms-2"
+                              className="text-sm text-[#A6A6A6] font-normal"
+                            >
+                              {type}
+                            </Label>
+                          </div>
+                        </div>
+                      )
+                    )}
                   </div>
                 </div>
               </div>
@@ -153,51 +221,26 @@ const Hiring = () => {
               <div className="flex flex-col gap-y-3">
                 <h5 className="font-medium text-lg">Experience Level</h5>
                 <div className="flex flex-col gap-y-4">
-                  <div className="flex justify-between">
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        id="terms-2"
-                        className="border w-4 h-4 rounded-[2px]"
-                      />
-                      <div className="grid gap-2">
-                        <Label
-                          htmlFor="terms-2"
-                          className="text-sm text-[#A6A6A6] font-normal"
-                        >
-                          Entry Level
-                        </Label>
+                  <div className="grid grid-cols-2 gap-y-4 justify-between">
+                    {["entry-level", "intermediate", "expert"].map((level) => (
+                      <div key={level} className="flex items-center gap-3">
+                        <Checkbox
+                          checked={filter.experience === level}
+                          onCheckedChange={() =>
+                            handleFilterChange("experience", level)
+                          }
+                          className="data-[state='checked']:bg-white border w-4 h-4 rounded-[2px]"
+                        />
+                        <div className="grid gap-2">
+                          <Label
+                            htmlFor="terms-2"
+                            className="text-sm text-[#A6A6A6] font-normal"
+                          >
+                            {level}
+                          </Label>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        id="terms-2"
-                        className="border w-4 h-4 rounded-[2px]"
-                      />
-                      <div className="grid gap-2">
-                        <Label
-                          htmlFor="terms-2"
-                          className="text-sm text-[#A6A6A6] font-normal"
-                        >
-                          Intermediate
-                        </Label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between">
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        id="terms-2"
-                        className="border w-4 h-4 rounded-[2px]"
-                      />
-                      <div className="grid gap-2">
-                        <Label
-                          htmlFor="terms-2"
-                          className="text-sm text-[#A6A6A6] font-normal"
-                        >
-                          Expert
-                        </Label>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -205,51 +248,26 @@ const Hiring = () => {
               <div className="flex flex-col gap-y-3">
                 <h5 className="font-medium text-lg">On-site/remote</h5>
                 <div className="flex flex-col gap-y-4">
-                  <div className="flex justify-between">
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        id="terms-2"
-                        className="border w-4 h-4 rounded-[2px]"
-                      />
-                      <div className="grid gap-2">
-                        <Label
-                          htmlFor="terms-2"
-                          className="text-sm text-[#A6A6A6] font-normal"
-                        >
-                          On-Site
-                        </Label>
+                  <div className="grid grid-cols-2 gap-y-4 justify-between">
+                    {["Onsite", "Remote", "Hybrid"].map((loc) => (
+                      <div key={loc} className="flex items-center gap-3">
+                        <Checkbox
+                          checked={filter.location_type === loc}
+                          onCheckedChange={() =>
+                            handleFilterChange("location_type", loc)
+                          }
+                          className="data-[state='checked']:bg-white border w-4 h-4 rounded-[2px]"
+                        />
+                        <div className="grid gap-2">
+                          <Label
+                            htmlFor="terms-2"
+                            className="text-sm text-[#A6A6A6] font-normal"
+                          >
+                            {loc}
+                          </Label>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        id="terms-2"
-                        className="border w-4 h-4 rounded-[2px]"
-                      />
-                      <div className="grid gap-2">
-                        <Label
-                          htmlFor="terms-2"
-                          className="text-sm text-[#A6A6A6] font-normal"
-                        >
-                          Remote
-                        </Label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex justify-between">
-                    <div className="flex items-center gap-3">
-                      <Checkbox
-                        id="terms-2"
-                        className="border w-4 h-4 rounded-[2px]"
-                      />
-                      <div className="grid gap-2">
-                        <Label
-                          htmlFor="terms-2"
-                          className="text-sm text-[#A6A6A6] font-normal"
-                        >
-                          Hybrid
-                        </Label>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -257,16 +275,56 @@ const Hiring = () => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+      <>
+        {loading && hiringPosts?.length === 0
+          ? [...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="w-full h-[200px] my-4" />
+            ))
+          : displayedPost?.map((post, index) => {
+              return (
+                <div
+                  key={post.uuid}
+                  ref={index === displayedPost.length - 1 ? ref : undefined}
+                  className="not-last:mb-5"
+                >
+                  <HiringCard
+                    post={post}
+                    removeBookmark={handleDeleteBookmark}
+                    isPrivate
+                  />
+                </div>
+              );
+            })}
 
-      <div className="flex flex-col gap-y-4">
-        {hiringPosts.map((post) => {
-          return loading ? (
-            <Skeleton key={post.uuid} className="w-full h-[200px] my-4" />
-          ) : (
-            <HiringCard key={post.uuid} post={post}  removeBookmark={handleDeleteBookmark} />
-          );
-        })}
-      </div>
+        {loading && hiringPosts?.length > 0 && (
+          <Skeleton className="w-full h-[200px] my-4" />
+        )}
+
+        {!loading && displayedPost.length === 0 && (
+          <p className="text-center text-gray-400 py-8">
+            No results match your filters.
+          </p>
+        )}
+      </>
+
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{
+              opacity: scrollUp ? 0.5 : 1,
+              y: 0,
+            }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.2 }}
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-1/2 -translate-x-1/2 z-50 p-3 rounded-full bg-[#1E1E1E] text-white shadow-lg border border-[#303030] backdrop-blur-md hover:opacity-100 transition"
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

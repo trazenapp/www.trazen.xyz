@@ -15,10 +15,15 @@ import { useVisitedLinks } from "@/hooks/useVisitedLinks";
 const BountyCard = ({ bounty }: { bounty: BountyItemResponse }) => {
   const avatarUrl =
     bounty?.project?.user?.avatar || "https://github.com/shadcn.png";
-    const { isVisited, markVisited } = useVisitedLinks();
+  const { isVisited, markVisited } = useVisitedLinks();
   const visited = isVisited(bounty?.link);
   return (
-    <Link href={bounty?.link} target="_blank" onClick={() => markVisited(bounty?.link)} className={`${visited ? "opacity-50" : "opacity-100"} transition-opacity`}>
+    <Link
+      href={bounty?.link}
+      target="_blank"
+      onClick={() => markVisited(bounty?.link)}
+      className={`${visited ? "opacity-50" : "opacity-100"} transition-opacity`}
+    >
       <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0 ">
         <div className="flex justify-between items-center">
           <div className="flex items-start gap-x-3.5 font-sans w-11/12">

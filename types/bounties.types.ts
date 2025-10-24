@@ -1,4 +1,5 @@
 import { ProjectDetail } from "@/types/project.types";
+import { PostPagination } from "@/types/post.types";
 
 export interface BountyItem {
   project_uuid: string;
@@ -17,6 +18,8 @@ export interface BountiesState {
   data?: BountyItem;
   bountyData?: BountyItemResponse[];
   bountyDetail?: BountyItemResponse | null;
+  pagination: PostPagination;
+  hasMore: boolean;
 }
 
 export interface BountyItemResponse {

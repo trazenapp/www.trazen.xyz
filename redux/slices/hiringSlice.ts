@@ -1,7 +1,11 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "@/utils/axios";
 import type { RootState } from "@/redux/store";
-import { HiringPostPayload, HiringPost, HiringState } from "@/types/hiring.types";
+import {
+  HiringPostPayload,
+  HiringPost,
+  HiringState,
+} from "@/types/hiring.types";
 
 const initialState: HiringState = {
   loading: false,
@@ -9,6 +13,13 @@ const initialState: HiringState = {
   lastCreated: undefined,
   data: undefined,
   hiringPosts: [],
+  pagination: {
+    total: 0,
+    page: 0,
+    limit: 0,
+    totalPages: 0,
+  },
+  hasMore: false,
   hiringPostItem: undefined,
   bookmark: false,
 };
@@ -72,15 +83,63 @@ export const createHiring = createAsyncThunk<
 
 export const fetchPublicHiring = createAsyncThunk(
   "hiring/fetchPublicHiring",
-  async (_, { rejectWithValue }) => {
+  async (
+    { page, limit }: { page: number; limit: number },
+    { getState, rejectWithValue }
+  ) => {
     try {
-      const response = await axiosInstance.get(`/v1/hire/public`);
-      const data = response.data?.data.hires;
+      const state = getState();
+      const token = (state as RootState).register?.token ?? null;
 
+      const response = await axiosInstance.get(
+        `/v1/hire/public?page=${page}&limit=${limit}`,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY ?? "",
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY ?? "",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      );
+
+      const data = response.data?.data;
       console.log(data);
-      return data;
+      return { hires: data.hires, pagination: data.pagination };
     } catch (err: any) {
       console.error("fetchPublicHiring error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error fetching public hiring"
+      );
+    }
+  }
+);
+
+export const fetchPrivateHiring = createAsyncThunk(
+  "hiring/fetchPrivateHiring",
+  async (
+    { status, page, limit }: { status: string; page: number; limit: number },
+    { getState, rejectWithValue }
+  ) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register?.token ?? null;
+
+      const response = await axiosInstance.get(
+        `/v1/hire/public?status=${status}&page=${page}&limit=${limit}`,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY ?? "",
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY ?? "",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      );
+
+      const data = response.data?.data;
+      console.log(data);
+      return { hires: data.hires, pagination: data.pagination };
+    } catch (err: any) {
+      console.error("fetchPrivateHiring error", err);
       return rejectWithValue(
         err?.response?.data?.message || "Error fetching public hiring"
       );
@@ -144,7 +203,17 @@ const eventsSlice = createSlice({
         (state, action: PayloadAction<any>) => {
           state.loading = false;
           state.error = null;
-          state.hiringPosts = action.payload;
+          const newPosts = action.payload.hires;
+          const { pagination } = action.payload;
+
+          if (pagination.page === 1) {
+            state.hiringPosts = newPosts;
+          } else {
+            state.hiringPosts = [...state.hiringPosts, ...newPosts];
+          }
+
+          state.pagination = pagination;
+          state.hasMore = pagination.page < pagination.totalPages;
         }
       )
       .addCase(fetchPublicHiring.rejected, (state, action) => {

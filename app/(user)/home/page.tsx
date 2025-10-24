@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -17,16 +17,40 @@ import { chainOptions, nicheOptions } from "@/constants/options";
 import FormRadio from "@/components/form/formRadio";
 import { MdFilterList } from "react-icons/md";
 import { FaCheck } from "react-icons/fa6";
+import { ArrowUp } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Home = () => {
   const router = useRouter();
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [scrollUp, setScrollUp] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      setShowScrollTop(currentY > 400);
+      setScrollUp(currentY < lastScrollY);
+      setLastScrollY(currentY);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
   return (
     <div className="">
       <Tabs
         defaultValue="general-feed"
         className="w-full flex flex-col items-center"
       >
-        <div className="flex flex-row items-center gap-x-5 fixed top-[83px] w-11/12 lg:w-[48.5%] bg-[#0B0B0B]/[50%] backdrop-blur-md z-10 h-20">
+        <div className="flex flex-row items-center gap-x-5 fixed top-[83px] w-11/12 lg:w-[48.5%] bg-[#0B0B0B] z-10 h-20">
           <TabsList className="bg-transparent border border-[#303030] py-1.5 px-2 md:px-[11px] md:py-[5px] h-fit flex-1 rounded-2xl w-full font-sans">
             <TabsTrigger
               value="personal-feed"
@@ -94,6 +118,25 @@ const Home = () => {
           </div>
         </TabsContent>
       </Tabs>
+      
+      <AnimatePresence>
+        {showScrollTop && (
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{
+              opacity: scrollUp ? 0.5 : 1,
+              y: 0,
+            }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.2 }}
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-1/2 -translate-x-1/2 z-50 p-3 rounded-full bg-[#1E1E1E] text-white shadow-lg border border-[#303030] backdrop-blur-md hover:opacity-100 transition"
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

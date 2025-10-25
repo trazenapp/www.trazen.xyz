@@ -67,15 +67,19 @@ export const getBounties = createAsyncThunk(
       const state = getState();
       const token = (state as RootState).register?.token ?? null;
 
-      const res = await axiosInstance.get(`/v1/task/public?page=${page}&limit=${limit}`, {
-        headers: {
-          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY ?? "",
-          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY ?? "",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
+      const res = await axiosInstance.get(
+        `/v1/task/public?page=${page}&limit=${limit}`,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY ?? "",
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY ?? "",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      );
 
-      const data = res.data.data
+      const data = res.data.data;
+      console.log(data);
       return { tasks: data.tasks, pagination: data.pagination };
     } catch (err: any) {
       const msg =
@@ -97,15 +101,19 @@ export const getBountiesPrivate = createAsyncThunk(
       const state = getState();
       const token = (state as RootState).register?.token ?? null;
 
-      const res = await axiosInstance.get(`/v1/task/private?page=${page}&limit=${limit}`, {
-        headers: {
-          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY ?? "",
-          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY ?? "",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-      });
+      const res = await axiosInstance.get(
+        `/v1/task/private?page=${page}&limit=${limit}`,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY ?? "",
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY ?? "",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          },
+        }
+      );
 
-      const data = res.data.data
+      const data = res.data.data;
+      console.log(data);
       return { tasks: data.tasks, pagination: data.pagination };
     } catch (err: any) {
       const msg =
@@ -116,6 +124,64 @@ export const getBountiesPrivate = createAsyncThunk(
     }
   }
 );
+
+export const editBounties = createAsyncThunk(
+  "post/editBounties",
+  async (
+    { data, task_uuid }: { task_uuid: string; data: BountyItem },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.patch(
+        `/v1/task/${task_uuid}`,
+        data,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (err: any) {
+      console.error("editBounties error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error editing bounty"
+      );
+    }
+  }
+);
+
+export const deleteBounties = createAsyncThunk<
+  string,
+  string,
+  { state: RootState } 
+>("post/deleteBounties", async (task_uuid, { rejectWithValue, getState }) => {
+  try {
+    const state = getState();
+    const token = (state as RootState).register.token || null;
+
+    const response = await axiosInstance.delete(`/v1/task/${task_uuid}`, {
+      headers: {
+        "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+        "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (err: any) {
+    console.error("deleteHire error", err);
+    return rejectWithValue(
+      err?.response?.data?.message || "Error deleting hire"
+    );
+  }
+});
 
 const bountiesSlice = createSlice({
   name: "bounties",
@@ -152,23 +218,20 @@ const bountiesSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        getBounties.fulfilled,
-        (state, action) => {
-          state.loading = false;
-          const newPosts = action.payload.tasks;
-          const { pagination } = action.payload;
+      .addCase(getBounties.fulfilled, (state, action) => {
+        state.loading = false;
+        const newPosts = action.payload.tasks;
+        const { pagination } = action.payload;
 
-          if (pagination.page === 1) {
-            state.bountyData = newPosts;
-          } else {
-            state.bountyData = [...(state.bountyData || []), ...newPosts];
-          }
-
-          state.pagination = pagination;
-          state.hasMore = pagination.page < pagination.totalPages;
+        if (pagination.page === 1) {
+          state.bountyData = newPosts;
+        } else {
+          state.bountyData = [...(state.bountyData || []), ...newPosts];
         }
-      )
+
+        state.pagination = pagination;
+        state.hasMore = pagination.page < pagination.totalPages;
+      })
       .addCase(getBounties.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
@@ -177,26 +240,48 @@ const bountiesSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(
-        getBountiesPrivate.fulfilled,
-        (state, action) => {
-          state.loading = false;
-          const newPosts = action.payload.tasks;
-          const { pagination } = action.payload;
+      .addCase(getBountiesPrivate.fulfilled, (state, action) => {
+        state.loading = false;
+        const newPosts = action.payload.tasks;
+        const { pagination } = action.payload;
 
-          if (pagination.page === 1) {
-            state.bountyData = newPosts;
-          } else {
-            state.bountyData = [...(state.bountyData || []), ...newPosts];
-          }
-
-          state.pagination = pagination;
-          state.hasMore = pagination.page < pagination.totalPages;
+        if (pagination.page === 1) {
+          state.bountyData = newPosts;
+        } else {
+          state.bountyData = [...(state.bountyData || []), ...newPosts];
         }
-      )
+
+        state.pagination = pagination;
+        state.hasMore = pagination.page < pagination.totalPages;
+      })
       .addCase(getBountiesPrivate.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+      })
+      .addCase(editBounties.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(editBounties.fulfilled, (state, action) => {
+        state.error = null;
+        state.data = action.payload;
+      })
+      .addCase(editBounties.rejected, (state, action) => {
+        state.error = (action.payload as string) || "Failed to edit bounties";
+      })
+      .addCase(deleteBounties.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(deleteBounties.fulfilled, (state, action) => {
+        state.error = null;
+
+        const deletedBountiesUuid = action.payload;
+
+        state.bountyData = state.bountyData?.filter(
+          (post) => post.uuid !== (deletedBountiesUuid as string)
+        );
+      })
+      .addCase(deleteBounties.rejected, (state, action) => {
+        state.error = (action.payload as string) || "Failed to delete bounties";
       });
   },
 });

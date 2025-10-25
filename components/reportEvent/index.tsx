@@ -1,22 +1,23 @@
-import React, { useState } from "react";
+import React, { useState } from 'react'
+import { EventsItem } from "@/types/event.types";
+import { ReportItem } from "@/types/post.types";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { CircleCheck } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Post, PostItem, ReportItem } from "@/types/post.types";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
-import { reportPost, setLoading } from "@/redux/slices/postSlice";
+import { setLoading, reportPost } from "@/redux/slices/eventSlice";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import { BsFillCheckCircleFill, BsCircle } from "react-icons/bs";
 
-interface ReportPostProps {
-  post?: PostItem;
+interface ReportEventProps {
+  post?: EventsItem;
 }
 
-const ReportPost = ({ post }: ReportPostProps) => {
+const ReportEvent = ({ post }: ReportEventProps) => {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
   const { reportData, error } = useAppSelector(
@@ -50,6 +51,7 @@ const ReportPost = ({ post }: ReportPostProps) => {
       });
     }
   };
+
   return (
     <form
       className="px-4 py-4 flex flex-col gap-y-6"
@@ -127,7 +129,7 @@ const ReportPost = ({ post }: ReportPostProps) => {
         {loading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Submit Report"}
       </Button>
     </form>
-  );
-};
+  )
+}
 
-export default ReportPost;
+export default ReportEvent

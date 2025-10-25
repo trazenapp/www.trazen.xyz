@@ -117,7 +117,9 @@ const Bounty = () => {
                 </div>
               ))
             ) : (
-              <p className="text-gray-400 text-base text-center">No bounties found</p>
+              <p className="text-gray-400 text-base text-center">
+                No bounties found
+              </p>
             )}
           </div>
 

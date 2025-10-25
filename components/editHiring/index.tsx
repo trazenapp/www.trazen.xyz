@@ -1,18 +1,10 @@
-"use client";
-import React from "react";
+import React from 'react'
+import { HiringPostPayload, HiringPost } from "@/types/hiring.types";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
-import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
-import {
-  createHiring,
-  setLoading,
-  updateForm,
-} from "@/redux/slices/hiringSlice";
-import { HiringPostPayload } from "@/types/hiring.types";
-import { useForm, Controller } from "react-hook-form";
-import { toast } from "react-toastify";
-import { ClipLoader } from "react-spinners";
+import { Button } from "../ui/button";
+import { Switch } from "../ui/switch";
 import {
   Select,
   SelectContent,
@@ -22,18 +14,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "../ui/button";
-import { Switch } from "../ui/switch";
+import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
+import {
+  createHiring,
+  setLoading,
+  updateForm,
+  editHiring
+} from "@/redux/slices/hiringSlice";
+import { useForm, Controller } from "react-hook-form";
+import { toast } from "react-toastify";
+import { ClipLoader } from "react-spinners";
 
-type HiringPostProps = {
-  projectId: string;
-};
+interface EditHiringProps {
+  post?: HiringPostPayload;
+  project_uuid?: string;
+}
 
-function HiringPost({ projectId }: HiringPostProps) {
+const EditHiring = ({ post, project_uuid }: EditHiringProps) => {
   const dispatch = useAppDispatch();
   const { loading, data, error } = useAppSelector(
     (state: RootState) => state.hiring
   );
+  const editHiringData = {
+    project_uuid: project_uuid || "",
+    is_published: post?.is_published,
+    title: post?.title,
+    description: post?.description,
+    type: post?.type,
+    experience: post?.experience,
+    location: post?.location,
+    location_type: post?.location_type,
+    pay_range: post?.pay_range,
+    link: post?.link,
+    status: "ONGOING",
+  };
+
   const {
     control,
     handleSubmit,
@@ -42,14 +57,14 @@ function HiringPost({ projectId }: HiringPostProps) {
     setValue,
     resetField,
   } = useForm<HiringPostPayload>({
-    defaultValues: data,
+    defaultValues: editHiringData,
   });
   const values = watch();
 
   const onSubmit = async (data: any) => {
-    const formData: HiringPostPayload = {
+    const formData = {
       ...data,
-      project_uuid: projectId,
+      project_uuid: project_uuid,
       location:
         values.type === "Onsite" || values.type === "Hybrid"
           ? values.location
@@ -60,9 +75,8 @@ function HiringPost({ projectId }: HiringPostProps) {
     console.log(formData);
     try {
       dispatch(setLoading(true));
-      dispatch(updateForm(data));
-      await dispatch(createHiring(formData)).unwrap();
-      toast(<div>Hiring post created successfully</div>, {
+      await dispatch(editHiring({ hire_uuid: (post as HiringPost)?.uuid || "", data: formData })).unwrap();
+      toast(<div>Hiring post edited successfully</div>, {
         theme: "dark",
         type: "success",
       });
@@ -77,7 +91,7 @@ function HiringPost({ projectId }: HiringPostProps) {
       resetField("pay_range");
     } catch (err: any) {
       dispatch(setLoading(false));
-      toast(<div>{err.message || "Failed to create hiring"}</div>, {
+      toast(<div>{err.message || "Failed to edit hiring"}</div>, {
         theme: "dark",
         type: "error",
       });
@@ -85,7 +99,7 @@ function HiringPost({ projectId }: HiringPostProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} className='px-4'>
       <div className="flex flex-col gap-2 mt-4">
         <Label
           htmlFor="title"
@@ -335,7 +349,7 @@ function HiringPost({ projectId }: HiringPostProps) {
         {loading ? <ClipLoader size={16} color="#fff" /> : "Post"}
       </Button>
     </form>
-  );
+  )
 }
 
-export default HiringPost;
+export default EditHiring

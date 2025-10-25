@@ -1,5 +1,5 @@
 import { ProjectDetail } from "@/types/project.types";
-import { PostPagination } from "@/types/post.types";
+import { PostPagination, ReportItem } from "@/types/post.types";
 
 export interface CreateEventPayload {
   project_uuid: string;
@@ -37,4 +37,5 @@ export interface EventsState {
   events?: EventsItem[];
   pagination: PostPagination;
   hasMore: boolean;
+  reportData: ReportItem;
 }

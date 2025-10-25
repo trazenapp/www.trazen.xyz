@@ -40,7 +40,7 @@ export interface BookmarkItem {
 }
 
 export interface ReportItem {
-  reason: "SCAM"|"FAKE"|"INAPPROPRIATE"|"MISLEADING"|"OTHER";
+  reason: "SCAM" | "FAKE" | "INAPPROPRIATE" | "MISLEADING" | "OTHER";
   details: string;
 }
 

@@ -26,7 +26,8 @@ import { useInView } from "react-intersection-observer";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { fetchPrivatePosts } from "@/redux/slices/postSlice";
 import { getEventsPrivate } from "@/redux/slices/eventSlice";
-import { fetchPrivateHiring } from "@/redux/slices/hiringSlice"
+import { fetchPrivateHiring } from "@/redux/slices/hiringSlice";
+import { getBountiesPrivate } from "@/redux/slices/bountiesSlice";
 import {
   getProject,
   setLoading,
@@ -65,18 +66,20 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
   const projectDetail = useAppSelector(
     (state: RootState) => state.project.projectDetail
   );
-  const { privatePosts, loading, pagination, hasMore } = useAppSelector(
+  const { privatePosts, loading: postLoading, pagination: postPagination, hasMore: postHasMore } = useAppSelector(
     (state) => state.post
   );
-  const events = useAppSelector((state: RootState) => state.events.events);
-  const hiringPosts = useAppSelector(
-    (state: RootState) => state.hiring.hiringPosts
+  const { events, loading: eventLoading, pagination: eventPagination, hasMore: eventHasMore } = useAppSelector(
+    (state: RootState) => state.events
   );
-  const bountyData = useAppSelector(
-    (state: RootState) => state.bounties.bountyData
+  const { hiringPosts, loading: hiringLoading, pagination: hiringPagination, hasMore: hiringHasMore } = useAppSelector(
+    (state: RootState) => state.hiring
+  );
+  const { bountyData, loading: bountyLoading, pagination: bountyPagination, hasMore: bountyHasMore } = useAppSelector(
+    (state: RootState) => state.bounties
   );
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState({ feed: 1, events: 1, hiring: 1, bounties: 1 });
   const [activeTab, setActiveTab] = useState("feed-post");
   const { ref, inView } = useInView({
     threshold: 0.1,
@@ -88,7 +91,10 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
         dispatch(getProjectDetail(slug)).unwrap(),
         dispatch(fetchPrivatePosts({ page: 1, limit: 10 })).unwrap(),
         dispatch(getEventsPrivate({ page: 1, limit: 10 })).unwrap(),
-        dispatch(fetchPrivateHiring({ status: "", page: 1, limit: 10 })).unwrap(),
+        dispatch(getBountiesPrivate({ page: 1, limit: 10 })).unwrap(),
+        dispatch(
+          fetchPrivateHiring({ status: "", page: 1, limit: 10 })
+        ).unwrap(),
       ]);
     } catch (err: any) {
       console.log("Error fetching initial data:", err);
@@ -100,23 +106,69 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
   }, [dispatch, slug]);
 
   const loadMore = useCallback(() => {
-    if (page && hasMore && !loading) {
-      setPage((prev: number) => {
-        const nextPage = prev + 1;
-        dispatch(
-          fetchPrivatePosts({ page: nextPage, limit: pagination.limit })
-        );
-        dispatch(getEventsPrivate({ page: nextPage, limit: pagination.limit }));
-        return nextPage;
-      });
+    if (!inView) return;
+
+    switch (activeTab) {
+      case "feed-post":
+        if (postHasMore && !postLoading) {
+          setPage((prev) => {
+            const nextPage = prev.feed + 1;
+            dispatch(fetchPrivatePosts({ page: nextPage, limit: postPagination.limit }));
+            return { ...prev, feed: nextPage };
+          });
+        }
+        break;
+      case "events":
+        if (eventHasMore && !eventLoading) {
+          setPage((prev) => {
+            const nextPage = prev.events + 1;
+            dispatch(getEventsPrivate({ page: nextPage, limit: eventPagination.limit }));
+            return { ...prev, events: nextPage };
+          });
+        }
+        break;
+      case "hiring":
+        if (hiringHasMore && !hiringLoading) {
+          setPage((prev) => {
+            const nextPage = prev.hiring + 1;
+            dispatch(fetchPrivateHiring({ status: "", page: nextPage, limit: hiringPagination.limit }));
+            return { ...prev, hiring: nextPage };
+          });
+        }
+        break;
+      case "bounties":
+        if (bountyHasMore && !bountyLoading) {
+          setPage((prev) => {
+            const nextPage = prev.bounties + 1;
+            dispatch(getBountiesPrivate({ page: nextPage, limit: bountyPagination.limit }));
+            return { ...prev, bounties: nextPage };
+          });
+        }
+        break;
+      default:
+        break;
     }
-  }, [inView, hasMore, dispatch, page, pagination.limit, loading])
+  }, [
+    inView,
+    activeTab,
+    postHasMore,
+    postLoading,
+    postPagination.limit,
+    eventHasMore,
+    eventLoading,
+    eventPagination.limit,
+    hiringHasMore,
+    hiringLoading,
+    hiringPagination.limit,
+    bountyHasMore,
+    bountyLoading,
+    bountyPagination.limit,
+    dispatch,
+  ]);
 
   useEffect(() => {
-    if (inView) {
-      loadMore();
-    }
-  }, [inView, loadMore]);
+    loadMore();
+  }, [loadMore]);
 
   if (!projectDetail) {
     return (
@@ -129,7 +181,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
   return (
     <>
       <div className="xl:w-[50%] lg:w-[50%] lg:flex filter xl:-ml-16 lg:-ml-11">
-        <div className="md:w-full max-lg:px-4">
+        <div className="relative md:w-full max-lg:px-4">
           <div className="w-full flex items-center gap-x-6 font-sans mb-4">
             <Button onClick={router.back} className="border-0 bg-transparent">
               <FaArrowLeft />
@@ -204,7 +256,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
             </div>
           </div>
           <Tabs
-            defaultValue="feed-post"
+            defaultValue={activeTab}
             className="w-full flex flex-col items-center"
           >
             <div className="w-full flex flex-row gap-x-5">
@@ -243,7 +295,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
             </div>
             <TabsContent className="relative w-full h-full" value="feed-post">
               <div className="w-full h-full">
-                {loading && privatePosts.length === 0
+                {postLoading && privatePosts.length === 0
                   ? [...Array(5)].map((_, i) => (
                       <Skeleton key={i} className="w-full h-[200px] my-4" />
                     ))
@@ -254,23 +306,73 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                           index === privatePosts.length - 1 ? ref : undefined
                         }
                       >
-                        <Feedscard post={post} isPrivate />
+                        <MemoizedFeedsCard post={post} isPrivate />
                       </div>
                     ))}
 
-                {loading && privatePosts.length > 0 && (
+                {postLoading && privatePosts.length > 0 && (
                   <Skeleton className="w-full h-[200px] my-4" />
                 )}
               </div>
             </TabsContent>
             <TabsContent className="relative w-full h-full" value="events">
-              {/* <Feedscard pioneer={true} /> */}
+              <div className="w-full h-full grid grid-cols-1 gap-y-5">
+                {eventLoading && events?.length === 0
+                  ? [...Array(5)].map((_, i) => (
+                      <Skeleton key={i} className="w-full h-[200px] my-4" />
+                    ))
+                  : events?.map((event, index) => (
+                      <div
+                        key={event.uuid}
+                        ref={index === events.length - 1 ? ref : undefined}
+                      >
+                        <MemoizedEventCard event={event} isPrivate />
+                      </div>
+                    ))}
+                {eventLoading && events && events.length > 0 && (
+                  <Skeleton className="w-full h-[200px] my-4" />
+                )}
+              </div>
             </TabsContent>
             <TabsContent className="relative w-full h-full" value="hiring">
-              {/* <Feedscard pioneer={true} /> */}
+              <div className="w-full h-full grid grid-cols-1 gap-y-5">
+                {hiringLoading && hiringPosts.length === 0
+                  ? [...Array(5)].map((_, i) => (
+                      <Skeleton key={i} className="w-full h-[200px] my-4" />
+                    ))
+                  : hiringPosts.map((post, index) => {
+                    console.log(hiringPosts)
+                    return(
+                      <div
+                        key={post.uuid}
+                        ref={index === hiringPosts.length - 1 ? ref : undefined}
+                      >
+                        <MemoizedHiringCard post={post} isPrivate project_uuid={projectDetail.uuid} />
+                      </div>
+                    )})}
+                {hiringLoading && hiringPosts.length > 0 && (
+                  <Skeleton className="w-full h-[200px] my-4" />
+                )}
+              </div>
             </TabsContent>
             <TabsContent className="relative w-full h-full" value="bounties">
-              {/* <Feedscard pioneer={true} /> */}
+              <div className="w-full h-full grid grid-cols-1 gap-y-5">
+                {bountyLoading && bountyData?.length === 0
+                  ? [...Array(5)].map((_, i) => (
+                      <Skeleton key={i} className="w-full h-[200px] my-4" />
+                    ))
+                  : bountyData?.map((bounty, index) => (
+                      <div
+                        key={bounty.uuid}
+                        ref={index === bountyData?.length - 1 ? ref : undefined}
+                      >
+                        <MemoizedBountyCard bounty={bounty} isPrivate />
+                      </div>
+                    ))}
+                {bountyLoading && bountyData && bountyData?.length > 0 && (
+                  <Skeleton className="w-full h-[200px] my-4" />
+                )}
+              </div>
             </TabsContent>
             <TabsContent
               className="relative w-full h-full"

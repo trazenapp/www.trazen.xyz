@@ -524,7 +524,6 @@ const postSlice = createSlice({
 
         const deletedPostUuid = action.payload;
 
-        // Remove deleted post from all relevant lists
         state.publicPosts = state.publicPosts.filter(
           (post) => post.uuid !== (deletedPostUuid as string)
         );
@@ -535,7 +534,6 @@ const postSlice = createSlice({
           (post) => post.uuid !== (deletedPostUuid as string)
         );
 
-        // If the deleted post was currently loaded in details, clear it
         if (state.postDetails?.uuid === (deletedPostUuid as string)) {
           state.postDetails = {} as PostItem;
         }

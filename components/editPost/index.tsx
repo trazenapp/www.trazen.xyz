@@ -11,10 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import Picker, { Theme } from "emoji-picker-react";
 import { useFileUpload } from "@/utils/uploadPostMedia";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
-import {
-  saveDraft,
-  editPost,
-} from "@/redux/slices/postSlice";
+import { saveDraft, editPost } from "@/redux/slices/postSlice";
 import { Post, PostItem } from "@/types/post.types";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -41,7 +38,6 @@ const EditPost = ({ post }: EditPostProps) => {
     is_published: post?.is_published,
   };
 
-
   const {
     control,
     handleSubmit,
@@ -53,7 +49,7 @@ const EditPost = ({ post }: EditPostProps) => {
     defaultValues: editPostData,
   });
   const values = watch();
-  
+
   const finalData = (formData: Post) => {
     return {
       project_uuid: formData.project_uuid,
@@ -137,7 +133,9 @@ const EditPost = ({ post }: EditPostProps) => {
     try {
       console.log(finalData(data));
       setIsLoading(true);
-      await dispatch(editPost({ post_uuid: post?.uuid as string, data: finalData(data)})).unwrap();
+      await dispatch(
+        editPost({ post_uuid: post?.uuid as string, data: finalData(data) })
+      ).unwrap();
       toast(<div>Post edited successfully</div>, {
         theme: "dark",
         type: "success",
@@ -245,16 +243,17 @@ const EditPost = ({ post }: EditPostProps) => {
                   defaultValue={false}
                   render={({ field }) => {
                     return (
-                    <>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={(checked) => field.onChange(checked)}
-                      />
-                      <Label className="text-sm text-gray-400">
-                        {field.value ? "Publish post" : "Save as draft"}
-                      </Label>
-                    </>
-                  )}}
+                      <>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={(checked) => field.onChange(checked)}
+                        />
+                        <Label className="text-sm text-gray-400">
+                          {field.value ? "Publish post" : "Save as draft"}
+                        </Label>
+                      </>
+                    );
+                  }}
                 />
               </div>
               <Button className="bg-transparent !p-0 hover:bg-transparent">
@@ -266,7 +265,11 @@ const EditPost = ({ post }: EditPostProps) => {
                 </p>
               </Button>
               <Button className="bg-[#430B68] rounded-full w-[111px] text-sm py-2.5">
-                {isLoading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Post"}
+                {isLoading ? (
+                  <ClipLoader color="#F4F4F4F4" size={20} />
+                ) : (
+                  "Post"
+                )}
               </Button>
             </div>
           </div>

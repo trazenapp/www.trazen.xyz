@@ -97,7 +97,7 @@ const Hiring = () => {
       });
     }
   }, [inView, hasMore, dispatch, page, pagination.limit, loading]);
-  
+
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -126,8 +126,8 @@ const Hiring = () => {
   };
 
   const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="w-full h-full">
@@ -290,7 +290,7 @@ const Hiring = () => {
                   <HiringCard
                     post={post}
                     removeBookmark={handleDeleteBookmark}
-                    isPrivate
+                    isPrivate={false}
                   />
                 </div>
               );

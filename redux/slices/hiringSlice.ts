@@ -76,7 +76,7 @@ export const createHiring = createAsyncThunk<
     return res.data;
   } catch (err: any) {
     const msg =
-      err?.response?.data?.message || err?.message || "Failed to create event";
+      err?.response?.data?.message || err?.message || "Failed to create Hiring";
     return rejectWithValue(msg);
   }
 });
@@ -165,7 +165,65 @@ export const fetchHiringDetails = createAsyncThunk<
   }
 });
 
-const eventsSlice = createSlice({
+export const editHiring = createAsyncThunk(
+  "post/editHiring",
+  async (
+    { data, hire_uuid }: { hire_uuid: string; data: HiringPostPayload },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.patch(
+        `/v1/hire/${hire_uuid}`,
+        data,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (err: any) {
+      console.error("editPost error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error editing post"
+      );
+    }
+  }
+);
+
+export const deleteHiring = createAsyncThunk<
+  string,
+  string,
+  { state: RootState } 
+>("post/deleteHiring", async (hire_uuid, { rejectWithValue, getState }) => {
+  try {
+    const state = getState();
+    const token = (state as RootState).register.token || null;
+
+    const response = await axiosInstance.delete(`/v1/hire/${hire_uuid}`, {
+      headers: {
+        "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+        "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (err: any) {
+    console.error("deleteHire error", err);
+    return rejectWithValue(
+      err?.response?.data?.message || "Error deleting hire"
+    );
+  }
+});
+
+const hiringSlice = createSlice({
   name: "hiring",
   initialState,
   reducers: {
@@ -221,6 +279,33 @@ const eventsSlice = createSlice({
         state.error =
           (action.payload as string) || "Failed to fetch public hires";
       })
+      .addCase(fetchPrivateHiring.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchPrivateHiring.fulfilled,
+        (state, action: PayloadAction<any>) => {
+          state.loading = false;
+          state.error = null;
+          const newPosts = action.payload.hires;
+          const { pagination } = action.payload;
+
+          if (pagination.page === 1) {
+            state.hiringPosts = newPosts;
+          } else {
+            state.hiringPosts = [...state.hiringPosts, ...newPosts];
+          }
+
+          state.pagination = pagination;
+          state.hasMore = pagination.page < pagination.totalPages;
+        }
+      )
+      .addCase(fetchPrivateHiring.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          (action.payload as string) || "Failed to fetch public hires";
+      })
       .addCase(fetchHiringDetails.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -253,9 +338,38 @@ const eventsSlice = createSlice({
       .addCase(bookmarkHiring.rejected, (state, action) => {
         // state.loading = false;
         state.error = (action.payload as string) || "Failed to bookmark hiring";
+      })
+      .addCase(editHiring.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(editHiring.fulfilled, (state, action) => {
+        state.error = null;
+        state.data = action.payload;
+      })
+      .addCase(editHiring.rejected, (state, action) => {
+        state.error = (action.payload as string) || "Failed to edit hiring";
+      })
+      .addCase(deleteHiring.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(deleteHiring.fulfilled, (state, action) => {
+        state.error = null;
+
+        const deletedHiringUuid = action.payload;
+
+        state.hiringPosts = state.hiringPosts.filter(
+          (post) => post.uuid !== (deletedHiringUuid as string)
+        );
+
+        if (state.hiringPostItem?.uuid === (deletedHiringUuid as string)) {
+          state.hiringPostItem = {} as HiringPost;
+        }
+      })
+      .addCase(deleteHiring.rejected, (state, action) => {
+        state.error = (action.payload as string) || "Failed to delete hiring";
       });
   },
 });
 
-export const { clearHiringError, setLoading, updateForm } = eventsSlice.actions;
-export default eventsSlice.reducer;
+export const { clearHiringError, setLoading, updateForm } = hiringSlice.actions;
+export default hiringSlice.reducer;

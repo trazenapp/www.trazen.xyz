@@ -50,7 +50,7 @@ const Home = () => {
         defaultValue="general-feed"
         className="w-full flex flex-col items-center"
       >
-        <div className="flex flex-row items-center gap-x-5 fixed top-[83px] w-11/12 lg:w-[48.5%] bg-[#0B0B0B] z-10 h-20">
+        <div className="flex flex-row items-center gap-x-5 fixed top-[60px] lg:top-[83px] w-[95%] lg:w-[48.5%] bg-[#0B0B0B] z-10 h-20">
           <TabsList className="bg-transparent border border-[#303030] py-1.5 px-2 md:px-[11px] md:py-[5px] h-fit flex-1 rounded-2xl w-full font-sans">
             <TabsTrigger
               value="personal-feed"

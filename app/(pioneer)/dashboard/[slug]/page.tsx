@@ -66,20 +66,37 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
   const projectDetail = useAppSelector(
     (state: RootState) => state.project.projectDetail
   );
-  const { privatePosts, loading: postLoading, pagination: postPagination, hasMore: postHasMore } = useAppSelector(
-    (state) => state.post
-  );
-  const { events, loading: eventLoading, pagination: eventPagination, hasMore: eventHasMore } = useAppSelector(
-    (state: RootState) => state.events
-  );
-  const { hiringPosts, loading: hiringLoading, pagination: hiringPagination, hasMore: hiringHasMore } = useAppSelector(
-    (state: RootState) => state.hiring
-  );
-  const { bountyData, loading: bountyLoading, pagination: bountyPagination, hasMore: bountyHasMore } = useAppSelector(
-    (state: RootState) => state.bounties
-  );
+  const {
+    privatePosts,
+    loading: postLoading,
+    pagination: postPagination,
+    hasMore: postHasMore,
+  } = useAppSelector((state) => state.post);
+  const {
+    events,
+    loading: eventLoading,
+    pagination: eventPagination,
+    hasMore: eventHasMore,
+  } = useAppSelector((state: RootState) => state.events);
+  const {
+    hiringPosts,
+    loading: hiringLoading,
+    pagination: hiringPagination,
+    hasMore: hiringHasMore,
+  } = useAppSelector((state: RootState) => state.hiring);
+  const {
+    bountyData,
+    loading: bountyLoading,
+    pagination: bountyPagination,
+    hasMore: bountyHasMore,
+  } = useAppSelector((state: RootState) => state.bounties);
 
-  const [page, setPage] = useState({ feed: 1, events: 1, hiring: 1, bounties: 1 });
+  const [page, setPage] = useState({
+    feed: 1,
+    events: 1,
+    hiring: 1,
+    bounties: 1,
+  });
   const [activeTab, setActiveTab] = useState("feed-post");
   const { ref, inView } = useInView({
     threshold: 0.1,
@@ -113,7 +130,9 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
         if (postHasMore && !postLoading) {
           setPage((prev) => {
             const nextPage = prev.feed + 1;
-            dispatch(fetchPrivatePosts({ page: nextPage, limit: postPagination.limit }));
+            dispatch(
+              fetchPrivatePosts({ page: nextPage, limit: postPagination.limit })
+            );
             return { ...prev, feed: nextPage };
           });
         }
@@ -122,7 +141,9 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
         if (eventHasMore && !eventLoading) {
           setPage((prev) => {
             const nextPage = prev.events + 1;
-            dispatch(getEventsPrivate({ page: nextPage, limit: eventPagination.limit }));
+            dispatch(
+              getEventsPrivate({ page: nextPage, limit: eventPagination.limit })
+            );
             return { ...prev, events: nextPage };
           });
         }
@@ -131,7 +152,13 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
         if (hiringHasMore && !hiringLoading) {
           setPage((prev) => {
             const nextPage = prev.hiring + 1;
-            dispatch(fetchPrivateHiring({ status: "", page: nextPage, limit: hiringPagination.limit }));
+            dispatch(
+              fetchPrivateHiring({
+                status: "",
+                page: nextPage,
+                limit: hiringPagination.limit,
+              })
+            );
             return { ...prev, hiring: nextPage };
           });
         }
@@ -140,7 +167,12 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
         if (bountyHasMore && !bountyLoading) {
           setPage((prev) => {
             const nextPage = prev.bounties + 1;
-            dispatch(getBountiesPrivate({ page: nextPage, limit: bountyPagination.limit }));
+            dispatch(
+              getBountiesPrivate({
+                page: nextPage,
+                limit: bountyPagination.limit,
+              })
+            );
             return { ...prev, bounties: nextPage };
           });
         }
@@ -341,15 +373,22 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                       <Skeleton key={i} className="w-full h-[200px] my-4" />
                     ))
                   : hiringPosts.map((post, index) => {
-                    console.log(hiringPosts)
-                    return(
-                      <div
-                        key={post.uuid}
-                        ref={index === hiringPosts.length - 1 ? ref : undefined}
-                      >
-                        <MemoizedHiringCard post={post} isPrivate project_uuid={projectDetail.uuid} />
-                      </div>
-                    )})}
+                      console.log(hiringPosts);
+                      return (
+                        <div
+                          key={post.uuid}
+                          ref={
+                            index === hiringPosts.length - 1 ? ref : undefined
+                          }
+                        >
+                          <MemoizedHiringCard
+                            post={post}
+                            isPrivate
+                            project_uuid={projectDetail.uuid}
+                          />
+                        </div>
+                      );
+                    })}
                 {hiringLoading && hiringPosts.length > 0 && (
                   <Skeleton className="w-full h-[200px] my-4" />
                 )}

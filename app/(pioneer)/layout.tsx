@@ -1,12 +1,10 @@
 "use client";
 
-import { createContext, useRef } from "react";
+import { useRef } from "react";
 import React from "react";
 import DashboardNav from "@/layouts/DashboardNav";
 import DashboardSidebar from "@/layouts/DashboardSidebar";
-
-export const ParentRefContext =
-  createContext<React.MutableRefObject<HTMLDivElement | null> | null>(null);
+import { ParentRefContext } from "@/context/ParentalRefContext";
 
 const PioneerLayout = ({ children }: { children: React.ReactNode }) => {
   const parentRef = useRef<HTMLDivElement | null>(null);

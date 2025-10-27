@@ -201,7 +201,7 @@ const SignUpForm = () => {
         >
           {loading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Sign Up"}
         </Button>
-        <p className="text-center font-light text-base">
+        <p className="text-center font-light text-sm">
           Already have an account?{" "}
           <Link href="/sign-in" className="font-medium">
             Login

@@ -20,7 +20,7 @@ const initialState: SignUpState = {
   loading: false,
   error: null,
   isAuthenticated: false,
-  steps: 1,
+  steps: 2,
   formData: formData,
   token: null,
 };

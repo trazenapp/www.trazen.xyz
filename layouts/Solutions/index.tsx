@@ -12,6 +12,7 @@ import { useGSAP } from "@gsap/react";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { useRef, useState } from "react";
 import SpotlightCard from "@/components/SpotlightCard";
+import TextType from "@/components/TextType";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -90,11 +91,18 @@ const Solutions = () => {
         <Heading
           className="text-center"
           subText="Whether you're here to stay informed or to share what you're building, we’ve created an experience tailored to your needs"
-        > 
+        >
           The Web3 Feed That Works for{" "}
-          <span className="bg-gradient-to-r italic from-[#9218E1] to-[#BF66FA] text-transparent bg-clip-text">
-            Enthusiasts
-          </span>
+          <TextType
+            text={["Newbies", "Project Owners", "Enthusiasts", "Investors"]}
+            typingSpeed={75}
+            pauseDuration={1500}
+            showCursor={true}
+            cursorCharacter="|"
+            className="bg-gradient-to-r from-[#9218E1] to-[#BF66FA] text-transparent bg-clip-text"
+            variableSpeed={false}
+            onSentenceComplete={() => {}}
+          />
         </Heading>
       </div>
       <Tabs value={tabValue} className="w-full flex flex-col items-center">

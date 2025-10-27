@@ -67,7 +67,7 @@ const Hero = () => {
         className="max-lg:hidden absolute top-1/2 -translate-1/2 lg:-right-[9.5%] md:-right-[10.5%] -right-[21.6%] lg:w-[19%] md:w-[21%] w-[24%]"
       />
       <div className="lg:mt-[118px] mt-[70px] flex flex-col items-center text-center relative z-10">
-        <h1 className="text-[38px] sm:text-[40px] md:text-[45px] text-center lg:text-[50px] xl:text-6xl font-clash-display font-semibold w-10/12 md:w-[79%] lg:w-8/12 mb-6">
+        <h1 className="text-[38px] sm:text-[40px] md:text-[45px] md:l text-center lg:text-[50px] xl:text-6xl font-clash-display font-semibold w-10/12 md:w-[79%] lg:w-8/12 mb-6">
           Stay Ahead in Web3 Easily. Without all the hassle
         </h1>
         <p className="lg:text-sm xl:text-base font-sans font-normal lg:w-[45%] md:w-[45%] w-[75%] mb-8">
@@ -76,12 +76,12 @@ const Hero = () => {
         </p>
         <div className="flex flex-col md:flex-row gap-y-6 md:gap-x-6 items-center ">
           <Button
-            onClick={() => router.push("/sign-up")}
-            className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#9218E1] border border-[#D9D9D9]"
-          >
-            Get started
-          </Button>
-          <Button className="relative p-[1px] rounded-full bg-gradient-to-b from-[#BF66FA] to-[#9218E1] hover:from-[#9218E1] hover:to-[#BF66FA] transition">
+          onClick={() => router.push("/sign-up")}
+          className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#430b68]"
+        >
+          Get started
+        </Button>
+          <Button className="relative p-[1px] rounded-full bg-gradient-to-b from-[#BF66FA] to-[#430b68] hover:from-[#430b68] hover:to-[#BF66FA] transition">
             <div className="bg-[#0b0b0b] rounded-full px-6 py-4 text-white">
               <Link
                 href="https://trazen-1.gitbook.io/trazen/"

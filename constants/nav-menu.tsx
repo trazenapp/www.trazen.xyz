@@ -10,7 +10,7 @@ export const footerMenu = [
     label: "Whitepaper",
     href: "https://trazen-1.gitbook.io/trazen/",
   },
-  { label: "Documentation", href: "#" },
+  { label: "Documentation", href: "https://blog.trazen.xyz" },
   // { label: "Pricing", href: "#" },
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms and Conditions", href: "/terms" },

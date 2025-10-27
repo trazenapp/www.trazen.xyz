@@ -34,7 +34,7 @@ const Navbar = () => {
         </Link>
         <Button
           onClick={() => router.push("/sign-up")}
-          className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#430b68] border border-[#D9D9D9]"
+          className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#430b68]"
         >
           Get started
         </Button>

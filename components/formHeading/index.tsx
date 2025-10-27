@@ -13,7 +13,7 @@ const FormHeading = ({ title, subtitle, className }: FormHeadingProps) => {
         {title}
       </h5>
       {subtitle && (
-        <p className='font-sans text-base font-normal'>
+        <p className='font-sans text-sm font-normal'>
           {subtitle}
         </p>
       )}

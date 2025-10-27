@@ -52,7 +52,7 @@ const Newsletter = () => {
           </Heading>
         </div>
         <div>
-          <Button className="flex gap-x-1 md:gap-x-2.5 rounded-full bg-gradient-to-b from-[#BF66FA] to-[#9218E1] border border-[#D9D9D9] !py-4 !px-4.5 w-max text-xs md:text-base">
+          <Button className="flex gap-x-1 md:gap-x-2.5 rounded-full bg-gradient-to-b from-[#BF66FA] to-[#430b68] !py-4 !px-4.5 w-max text-xs md:text-base">
             <Link
               href="https://waitlist.trazen.xyz/"
               className="font-sans text-sm font-medium text-white text-center flex gap-2 w-max items-center"

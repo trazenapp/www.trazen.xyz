@@ -61,7 +61,7 @@ const Faq = () => {
         </div>
         <Accordion
           type="single"
-          className="w-full md:w-7/12 flex flex-col gap-y-8"
+          className="w-full lg:w-7/12 md:w-10/12 flex flex-col gap-y-8"
           value={openItem}
           onValueChange={(value) => setOpenItem(value)}
           collapsible

@@ -13,7 +13,7 @@ const Footer = () => {
             <li key={item.label} className="md:w-max w-full text-center">
               <Link
                 href={item.href}
-                className="font-sans text-base font-medium text-white text-center"
+                className="font-sans text-sm font-medium text-white text-center"
               >
                 {item.label}
               </Link>
@@ -21,7 +21,7 @@ const Footer = () => {
           ))}
         </ul>
         <div className="border-[0.5px] border-white w-full" />
-        <div className="flex flex-col md:flex-row gap-y-3 md:gap-y-0 items-center md:justify-between mt-10 w-full">
+        <div className="flex flex-col md:flex-row gap-y-3 md:gap-y-0 items-center md:justify-between mt-10 w-full text-sm">
           <Link
             href="https://x.com/trazenxyz/"
             className="h-[42px] w-[42px] rounded-full border flex justify-center items-center"

@@ -38,7 +38,7 @@ const MobileNav = () => {
                   <Link
                     href={item.href}
                     key={item.label}
-                    className="font-sans font-semibold text-base text-white hover:bg-gradient-to-b hover:from-[#BF66FA] hover:to-[#9218E1] hover:bg-clip-text hover:text-transparent transition-all duration-300 ease-in-out"
+                    className="font-sans font-semibold text-sm text-white hover:bg-gradient-to-b hover:from-[#BF66FA] hover:to-[#430b68] hover:bg-clip-text hover:text-transparent transition-all duration-300 ease-in-out"
                   >
                     {item.label}
                   </Link>
@@ -46,14 +46,14 @@ const MobileNav = () => {
               </div>
               <div className="flex flex-col gap-y-7 items-center">
                 <Link
-                  href="/sign-up"
-                  className="font-sans font-semibold text-base text-white hover:bg-gradient-to-b hover:from-[#BF66FA] hover:to-[#9218E1] hover:bg-clip-text hover:text-transparent transition-all duration-300 ease-in-out"
+                  href="/sign-in"
+                  className="font-sans font-semibold text-sm text-white hover:bg-gradient-to-b hover:from-[#BF66FA] hover:to-[#430b68] hover:bg-clip-text hover:text-transparent transition-all duration-300 ease-in-out"
                 >
                   Login
                 </Link>
                 <Button
-                  onClick={() => router.push("/sign-in")}
-                  className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#9218E1] border border-[#D9D9D9]"
+                  onClick={() => router.push("/sign-up")}
+                  className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#430b68] border border-[#D9D9D9]"
                 >
                   Get started
                 </Button>

@@ -44,7 +44,7 @@ const Cta = () => {
             <h4 className="font-sans font-semibold text-[32px] md:text-4xl">
               Stay Ahead of the Curve in Web3
             </h4>
-            <p className="font-sans text-base font-normal">
+            <p className="font-sans text-sm font-normal">
               Don’t just catch up, stay ahead. Get personalized updates,
               real-time project drops, and meaningful community insights
               delivered straight to your feed

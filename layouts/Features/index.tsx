@@ -65,10 +65,10 @@ const Features = () => {
               <div
                 className={`w-full lg:w-1/2 flex flex-col gap-y-6 md:gap-y-8 ${index === 1 && "order-1 lg:order-2"}`}
               >
-                <h4 className="font-semibold text-[32px] md:text-[40px]">
+                <h4 className="font-semibold text-[28px] md:text-[36px]">
                   {item.title}
                 </h4>
-                <p className="text-base font-normal">{item.subtitle}</p>
+                <p className="text-sm font-normal">{item.subtitle}</p>
                 <Link href={item.href} className="flex z-1000">
                   <Button className="relative p-[1px]  backdrop-blur-3xl rounded-full bg-gradient-to-br from-[#c83be5] to-[#2C05334D] hover:from-[#9218e1] hover:to-[#BF66FA] transition w-full lg:w-fit">
                     <div className="bg-[#161616] rounded-full px-6 py-4 text-white flex items-center justify-center gap-x-3.5 w-full ">

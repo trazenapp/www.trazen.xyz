@@ -90,7 +90,7 @@ const Solutions = () => {
         <Heading
           className="text-center"
           subText="Whether you're here to stay informed or to share what you're building, we’ve created an experience tailored to your needs"
-        >
+        > 
           The Web3 Feed That Works for{" "}
           <span className="bg-gradient-to-r italic from-[#9218E1] to-[#BF66FA] text-transparent bg-clip-text">
             Enthusiasts
@@ -100,14 +100,14 @@ const Solutions = () => {
       <Tabs value={tabValue} className="w-full flex flex-col items-center">
         <TabsList className="bg-[#161616] py-1.5 px-2 md:p-[11px] h-fit flex rounded-full w-full md:w-8/12 mb-8 md:mb-12">
           <TabsTrigger
-            className="data-[state=active]:bg-[#430B68] p-[5px] md:p-2.5 h-fit hover:cursor-pointer rounded-full text-[#F4F4F4F4] font-sans text-base md:text-xl"
+            className="data-[state=active]:bg-[#430B68] p-[5px] md:p-2.5 h-fit hover:cursor-pointer rounded-full text-[#F4F4F4F4] font-sans text-sm md:text-base"
             value="users"
             onClick={() => setTabValue("users")}
           >
             Users
           </TabsTrigger>
           <TabsTrigger
-            className="data-[state=active]:bg-[#430B68] p-[5px] md:p-2.5 h-fit hover:cursor-pointer rounded-full text-[#F4F4F4F4] font-sans text-base md:text-xl"
+            className="data-[state=active]:bg-[#430B68] p-[5px] md:p-2.5 h-fit hover:cursor-pointer rounded-full text-[#F4F4F4F4] font-sans text-sm md:text-base"
             value="pioneers"
             onClick={() => setTabValue("pioneers")}
           >
@@ -130,10 +130,10 @@ const Solutions = () => {
                   <div className="w-14 h-14 rounded-[10px] border border-[#434343] flex justify-center items-center font-sans text-white">
                     <Image src={item.image} alt={item.title} className="" />
                   </div>
-                  <h6 className="text-xl font-semibold font-sans">
+                  <h6 className="text-base font-semibold font-sans">
                     {item.title}
                   </h6>
-                  <p className="text-base font-normal leading-7 font-sans">
+                  <p className="text-sm font-normal leading-7 font-sans">
                     {item.subtitle}
                   </p>
                 </Card>
@@ -157,10 +157,10 @@ const Solutions = () => {
                   <div className="w-14 h-14 rounded-[10px] border border-[#434343] flex justify-center items-center font-sans text-white">
                     <Image src={item.image} alt={item.title} className="" />
                   </div>
-                  <h6 className="text-xl font-semibold font-sans">
+                  <h6 className="text-base font-semibold font-sans">
                     {item.title}
                   </h6>
-                  <p className="text-base font-normal leading-7 font-sans">
+                  <p className="text-sm font-normal leading-7 font-sans">
                     {item.subtitle}
                   </p>
                 </Card>

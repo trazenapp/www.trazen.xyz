@@ -75,10 +75,10 @@ const Faq = () => {
                   key={faq.id}
                   className={`px-6 py-[18px] h-fit `}
                 >
-                  <AccordionTrigger className="p-0 font-sans text-xl font-medium hover:cursor-pointer hover:no-underline">
+                  <AccordionTrigger className="p-0 font-sans text-base font-medium hover:cursor-pointer hover:no-underline">
                     {faq.title}
                   </AccordionTrigger>
-                  <AccordionContent className="font-sans text-[#A6A6A6] text-base font-normal mt-[22px]">
+                  <AccordionContent className="font-sans text-[#A6A6A6] text-sm font-normal mt-[22px]">
                     {faq.content}
                   </AccordionContent>
                 </AccordionItem>
@@ -89,10 +89,10 @@ const Faq = () => {
                 key={faq.id}
                 className={`px-6 py-[18px] h-fit rounded-[12px] bg-[#161616] border-0`}
               >
-                <AccordionTrigger className="p-0 font-sans text-xl font-medium hover:cursor-pointer hover:no-underline">
+                <AccordionTrigger className="p-0 font-sans text-base font-medium hover:cursor-pointer hover:no-underline">
                   {faq.title}
                 </AccordionTrigger>
-                <AccordionContent className="font-sans text-[#A6A6A6] text-base font-normal mt-[22px]">
+                <AccordionContent className="font-sans text-[#A6A6A6] text-sm font-normal mt-[22px]">
                   {faq.content}
                 </AccordionContent>
               </AccordionItem>

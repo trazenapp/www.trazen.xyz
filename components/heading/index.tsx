@@ -14,9 +14,11 @@ const Heading = ({ children, className, subText }: HeadingProps) => {
       >
         {children}
       </h3>
-      {subText && <p className="font-sans text-xs md:text-base text-center font-normal flex justify-center mx-auto">
-        {subText}
-      </p>}
+      {subText && (
+        <p className="font-sans text-xs md:text-base text-center font-normal flex justify-center mx-auto">
+          {subText}
+        </p>
+      )}
     </>
   );
 };

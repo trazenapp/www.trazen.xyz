@@ -70,7 +70,7 @@ const Hero = () => {
         <h1 className="text-[38px] sm:text-[40px] md:text-[45px] text-center lg:text-[50px] xl:text-6xl font-clash-display font-semibold w-10/12 md:w-[79%] lg:w-8/12 mb-6">
           Stay Ahead in Web3 Easily. Without all the hassle
         </h1>
-        <p className="lg:text-[16px] xl:text-lg font-sans font-normal lg:w-[45%] md:w-[45%] w-[75%] mb-8">
+        <p className="lg:text-sm xl:text-base font-sans font-normal lg:w-[45%] md:w-[45%] w-[75%] mb-8">
           Your personalized Web3 feed with curated updates, real conversations,
           and real projects in one dynamic hub.
         </p>
@@ -85,7 +85,7 @@ const Hero = () => {
             <div className="bg-[#0b0b0b] rounded-full px-6 py-4 text-white">
               <Link
                 href="https://trazen-1.gitbook.io/trazen/"
-                className="font-sans text-base font-medium text-white text-center"
+                className="font-sans text-sm font-medium text-white text-center"
               >
                 Whitepaper
               </Link>

@@ -3,6 +3,7 @@ import React from "react";
 import ReduxProvider from "@/redux/ReduxProvider";
 import Provider from "@/context/web3AuthContext";
 import { ToastContainer } from "react-toastify";
+import { Toaster } from "react-hot-toast";
 import { cookieToWeb3AuthState } from "@web3auth/modal";
 
 interface ClientProviderProps {
@@ -17,6 +18,7 @@ const ClientProvider = ({ children, cookie }: ClientProviderProps) => {
       <Provider web3authInitialState={web3authInitialState}>
         {children}
         <ToastContainer />
+        <Toaster position="bottom-center" reverseOrder={false} />
       </Provider>
     </ReduxProvider>
   );

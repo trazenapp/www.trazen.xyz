@@ -26,13 +26,12 @@ import {
   setResendLoading,
 } from "@/redux/slices/verifyEmailSlice";
 import { VerifyEmailData } from "@/types/auth.types";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 const VerifyEmailForm = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const [timeLeft, setTimeLeft] = useState(300);
-  const [timerExpired, setTimerExpired] = useState(false);
   const { loading, user } = useAppSelector(
     (state: RootState) => state.register
   );
@@ -41,11 +40,12 @@ const VerifyEmailForm = () => {
   );
 
   useEffect(() => {
+    if(timeLeft <= 0) return
+
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          setTimerExpired(true);
           return 0;
         }
         return prev - 1;
@@ -77,18 +77,22 @@ const VerifyEmailForm = () => {
       dispatch(setLoading(true));
       dispatch(updateFormData(getFormData));
       await dispatch(verifyEmail(getFormData)).unwrap();
-      toast(<div>Email verified successfully</div>, {
-        theme: "dark",
-        type: "success",
+      toast.success((t) => <div>Email verified successfully</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setLoading(false));
       dispatch(resetForm());
       router.push("/on-boarding");
     } catch (err: any) {
       console.log(err);
-      toast(<div>{err}</div>, {
-        theme: "dark",
-        type: "error",
+      toast.error((t) => <div>{err}</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setLoading(false));
     }
@@ -98,18 +102,21 @@ const VerifyEmailForm = () => {
     try {
       dispatch(setResendLoading(true));
       setTimeLeft(300);
-      setTimerExpired(false);
       await dispatch(resendEmailVerification(getEmail as string)).unwrap();
-      toast(<div>Email verification token resent</div>, {
-        theme: "dark",
-        type: "success",
+      toast.success((t) => <div>Email Verification Code Resent</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setResendLoading(false));
     } catch (err: any) {
       console.log(err);
-      toast(<div>{err}</div>, {
-        theme: "dark",
-        type: "error",
+      toast.error((t) => <div>{err}</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setResendLoading(false));
     }
@@ -136,7 +143,15 @@ const VerifyEmailForm = () => {
             control={control}
             rules={{ required: true }}
             render={({ field }) => (
-              <InputOTP maxLength={6} {...field}>
+              <InputOTP
+                maxLength={6}
+                {...field}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSubmit(onSubmit)();
+                  }
+                }}
+              >
                 <InputOTPGroup className="w-full gap-x-4 *:border-0 *:bg-[#272727] *:md:w-[70px] *:md:h-[70px] *:w-[46px] *:h-[46px] *:md:rounded-[12px] *:rounded-[8px] *:data-[active=true]:border-[#430B68] *:data-[active=true]:ring-[#430B68]">
                   <InputOTPSlot index={0} />
                   <InputOTPSlot index={1} />
@@ -164,7 +179,7 @@ const VerifyEmailForm = () => {
             type="button"
             className="p-0 bg-transparent"
             onClick={handleResend}
-            disabled={resendLoading || timerExpired}
+            disabled={resendLoading || timeLeft > 0}
           >
             {resendLoading ? (
               <ClipLoader color="#F4F4F4F4" size={10} />

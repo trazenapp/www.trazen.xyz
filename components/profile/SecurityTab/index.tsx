@@ -1,7 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import Image from "next/image";
-import wallet from "@/public/wallet.svg";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { Label } from "@/components/ui/label";
@@ -17,6 +15,7 @@ import {
   clearError,
 } from "@/redux/slices/changePasswordSlice";
 import { toast } from "react-toastify";
+import { ConnectWallet } from "../connectWallet";
 
 interface FormData {
   oldPassword: string;
@@ -83,17 +82,7 @@ function SecurityTab() {
     <div className="flex-1 p-8 bg-transparent md:bg-[#161616] ml-0 md:ml-4">
       <h2 className="text-white mb-6">Security</h2>
 
-      <label htmlFor="wallet" className="mb-5 mt-8 block">
-        Linked Wallet
-      </label>
-      <button
-        id="wallet"
-        className="flex justify-center gap-3 border border-[#303030] py-3.5 px-4 rounded-[100px] cursor-pointer w-full "
-      >
-        <Image src={wallet} alt="linked wallet" />
-        Connect Wallet
-      </button>
-
+      <ConnectWallet />
       <h2 className="mt-6">Change Password</h2>
 
       <form

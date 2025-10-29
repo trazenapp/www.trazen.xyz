@@ -21,6 +21,7 @@ import hiringReducer from "@/redux/slices/hiringSlice";
 import bookmarkReducer from "@/redux/slices/bookmarkSlice";
 import changePasswordReducer from "@/redux/slices/changePasswordSlice";
 import profileSettingsReducer from "@/redux/slices/profileSlice";
+import createWalletReducer from "@/redux/slices/createWallet";
 
 const persistConfig = {
   key: "root",
@@ -47,6 +48,7 @@ const rootReducer = combineReducers({
   bookmark: bookmarkReducer,
   changePassword: changePasswordReducer,
   profileSettings: profileSettingsReducer,
+  createWallet: createWalletReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

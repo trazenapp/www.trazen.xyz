@@ -26,9 +26,9 @@ import { VerifyEmailData } from "@/types/auth.types";
 const ForgotPasswordEmailVerificationForm = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [timeLeft, setTimeLeft] = useState(300); 
+  const [timeLeft, setTimeLeft] = useState(300);
   const [timerExpired, setTimerExpired] = useState(false);
-  const { data, loading, resendLoading } = useAppSelector(
+  const { formData, loading, resendLoading } = useAppSelector(
     (state: RootState) => state.verifyEmail
   );
   const getEmail = localStorage.getItem("email") || "";
@@ -54,7 +54,7 @@ const ForgotPasswordEmailVerificationForm = () => {
     formState: { errors },
   } = useForm<VerifyEmailData>({
     mode: "all",
-    defaultValues: data,
+    defaultValues: formData,
   });
 
   const onSubmit = async (data: VerifyEmailData) => {
@@ -68,7 +68,7 @@ const ForgotPasswordEmailVerificationForm = () => {
         type: "success",
       });
       dispatch(setLoading(false));
-      dispatch(resetForm());
+      dispatch(resetForm(formData));
       router.push("/reset-password");
     } catch (err: any) {
       console.log(err);
@@ -104,11 +104,14 @@ const ForgotPasswordEmailVerificationForm = () => {
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${minutes}:${secs < 10 ? '0' : ''}${secs}`;
+    return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
   };
 
   return (
-    <form className="font-sans text-[#F4F4F4F4] w-full mt-8 flex flex-col gap-y-8" onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className="font-sans text-[#F4F4F4F4] w-full mt-8 flex flex-col gap-y-8"
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="flex flex-col gap-y-2 w-full">
         <Controller
           name="token"
@@ -169,7 +172,11 @@ const ForgotPasswordEmailVerificationForm = () => {
           onClick={() => handleResend(getEmail as string)}
           disabled={resendLoading}
         >
-          {resendLoading ? <ClipLoader color="#F4F4F4F4" size={10} /> : "Resend"}
+          {resendLoading ? (
+            <ClipLoader color="#F4F4F4F4" size={10} />
+          ) : (
+            "Resend"
+          )}
         </Button>{" "}
         In {formatTime(timeLeft)}
       </p>

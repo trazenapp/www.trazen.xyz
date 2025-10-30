@@ -73,8 +73,8 @@ const registerSlice = createSlice({
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
     },
-    resetForm: (state) => {
-      state.formData = formData;
+    resetForm: (state, action) => {
+      state.formData = action.payload;
     },
     logout: (state) => {
       state.user = null;

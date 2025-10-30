@@ -9,6 +9,7 @@ import {
   signUp,
   resetForm,
 } from "@/redux/slices/registerSlice";
+import { setUserRole } from "@/redux/slices/authSlice";
 import { useForm, Controller } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
 import { Label } from "@/components/ui/label";
@@ -57,6 +58,7 @@ const SignUpForm = () => {
     };
     try {
       dispatch(setLoading(true));
+      dispatch(setUserRole(data.role));
       dispatch(updateFormData({ ...data }));
       await dispatch(signUp(formData)).unwrap();
       toast.success((t) => <div>Account Created</div>, {
@@ -66,7 +68,7 @@ const SignUpForm = () => {
         },
       });
       dispatch(setLoading(false));
-      dispatch(resetForm());
+      dispatch(resetForm(formData));
       dispatch(setSteps(steps + 1));
     } catch (err: any) {
       console.log(err);

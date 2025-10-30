@@ -57,7 +57,7 @@ export interface OnboardingData {
   interests: string[];
   chains?: string[];
   niche?: string[];
-  projects?: string;
+  projects?: string[];
   ref: string;
 }
 
@@ -90,13 +90,16 @@ export interface ResetPasswordData {
 //   projects: string;
 // }
 
+export const AUTH_STEPS_ROUTE = {
+  1: "/sign-up", 2: "/on-boarding", 3: "create-project"
+}
+
 export interface AuthState {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
   isAuthenticated: boolean;
-  steps?: number;
-  data: SignUpData | OnboardingData | SignInData | VerifyEmailData | ForgotPasswordData | ResetPasswordData;
+  authSteps?: number;
+  lastCompletedStep: number;
+  currentRoute: typeof AUTH_STEPS_ROUTE[1];
+  role: "USER" | "PIONEER" | null;
 }
 
 export interface SignUpState {
@@ -133,7 +136,7 @@ export interface EmailVerificationState {
   loading: boolean;
   resendLoading: boolean;
   error: string | null;
-  data: VerifyEmailData;
+  formData: VerifyEmailData;
 }
 
 export interface ResetPasswordState {

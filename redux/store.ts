@@ -3,7 +3,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
-// import authReducer from "@/redux/slices/authSlice";
+import authReducer from "@/redux/slices/authSlice";
 import dashboardSidebarReducer from "@/redux/slices/dashboardSidebarSlice";
 import registerReducer from "@/redux/slices/registerSlice";
 import loginReducer from "@/redux/slices/loginSlice";
@@ -27,11 +27,11 @@ import dashboardReducer from "@/redux/slices/dashboardSlice";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["register", "login"],
+  whitelist: ["register", "login", "auth"],
 };
 
 const rootReducer = combineReducers({
-  // auth: authReducer,
+  auth: authReducer,
   dashboardSidebar: dashboardSidebarReducer,
   register: registerReducer,
   login: loginReducer,

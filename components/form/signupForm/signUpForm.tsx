@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { RootState } from "@/redux/store";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
 import {
   updateFormData,
   setSteps,
@@ -49,6 +48,8 @@ const SignUpForm = () => {
   };
   const passwordType = showPassword ? "text" : "password";
 
+  const registerWithGoogle = async () => {};
+
   const onSubmit = async (data: SignUpData) => {
     console.log(data);
     const formData = {
@@ -94,7 +95,7 @@ const SignUpForm = () => {
         />
       </div>
       <div className="flex flex-col gap-y-4 w-full mb-8">
-        <SignInWithGoogle />
+        <SignInWithGoogle onClick={registerWithGoogle} />
       </div>
       <DividerText text="Or sign up with" />
       <form

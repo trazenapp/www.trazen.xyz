@@ -15,7 +15,7 @@ const SignUp = () => {
   const { steps } = useAppSelector((state) => state.register);
   const handlePrevStep = (steps: number) => {
     if (steps === 1) return;
-  
+
     return dispatch(setSteps(steps - 1));
   };
 

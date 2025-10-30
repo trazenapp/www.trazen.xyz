@@ -22,7 +22,7 @@ export const fetchBookmark = createAsyncThunk(
   "bookmark/fetchBookmark",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/v1/bookmark`);
+      const response = await axiosInstance.get(`/v1/bookmark?page=1&limit=10`);
       const data = response.data?.data.bookmarks;
 
       console.log(data);
@@ -50,6 +50,24 @@ export const fetchBookmarkDetails = createAsyncThunk<
     console.error("fetchBookmarkDetails error", err);
     return rejectWithValue(
       err?.response?.data?.message || "Error fetching bookmark details"
+    );
+  }
+});
+
+export const deleteBookmark = createAsyncThunk<
+  any,
+  { bookmark_uuid: string },
+  { state: RootState }
+>("bookmark/deleteBookmark", async ({ bookmark_uuid }, { rejectWithValue }) => {
+  try {
+    const response = await axiosInstance.delete(`/v1/bookmark/${bookmark_uuid}`);
+    const data = response.data;
+    console.log(data);
+    return data;
+  } catch (err: any) {
+    console.error("deleteBookmark error", err);
+    return rejectWithValue(
+      err?.response?.data?.message || "Error deleting bookmark"
     );
   }
 });

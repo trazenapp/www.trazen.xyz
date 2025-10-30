@@ -10,6 +10,7 @@ export interface Wallet {
 }
 
 export interface UserProfile {
+  avatar: string | null;
   id: number;
   uuid: string;
   email: string;
@@ -23,5 +24,4 @@ export interface UserProfile {
   email_verified_at: string | null;
   created_at: string;
   updated_at: string;
-  wallets: Wallet[];
 }

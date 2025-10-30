@@ -7,8 +7,10 @@ import {
   Post,
   PostItem,
   PostPagination,
+  ReportItem,
 } from "@/types/post.types";
 import { RootState } from "@/redux/store";
+import { string } from "slate";
 
 const initialState: PostState = {
   loading: false,
@@ -34,8 +36,13 @@ const initialState: PostState = {
   hasMore: false,
   publicPosts: [],
   privatePosts: [],
+  followedPosts: [],
   postDetails: {} as PostItem,
   bookmark: false,
+  reportData: {
+    reason: "SCAM",
+    details: "",
+  },
 };
 
 export const fetchPublicPosts = createAsyncThunk<
@@ -71,7 +78,39 @@ export const fetchPrivatePosts = createAsyncThunk<
         `/v1/post/private?status=status&page=${page}&limit=${limit}`
       );
       const data = response.data?.data;
+
+      console.log(data);
       return { privatePosts: data.posts, pagination: data.pagination };
+    } catch (err: any) {
+      console.error("fetchPosts error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error fetching posts"
+      );
+    }
+  }
+);
+
+export const fetchFollowedPosts = createAsyncThunk<
+  { followedPosts: PostItem[]; pagination: PostPagination },
+  { search: string; page: number; limit: number }
+>(
+  "post/fetchFollowedPosts",
+  async ({ search = "", page = 1, limit = 10 }, { rejectWithValue }) => {
+    try {
+      let response;
+      if (search.length > 3) {
+        response = await axiosInstance.get(
+          `/v1/post/feed?search=${search}&page=${page}&limit=${limit}`
+        );
+      } else {
+        response = await axiosInstance.get(
+          `/v1/post/feed?page=${page}&limit=${limit}`
+        );
+      }
+      const data = response.data?.data;
+
+      console.log(data);
+      return { followedPosts: data.posts, pagination: data.pagination };
     } catch (err: any) {
       console.error("fetchPosts error", err);
       return rejectWithValue(
@@ -256,6 +295,91 @@ export const bookmarkPost = createAsyncThunk<
     return rejectWithValue(
       err?.response?.data?.message || "Error bookmarking post"
     );
+
+    const response = await axiosInstance.post(
+      `/v1/post/bookmark/${post_uuid}`,
+      {
+        headers: {
+          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    console.log("Bookmark response:", response.data);
+    return response.data;
+  } catch (err: any) {
+    console.error("bookmarkPost error", err?.response?.data || err.message);
+    return rejectWithValue(
+      err?.response?.data?.message || "Error bookmarking post"
+    );
+  }
+});
+
+export const reportPost = createAsyncThunk(
+  "post/reportPost",
+  async (
+    { data, post_uuid }: { post_uuid: string; data: ReportItem },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.post(
+        `/v1/post/report/${post_uuid}`,
+        data,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Follow response:", response.data);
+      return response.data;
+    } catch (err: any) {
+      console.error("reportPost error", err?.response?.data || err.message);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error reporting project"
+      );
+    }
+  }
+);
+
+export const followPost = createAsyncThunk<
+  any,
+  { project_uuid: string },
+  { state: RootState }
+>(
+  "post/followPost",
+  async ({ project_uuid }, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.post(
+        `/v1/project/follow/${project_uuid}`,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("Follow response:", response.data);
+      return response.data;
+    } catch (err: any) {
+      console.error("followPost error", err?.response?.data || err.message);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error following project"
+      );
+    }
   }
 });
 
@@ -283,6 +407,64 @@ export const createPost = createAsyncThunk<Post, { state: RootState }>(
     }
   }
 );
+
+export const editPost = createAsyncThunk(
+  "post/editPost",
+  async (
+    { data, post_uuid }: { post_uuid: string; data: Post },
+    { rejectWithValue, getState }
+  ) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.patch(
+        `/v1/post/${post_uuid}`,
+        data,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (err: any) {
+      console.error("editPost error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error editing post"
+      );
+    }
+  }
+);
+
+export const deletePost = createAsyncThunk<
+  string,
+  string,
+  { state: RootState } // thunk API type
+>("post/deletePost", async (post_uuid, { rejectWithValue, getState }) => {
+  try {
+    const state = getState();
+    const token = (state as RootState).register.token || null;
+
+    const response = await axiosInstance.delete(`/v1/post/${post_uuid}`, {
+      headers: {
+        "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+        "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data;
+  } catch (err: any) {
+    console.error("deletePost error", err);
+    return rejectWithValue(
+      err?.response?.data?.message || "Error deleting post"
+    );
+  }
+});
 
 const postSlice = createSlice({
   name: "post",
@@ -333,6 +515,51 @@ const postSlice = createSlice({
         state.loading = false;
         state.error = (action.payload as string) || "Failed to create post";
       })
+      .addCase(editPost.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(editPost.fulfilled, (state, action) => {
+        state.error = null;
+        state.data = action.payload;
+      })
+      .addCase(editPost.rejected, (state, action) => {
+        state.error = (action.payload as string) || "Failed to edit post";
+      })
+      .addCase(reportPost.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(reportPost.fulfilled, (state, action) => {
+        state.error = null;
+        state.reportData = action.payload;
+      })
+      .addCase(reportPost.rejected, (state, action) => {
+        state.error = (action.payload as string) || "Failed to edit post";
+      })
+      .addCase(deletePost.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(deletePost.fulfilled, (state, action) => {
+        state.error = null;
+
+        const deletedPostUuid = action.payload;
+
+        state.publicPosts = state.publicPosts.filter(
+          (post) => post.uuid !== (deletedPostUuid as string)
+        );
+        state.privatePosts = state.privatePosts.filter(
+          (post) => post.uuid !== (deletedPostUuid as string)
+        );
+        state.followedPosts = state.followedPosts.filter(
+          (post) => post.uuid !== (deletedPostUuid as string)
+        );
+
+        if (state.postDetails?.uuid === (deletedPostUuid as string)) {
+          state.postDetails = {} as PostItem;
+        }
+      })
+      .addCase(deletePost.rejected, (state, action) => {
+        state.error = (action.payload as string) || "Failed to edit post";
+      })
       .addCase(fetchPublicPosts.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -352,6 +579,28 @@ const postSlice = createSlice({
         state.hasMore = pagination.page < pagination.totalPages;
       })
       .addCase(fetchPublicPosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Something went wrong";
+      })
+      .addCase(fetchFollowedPosts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchFollowedPosts.fulfilled, (state, action) => {
+        state.loading = false;
+        const newPosts = action.payload.followedPosts;
+        const { pagination } = action.payload;
+
+        if (pagination.page === 1) {
+          state.followedPosts = newPosts;
+        } else {
+          state.followedPosts = [...state.followedPosts, ...newPosts];
+        }
+
+        state.pagination = pagination;
+        state.hasMore = pagination.page < pagination.totalPages;
+      })
+      .addCase(fetchFollowedPosts.rejected, (state, action) => {
         state.loading = false;
         state.error = (action.payload as string) || "Something went wrong";
       })
@@ -390,16 +639,17 @@ const postSlice = createSlice({
         state.error = (action.payload as string) || "Something went wrong";
       })
       .addCase(bookmarkPost.pending, (state) => {
-        state.loading = true;
+        // state.loading = true;
         state.error = null;
       })
       .addCase(bookmarkPost.fulfilled, (state, action) => {
-        state.loading = false;
+        // state.loading = false;
         state.error = null;
         state.bookmark = action.payload;
       })
       .addCase(bookmarkPost.rejected, (state, action) => {
         state.loading = false;
+        // state.loading = false;
         state.error = (action.payload as string) || "Something went wrong";
       });
   },

@@ -1,9 +1,8 @@
-import { Descendant } from "slate";
 import { ProjectDetail } from "./project.types";
 import { UserProfile } from "./user.types";
 export type FormType = "feed" | "events" | "hiring" | "bounties";
 
-export interface  Post {
+export interface Post {
   project_uuid: string;
   content: string;
   medias: string[];
@@ -27,7 +26,22 @@ export interface CommentItem {
     content: string;
     created_at: string;
     uuid: string;
-  }
+  };
+}
+
+export interface VoteItem {
+  uuid?: string;
+  user_uuid?: string;
+  value?: "UPVOTE" | "DOWNVOTE";
+}
+
+export interface BookmarkItem {
+  uuid?: string;
+}
+
+export interface ReportItem {
+  reason: "SCAM" | "FAKE" | "INAPPROPRIATE" | "MISLEADING" | "OTHER";
+  details: string;
 }
 
 export interface PostItem {
@@ -41,12 +55,17 @@ export interface PostItem {
   upvoteCount?: number;
   downvoteCount?: number;
   commentCount?: number;
-  isPublished?: boolean;
+  is_published?: boolean;
+  voteStatus?: "UPVOTE" | "DOWNVOTE" | null;
   project?: ProjectDetail;
   is_approved?: boolean;
   avatar?: string;
   name?: string;
   comments?: CommentItem[];
+  bookmarks?: BookmarkItem[];
+  votes?: VoteItem[];
+  isBookmarked?: boolean;
+  isFollowing?: boolean;
 }
 
 export interface PostState {
@@ -58,8 +77,10 @@ export interface PostState {
   hasMore: boolean;
   publicPosts: PostItem[];
   privatePosts: PostItem[];
+  followedPosts: PostItem[];
   postDetails: PostItem;
   bookmark: boolean;
+  reportData: ReportItem;
 }
 
 export interface Draft {

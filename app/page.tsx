@@ -10,7 +10,7 @@ import Footer from "@/layouts/Footer";
 
 export default function Home() {
   return (
-    <main className="w-full h-full flex flex-col items-center justify-center text-white">
+    <main className="w-full h-full flex flex-col items-center justify-center text-white overflow-hidden">
       <Hero />
       <Partners />
       <Features />

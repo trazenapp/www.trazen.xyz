@@ -58,7 +58,7 @@ export const hearOptions = [
   { value: "Twitter", label: "Twitter" },
   { value: "Discord", label: "Discord" },
   { value: "Word of Mouth", label: "Word of Mouth" },
-  { value: "Other SearchEngines", label: "Other SearchEngines" },
+  { value: "Others", label: "Others" },
 ];
 
 export const chainOptions = [

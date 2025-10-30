@@ -1,0 +1,20 @@
+import React from "react";
+import Link from "next/link";
+
+const TermsFooter = () => {
+  return (
+    <footer className="pb-4 mt-8 w-11/12 mx-auto flex justify-between items-center font-sans text-sm font-normal text-[#B7B7B7]">
+      <div className="">© 2025 Trazen</div>
+      <ul className="flex gap-x-4 md:gap-x-10">
+        <li>
+          <Link href="/privacy">Privacy Policy</Link>
+        </li>
+        <li>
+          <Link href="#">Support</Link>
+        </li>
+      </ul>
+    </footer>
+  );
+};
+
+export default TermsFooter;

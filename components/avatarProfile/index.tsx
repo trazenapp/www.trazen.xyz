@@ -20,8 +20,8 @@ const AvatarProfile = ({
 
   return (
     <>
-      <Avatar>
-        <AvatarImage src={avatar} />
+      <Avatar className="h-10 w-10">
+        {avatar && <AvatarImage src={avatar} className="h-full w-full" />}
         {/* <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
           CN
         </AvatarFallback> */}

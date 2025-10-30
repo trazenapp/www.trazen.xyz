@@ -57,10 +57,6 @@ const FeedsMedia = ({ media = [] as string[], maxVisible = 4 }) => {
   }) => {
 
     const imgUrl = `${process.env.NEXT_PUBLIC_FILE_PREVIEW_URL}/${item}`;
-    useEffect(() => {
-      console.log("MediaItem:", item);
-    }, []);
-    
 
     return (
       <div

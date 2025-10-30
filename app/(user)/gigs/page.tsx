@@ -1,20 +1,7 @@
 import React from "react";
-import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import GigsCard from "@/components/hiringCard";
-import BountyCard from "@/components/bountyCard";
-import { FiSearch } from "react-icons/fi";
-import { MdFilterList } from "react-icons/md";
-import { IoLocationOutline } from "react-icons/io5";
-import { Checkbox } from "@radix-ui/react-checkbox";
-import { Label } from "@radix-ui/react-label";
 import Hiring from "@/components/hiring";
+import Bounty from "@/components/bounty";
 
 const Gigs = () => {
   return (
@@ -40,17 +27,7 @@ const Gigs = () => {
           <Hiring />
         </TabsContent>
         <TabsContent className="relative w-full h-full" value="bounties">
-          <div className="flex gap-x-2.5 items-center mb-4">
-            <div className="border border-[#303030] flex-1 flex items-center gap-x-2 rounded-full py-1 px-4">
-              <FiSearch color="#9F9F9F" className="text-xl" />
-              <Input
-                type="text"
-                placeholder="Search bounty title or keyword"
-                className="font-sans border-0 focus-visible:ring-0 p-0"
-              />
-            </div>
-          </div>
-          <BountyCard />
+          <Bounty />
         </TabsContent>
       </Tabs>
     </div>

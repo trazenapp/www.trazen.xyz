@@ -8,8 +8,8 @@ import {
   createHiring,
   setLoading,
   updateForm,
-  HiringPostPayload,
 } from "@/redux/slices/hiringSlice";
+import { HiringPostPayload } from "@/types/hiring.types";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "../ui/button";
+import { Switch } from "../ui/switch";
 
 type HiringPostProps = {
   projectId: string;
@@ -31,7 +32,7 @@ type HiringPostProps = {
 function HiringPost({ projectId }: HiringPostProps) {
   const dispatch = useAppDispatch();
   const { loading, data, error } = useAppSelector(
-    (state: RootState) => state.events
+    (state: RootState) => state.hiring
   );
   const {
     control,
@@ -44,12 +45,15 @@ function HiringPost({ projectId }: HiringPostProps) {
     defaultValues: data,
   });
   const values = watch();
-  
+
   const onSubmit = async (data: any) => {
     const formData: HiringPostPayload = {
       ...data,
       project_uuid: projectId,
-      location: (values.type === "Onsite" || values.type === "Hybrid") ? values.location : values.location_type,
+      location:
+        values.type === "Onsite" || values.type === "Hybrid"
+          ? values.location
+          : values.location_type,
       is_published: true,
       status: "ONGOING",
     };
@@ -73,7 +77,7 @@ function HiringPost({ projectId }: HiringPostProps) {
       resetField("pay_range");
     } catch (err: any) {
       dispatch(setLoading(false));
-      toast(<div>{err.message || "Failed to create event"}</div>, {
+      toast(<div>{err.message || "Failed to create hiring"}</div>, {
         theme: "dark",
         type: "error",
       });
@@ -140,15 +144,18 @@ function HiringPost({ projectId }: HiringPostProps) {
               <SelectContent className="font-sans bg-[#161616] border-[#303030]">
                 <SelectGroup className="w-full">
                   <SelectLabel className="text-[#f4f4f4] text-[16px]" />
-                  {["contract", "full-time", "internship", "volunteer"].map((v) => (
-                    <SelectItem
-                      key={v}
-                      value={v}
-                      className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
-                    >
-                      {v.charAt(0).toUpperCase() + v.slice(1).replace("-", " ")}
-                    </SelectItem>
-                  ))}
+                  {["contract", "full-time", "internship", "volunteer"].map(
+                    (v) => (
+                      <SelectItem
+                        key={v}
+                        value={v}
+                        className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
+                      >
+                        {v.charAt(0).toUpperCase() +
+                          v.slice(1).replace("-", " ")}
+                      </SelectItem>
+                    )
+                  )}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -234,7 +241,8 @@ function HiringPost({ projectId }: HiringPostProps) {
         />
       </div>
 
-      {(values.location_type === "Onsite" || values.location_type === "Hybrid") && (
+      {(values.location_type === "Onsite" ||
+        values.location_type === "Hybrid") && (
         <div className="mt-4 flex flex-col gap-2">
           <Label
             htmlFor="location"
@@ -301,12 +309,29 @@ function HiringPost({ projectId }: HiringPostProps) {
           )}
         />
       </div>
+      <div className="flex items-center gap-2 px-3 py-2 my-2.5 rounded-md">
+        <Controller
+          name="is_published"
+          control={control}
+          defaultValue={false}
+          render={({ field }) => (
+            <>
+              <Switch
+                checked={field.value}
+                onCheckedChange={(checked) => field.onChange(checked)}
+              />
+              <Label className="text-sm text-gray-400">
+                {field.value ? "Publish hiring post" : "Save as draft"}
+              </Label>
+            </>
+          )}
+        />
+      </div>
       <Button
         type="submit"
         disabled={loading}
         className="bg-[#430B68] py-4 rounded-full w-[130px] text-sm my-3"
       >
-        
         {loading ? <ClipLoader size={16} color="#fff" /> : "Post"}
       </Button>
     </form>

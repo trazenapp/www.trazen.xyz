@@ -9,9 +9,13 @@ import img from "@/public/pdf2.svg";
 
 type FileOrUrlInputProps = {
   onChange: (value: string) => void;
+  isImage?: boolean;
 };
 
-const InputFile: React.FC<FileOrUrlInputProps> = ({ onChange }) => {
+const InputFile: React.FC<FileOrUrlInputProps> = ({
+  onChange,
+  isImage = false,
+}) => {
   const { token } = useAppSelector((state) => state.register);
   const [url, setUrl] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
@@ -24,13 +28,13 @@ const InputFile: React.FC<FileOrUrlInputProps> = ({ onChange }) => {
     onChange(value);
   };
 
-  const handleFileChange = async(e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if(!file) return;
-    setLoading(true)
+    if (!file) return;
+    setLoading(true);
     setFileName(file.name);
 
-    try{
+    try {
       const formData = new FormData();
       formData.append("file", file);
       const res = await fetch(
@@ -48,13 +52,12 @@ const InputFile: React.FC<FileOrUrlInputProps> = ({ onChange }) => {
       // const filePreviewUrl = `${previewFileUrl}/${data.data.path as string}`;
       setUrl(fileUrl);
       onChange(fileUrl);
-    }catch(error){
+    } catch (error) {
       console.log("Upload Error: ", error);
       setLoading(false);
-    }finally{
+    } finally {
       setLoading(false);
     }
-
   };
 
   return (
@@ -65,18 +68,33 @@ const InputFile: React.FC<FileOrUrlInputProps> = ({ onChange }) => {
           {fileName}
         </div>
       )}
-      {!fileName && <Input
-        type="text"
-        placeholder="Enter link or"
-        value={url}
-        onChange={handleUrlChange}
-        className="flex-1 border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
-      />}
-      <label htmlFor="docFile" className="ml-2 bg-[#430B68] hover:bg-[#430B68] px-5 py-1.5 w-fit rounded-[4px]">
-        <input type="file" id="docFile" className="hidden" onChange={handleFileChange} />
-        {loading ? <ClipLoader size={10} color="#fff" /> : "Upload"}
+      {!fileName && (
+        <Input
+          type="text"
+          placeholder={isImage ? "" : "Enter link or"}
+          value={url}
+          onChange={handleUrlChange}
+          className="flex-1 border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+        />
+      )}
+      <label
+        htmlFor="docFile"
+        className="ml-2 bg-[#430B68] hover:bg-[#430B68] text-sm px-5 py-1.5 w-fit rounded-[4px]"
+      >
+        <input
+          type="file"
+          id="docFile"
+          className="hidden"
+          onChange={handleFileChange}
+        />
+        {loading ? (
+          <ClipLoader size={10} color="#fff" />
+        ) : isImage ? (
+          "Replace"
+        ) : (
+          "Upload"
+        )}
       </label>
-      
     </div>
   );
 };

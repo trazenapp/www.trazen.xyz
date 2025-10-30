@@ -5,17 +5,13 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
-import {
-  createEvent,
-  setLoading,
-  CreateEventPayload,
-  updateForm,
-} from "@/redux/slices/eventSlice";
+import { createEvent, setLoading, updateForm } from "@/redux/slices/eventSlice";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import FileInput from "@/components/ui/FileInput";
-// import { EventState, FormType, Draft, Event } from "@/types/event.types";
+import { CreateEventPayload } from "@/types/event.types";
+import { Switch } from "../ui/switch";
 
 type EventPostProps = {
   projectId: string;
@@ -43,7 +39,10 @@ function EventsPost({ projectId }: EventPostProps) {
       ...data,
       project_uuid: projectId,
       cover_image: data.cover_image,
-      location: (values.type === "ONSITE" || values.type === "HYBRID") ? values.location : values.type,
+      location:
+        values.type === "ONSITE" || values.type === "HYBRID"
+          ? values.location
+          : values.type,
       is_published: true,
       status: data.status,
       date_time: new Date(data.date_time).toISOString(),
@@ -247,6 +246,25 @@ function EventsPost({ projectId }: EventPostProps) {
                 </div>
               ))}
             </div>
+          )}
+        />
+      </div>
+
+      <div className="flex items-center gap-2 px-3 py-2 my-2.5 rounded-md">
+        <Controller
+          name="is_published"
+          control={control}
+          defaultValue={false}
+          render={({ field }) => (
+            <>
+              <Switch
+                checked={field.value}
+                onCheckedChange={(checked) => field.onChange(checked)}
+              />
+              <Label className="text-sm text-gray-400">
+                {field.value ? "Publish event" : "Save as draft"}
+              </Label>
+            </>
           )}
         />
       </div>

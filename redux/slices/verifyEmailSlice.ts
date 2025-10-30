@@ -5,6 +5,7 @@ import {
   ForgotPasswordResponse,
   VerifyEmailData,
 } from "@/types/auth.types";
+import { RootState } from "@/redux/store";
 
 const formData: VerifyEmailData = {
   email: "",
@@ -15,14 +16,20 @@ const initialState: EmailVerificationState = {
   loading: false,
   resendLoading: false,
   error: null,
-  data: formData,
+  formData: formData,
 };
 
 export const verifyEmail = createAsyncThunk<
   ForgotPasswordResponse,
-  VerifyEmailData
->("verify-email/verify", async (VerifyEmailData, { rejectWithValue }) => {
+  VerifyEmailData,
+  { state: RootState }
+>("verify-email/verify", async (VerifyEmailData, { rejectWithValue, getState }) => {
   try {
+      const state = getState();
+      const token = state.register.token || null;
+
+      if (!token) return rejectWithValue("No token found");
+
     const response = await axiosInstance.post<ForgotPasswordResponse>(
       "/v1/auth/verify-email",
       VerifyEmailData,
@@ -30,6 +37,7 @@ export const verifyEmail = createAsyncThunk<
         headers: {
           "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
           "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+          Authorization: `Bearer ${token}`,
         },
       }
     );
@@ -73,7 +81,7 @@ const verifyEmailSlice = createSlice({
       state.error = null;
     },
     updateFormData: (state, action: PayloadAction<VerifyEmailData>) => {
-      state.data = action.payload;
+      state.formData = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
@@ -81,8 +89,8 @@ const verifyEmailSlice = createSlice({
     setResendLoading: (state, action: PayloadAction<boolean>) => {
       state.resendLoading = action.payload;
     },
-    resetForm: (state) => {
-      state.data = formData;
+    resetForm: (state, action) => {
+      state.formData = action.payload;
     },
   },
   extraReducers: (builder) => {

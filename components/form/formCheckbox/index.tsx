@@ -6,7 +6,7 @@ export type FormCheckboxOptions = {
 };
 
 interface FormCheckboxProps {
-  values: string[]; 
+  values: string[];
   options: FormCheckboxOptions[];
   className?: string;
   selectedIcon?: React.ReactNode;
@@ -37,7 +37,10 @@ const FormCheckbox = ({
     <div className={`flex flex-wrap gap-4 ${className ?? ""}`}>
       {options.map((option) => {
         const isChecked = values.includes(option.value);
-        const isDisabled = !isChecked && maxSelected !== undefined && values.length >= maxSelected;
+        const isDisabled =
+          !isChecked &&
+          maxSelected !== undefined &&
+          values.length >= maxSelected;
         return (
           <label
             key={option.value}

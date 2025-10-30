@@ -26,7 +26,7 @@ import FormRadio from "@/components/form/formRadio";
 import FormCheckbox from "@/components/form/formCheckbox";
 import FormSuccess from "@/components/form/formSuccess";
 import { FaCheck } from "react-icons/fa6";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 const InterestsForm = () => {
   const router = useRouter();
@@ -80,9 +80,11 @@ const InterestsForm = () => {
       console.log(mergedData);
       dispatch(updateFormData(mergedData));
       await dispatch(onboarding(mergedData)).unwrap();
-      toast(<div>Onboarding Steps Complete</div>, {
-        theme: "dark",
-        type: "success",
+      toast.success((t) => <div>Onboarding Steps Complete</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setLoading(false));
       userRole === "USER"
@@ -90,9 +92,11 @@ const InterestsForm = () => {
         : router.push("/create-project");
     } catch (error: any) {
       console.log(error);
-      toast(<div>{error}</div>, {
-        theme: "dark",
-        type: "error",
+      toast.error((t) => <div>{error}</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setLoading(false));
     }
@@ -125,6 +129,7 @@ const InterestsForm = () => {
                 values={field.value || []}
                 onChange={field.onChange}
                 selectedIcon={<FaCheck />}
+                maxSelected={userRole === "PIONEER" ? 3 : undefined}
               />
             )}
           />
@@ -148,6 +153,7 @@ const InterestsForm = () => {
                 values={field.value || []}
                 onChange={field.onChange}
                 selectedIcon={<FaCheck />}
+                maxSelected={userRole === "PIONEER" ? 3 : undefined}
               />
             )}
           />
@@ -166,9 +172,9 @@ const InterestsForm = () => {
               name="projects"
               control={control}
               render={({ field }) => (
-                <FormRadio
+                <FormCheckbox
                   options={projectOptions}
-                  value={field.value || ""}
+                  values={field.value || []}
                   onChange={field.onChange}
                   selectedIcon={<FaCheck />}
                 />

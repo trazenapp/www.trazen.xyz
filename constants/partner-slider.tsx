@@ -6,23 +6,23 @@ import img5 from "@/public/hachstacks.png";
 
 export const partnerSliderData = [
   {
-    img: img1,
+    src: img1.src,
     alt: "XPR",
   },
   {
-    img: img2,
+    src: img2.src,
     alt: "Sonic",
   },
   {
-    img: img3,
+    src: img3.src,
     alt: "Zerion",
   },
   {
-    img: img4,
+    src: img4.src,
     alt: "Web3",
   },
   {
-    img: img5,
+    src: img5.src,
     alt: "Hachstacks",
   },
 ];

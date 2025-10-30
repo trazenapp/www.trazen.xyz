@@ -70,7 +70,7 @@ const RoleForm = () => {
                   className="w-full flex flex-col justify-center items-center font-sans data-[state=checked]:border data-[state=checked]:border-[#430B68] group-checked:border group-checked:border-[#430B68]"
                 >
                   <Image src={img1} alt="user" className="w-20 h-20" />
-                  <h5 className="text-2xl font-medium mb-3">User</h5>
+                  <h5 className="text-xl font-medium mb-3">User</h5>
                   <p className="text-sm font-normal text-center">
                     Engage projects, contribute and participate on Trazen
                   </p>
@@ -83,7 +83,7 @@ const RoleForm = () => {
                   className="w-full flex flex-col justify-center items-center font-sans"
                 >
                   <Image src={img2} alt="user" className="w-20 h-20" />
-                  <h5 className="text-2xl font-medium mb-3 text-center">
+                  <h5 className="text-xl font-medium mb-3 text-center">
                     Project Pioneer
                   </h5>
                   <p className="text-sm font-normal text-center">

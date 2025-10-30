@@ -3,7 +3,7 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
-// import authReducer from "@/redux/slices/authSlice";
+import authReducer from "@/redux/slices/authSlice";
 import dashboardSidebarReducer from "@/redux/slices/dashboardSidebarSlice";
 import registerReducer from "@/redux/slices/registerSlice";
 import loginReducer from "@/redux/slices/loginSlice";
@@ -14,6 +14,7 @@ import onboardingReducer from "@/redux/slices/onboardingSlice";
 import fcmNotificationReducer from "@/redux/slices/fcmNotificationSlice";
 import projectReducer from "@/redux/slices/projectSlice";
 import postReducer from "@/redux/slices/postSlice";
+import bountiesReducer from "@/redux/slices/bountiesSlice";
 // import draftsReducer from "@/redux/slices/draftSlice";
 import profileReducer from "@/redux/slices/userSlice";
 import eventsReducer from "@/redux/slices/eventSlice";
@@ -23,15 +24,18 @@ import changePasswordReducer from "@/redux/slices/changePasswordSlice";
 import profileSettingsReducer from "@/redux/slices/profileSlice";
 import createWalletReducer from "@/redux/slices/createWallet";
 import discoverPostReducer from "@/redux/slices/discoverPostSlice";
+import dashboardReducer from "@/redux/slices/dashboardSlice";
+
+
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["register", "login"],
+  whitelist: ["register", "login", "auth"],
 };
 
 const rootReducer = combineReducers({
-  // auth: authReducer,
+  auth: authReducer,
   dashboardSidebar: dashboardSidebarReducer,
   register: registerReducer,
   login: loginReducer,
@@ -51,6 +55,8 @@ const rootReducer = combineReducers({
   profileSettings: profileSettingsReducer,
   createWallet: createWalletReducer,
   discoverPost: discoverPostReducer,
+  bounties: bountiesReducer,
+  dashboard: dashboardReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

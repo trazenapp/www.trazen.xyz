@@ -1,3 +1,4 @@
+import { UserProfile } from "@/types/user.types";
 export interface AddProjectData {
   name: string;
   description: string;
@@ -8,12 +9,15 @@ export interface AddProjectData {
   team_emails?: string[];
   isTeam?: "Yes" | "No";
   category?: string[];
+  chains?: string[];
+  niche?: string[];
 }
 
 export interface ProjectDetail {
   id: number;
   uuid: string;
   user_uuid: string;
+  user: UserProfile | null;
   wallet_uuid: string | null;
   name: string;
   description: string;
@@ -26,6 +30,7 @@ export interface ProjectDetail {
   created_at: string;
   updated_at: string;
   total_followers?: number;
+  isBookmarked: boolean;
 }
 
 export interface AddProjectState {

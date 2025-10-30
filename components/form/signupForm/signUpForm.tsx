@@ -9,6 +9,7 @@ import {
   signUp,
   resetForm,
 } from "@/redux/slices/registerSlice";
+import { setUserRole } from "@/redux/slices/authSlice";
 import { useForm, Controller } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
 import { Label } from "@/components/ui/label";
@@ -21,7 +22,7 @@ import Card from "@/components/card";
 import FormHeading from "@/components/formHeading";
 import { SignUpData } from "@/types/auth.types";
 import Link from "next/link";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 const SignUpForm = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -54,26 +55,31 @@ const SignUpForm = () => {
       role: data.role,
       email: data.email,
       password: data.password,
-    }
+    };
     try {
       dispatch(setLoading(true));
+      dispatch(setUserRole(data.role));
       dispatch(updateFormData({ ...data }));
       await dispatch(signUp(formData)).unwrap();
-      toast(<div>Account Created</div>, {
-        theme: "dark",
-        type: "success",
+      toast.success((t) => <div>Account Created</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setLoading(false));
-      dispatch(resetForm());
+      dispatch(resetForm(formData));
       dispatch(setSteps(steps + 1));
     } catch (err: any) {
       console.log(err);
-      toast(<div>{err}</div>, {
-        theme: "dark",
-        type: "error",
+      toast.error((t) => <div>{err}</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setLoading(false));
-    // }
+      // }
     } finally {
       dispatch(setLoading(false));
     }
@@ -132,7 +138,18 @@ const SignUpForm = () => {
             <Controller
               name="password"
               control={control}
-              rules={{ required: true }}
+              rules={{
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 characters long",
+                },
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$/,
+                  message:
+                    "Must contain uppercase, lowercase, number & special character",
+                },
+              }}
               render={({ field }) => (
                 <Input
                   type={passwordType}
@@ -201,7 +218,7 @@ const SignUpForm = () => {
         >
           {loading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Sign Up"}
         </Button>
-        <p className="text-center font-light text-base">
+        <p className="text-center font-light text-sm">
           Already have an account?{" "}
           <Link href="/sign-in" className="font-medium">
             Login

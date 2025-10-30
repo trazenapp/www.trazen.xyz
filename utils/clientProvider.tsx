@@ -6,6 +6,10 @@ import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
 import { mainnet, polygon, optimism, arbitrum, base } from "wagmi/chains";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import Provider from "@/context/web3AuthContext";
+import { ToastContainer } from "react-toastify";
+import { Toaster } from "react-hot-toast";
+import { cookieToWeb3AuthState } from "@web3auth/modal";
 
 interface ClientProviderProps {
   cookie: string;
@@ -31,6 +35,11 @@ const ClientProvider = ({ children, cookie }: ClientProviderProps) => {
           <RainbowKitProvider>{children}</RainbowKitProvider>
         </QueryClientProvider>
       </WagmiProvider>
+      <Provider web3authInitialState={web3authInitialState}>
+        {children}
+        <ToastContainer />
+        <Toaster position="bottom-center" reverseOrder={false} />
+      </Provider>
     </ReduxProvider>
   );
 };

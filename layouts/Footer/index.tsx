@@ -8,12 +8,12 @@ const Footer = () => {
   return (
     <footer className="w-full px-5 md:px-[102px] py-10 md:py-[68px] flex flex-col justify-center items-center relative rounded-t-[24px] md:rounded-t-[32px] bg-[#161616] mt-[120px]">
       <div className="flex flex-col justify-center items-center w-full">
-        <ul className="flex flex-col md:flex-row gap-y-6 md:gap-x-12 mb-12 w-8/12">
+        <ul className="flex flex-col md:flex-row md:justify-between gap-y-6 md:gap-x-12 mb-12 w-8/12">
           {footerMenu.map((item) => (
-            <li key={item.label} className="w-full text-center">
+            <li key={item.label} className="md:w-max w-full text-center">
               <Link
                 href={item.href}
-                className="font-sans text-base font-medium text-white text-center"
+                className="font-sans text-sm font-medium text-white text-center"
               >
                 {item.label}
               </Link>
@@ -21,9 +21,9 @@ const Footer = () => {
           ))}
         </ul>
         <div className="border-[0.5px] border-white w-full" />
-        <div className="flex flex-col md:flex-row gap-y-3 md:gap-y-0 items-center md:justify-between mt-10 w-full">
+        <div className="flex flex-col md:flex-row gap-y-3 md:gap-y-0 items-center md:justify-between mt-10 w-full text-sm">
           <Link
-            href="#"
+            href="https://x.com/trazenxyz"
             className="h-[42px] w-[42px] rounded-full border flex justify-center items-center"
           >
             <Image src={X} alt="x icon" />

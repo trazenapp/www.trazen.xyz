@@ -45,7 +45,28 @@ const settingUpForm = () => {
     defaultValues: data,
   });
 
-  
+  const xUrlCheck = (value: string) => {
+    if (!value) return value;
+
+    let handle = value.trim();
+
+    if (handle.startsWith("https://") && handle.includes("@@")) {
+      handle = handle.replace("@@", "@");
+    }
+
+    if (!handle.startsWith("http")) {
+      handle = handle.replace(/^@/, ""); // remove leading @ if present
+      return `https://x.com/@${handle}`;
+    }
+
+    handle = handle
+      .replace("https://twitter.com/", "https://x.com/")
+      .replace("https://mobile.twitter.com/", "https://x.com/");
+
+    const extractedUsername = handle.split(/@/).pop();
+    return `https://x.com/@${extractedUsername}`;
+  };
+
   const onSubmit = (data: OnboardingData) => {
     dispatch(updateFormData({ ...data }));
     dispatch(setLoading(true));
@@ -81,54 +102,65 @@ const settingUpForm = () => {
           />
         </div>
         {userRole === "PIONEER" && (
-          <div className="flex flex-col gap-y-2 w-full">
-            <Label htmlFor="social" className="font-medium text-sm">
-              X(Twitter) handle
-            </Label>
-            <Controller
-              name="social"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Input
-                  type="text"
-                  id="social"
-                  className="border-[#434343] rounded-[8px] py-[19px] px-4"
-                  {...field}
-                />
+          <>
+            <div className="flex flex-col gap-y-2 w-full">
+              <Label htmlFor="social" className="font-medium text-sm">
+                X(Twitter) handle
+              </Label>
+              <Controller
+                name="social"
+                control={control}
+                rules={{
+                  required: true,
+                  validate: (value) => {
+                    const url = xUrlCheck(value || "");
+                    const regexCheck = /^https:\/\/x\.com\/@([A-Za-z0-9_]{1,15})$/;
+
+                    return regexCheck.test(url)
+                      ? true
+                      : "Invalid URL: Use format https://x.com/username or use a valid X(Twitter) username";
+                  },
+                }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    id="social"
+                    className="border-[#434343] rounded-[8px] py-[19px] px-4"
+                    {...field}
+                  />
+                )}
+              />
+              {errors.social && (
+                <p className="text-red-500 text-sm">
+                  {errors.social.message ||
+                    "Please enter your X(Twitter) handle"}
+                </p>
               )}
-            />
-            {errors.social && (
-              <p className="text-red-500 text-sm">
-                {errors.social.message || "Please enter your X(Twitter) handle"}
-              </p>
-            )}
-          </div>
-        )}
-        {userRole === "PIONEER" && (
-          <div className="flex flex-col gap-y-2 w-full">
-            <Label htmlFor="title" className="font-medium text-sm">
-              What is your title?
-            </Label>
-            <Controller
-              name="title"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <Input
-                  type="text"
-                  id="title"
-                  className="border-[#434343] rounded-[8px] py-[19px] px-4"
-                  {...field}
-                />
+            </div>
+            <div className="flex flex-col gap-y-2 w-full">
+              <Label htmlFor="title" className="font-medium text-sm">
+                What is your title?
+              </Label>
+              <Controller
+                name="title"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    id="title"
+                    className="border-[#434343] rounded-[8px] py-[19px] px-4"
+                    {...field}
+                  />
+                )}
+              />
+              {errors.title && (
+                <p className="text-red-500 text-sm">
+                  {errors.title.message || "Please enter your title"}
+                </p>
               )}
-            />
-            {errors.title && (
-              <p className="text-red-500 text-sm">
-                {errors.title.message || "Please enter your title"}
-              </p>
-            )}
-          </div>
+            </div>
+          </>
         )}
         <div className="flex flex-col gap-y-2 w-full">
           <Label htmlFor="skills" className="font-medium text-sm">
@@ -137,7 +169,6 @@ const settingUpForm = () => {
           <Controller
             name="skills"
             control={control}
-            rules={{ required: true }}
             render={({ field }) => (
               <Select<OptionType, true>
                 isMulti

@@ -157,7 +157,7 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent
             className="bg-[#272727] !min-w-0 !p-0 border-0"
-            align="start"
+            align="end"
           >
             <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-fit flex items-center gap-x-2.5 py-2.5 px-4">
               <CgFlagAlt color="#ddd" /> Report
@@ -172,7 +172,7 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
         <div className="flex-1 flex-col gap-y-2.5 pl-[34px]">
           <p className="text-sm font-normal">{comment.content}</p>
           <div className="flex gap-x-2.5 mt-1">
-            <Button
+            {/* <Button
               onClick={() =>
                 comment?.uuid && handleVote("UPVOTE", comment.uuid)
               }
@@ -187,7 +187,7 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
               className="!w-fit !h-fit !py-1.5 !px-4 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-xs text-[#B7B7B7]"
             >
               <PiArrowFatDown />0
-            </Button>
+            </Button> */}
             <Button
               onClick={handleToggleReply}
               className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border-0 flex gap-x-2.5 font-sans font-medium text-xs text-[#B7B7B7] shadow-none"
@@ -272,7 +272,7 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 className="bg-[#272727] !min-w-0 !p-0 border-0"
-                align="start"
+                align="end"
               >
                 <DropdownMenuItem className="text-[#ddd] font-sans font-normal text-xs !w-fit flex items-center gap-x-2.5 py-2.5 px-4">
                   <CgFlagAlt color="#ddd" /> Report
@@ -287,7 +287,7 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
             <div className="flex-1 flex-col gap-y-2.5 pl-[34px]">
               <p className="text-sm font-normal">{item.content}</p>
               <div className="flex gap-x-2.5 mt-1">
-                <Button
+                {/* <Button
                   onClick={() =>
                     comment?.uuid && handleVote("UPVOTE", item.uuid)
                   }
@@ -302,7 +302,7 @@ const FeedsCommentItem = ({ comment }: { comment: CommentItem }) => {
                   className="!w-fit !h-fit !py-1.5 !px-4 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-xs text-[#B7B7B7]"
                 >
                   <PiArrowFatDown />0
-                </Button>
+                </Button> */}
                 {/* <Button
                   onClick={handleToggleReply}
                   className="!w-fit !h-fit !py-1.5 !px-6 rounded-full border-0 flex gap-x-2.5 font-sans font-medium text-xs text-[#B7B7B7] shadow-none"

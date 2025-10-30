@@ -3,11 +3,6 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import wallet from "@/public/solar_wallet.svg";
-import {
-  useWeb3Auth,
-  useWeb3AuthConnect,
-  useWeb3AuthDisconnect,
-} from "@web3auth/modal/react";
 import { BrowserProvider } from "ethers";
 
 // interface SignInWithWalletProps {
@@ -16,14 +11,6 @@ import { BrowserProvider } from "ethers";
 
 // const SignInWithWallet = ({ onClick }: SignInWithWalletProps) => {
 const SignInWithWallet = () => {
-  const { web3Auth } = useWeb3Auth();
-  const {
-    connect,
-    isConnected,
-    loading: connectLoading,
-    error: connectError,
-  } = useWeb3AuthConnect();
-
   // useEffect(() => {
   //   const getAddress = async () => {
   //     if (!provider) return; // wait for connection
@@ -41,17 +28,10 @@ const SignInWithWallet = () => {
   //   getAddress();
   // }, [provider]);
 
-  useEffect(() => {
-    console.log("Web3Auth instance:", web3Auth);
-    console.log("isConnected", isConnected);
-    console.log("connectLoading", connectLoading);
-    console.log("error ", connectError);
-  }, [web3Auth, isConnected, connectLoading, connectError]);
-
   const handleConnect = async () => {
     try {
       console.log("Attempting to open Web3Auth modal...");
-      await connect();
+      // await connect();
       console.log("Modal connect triggered");
     } catch (err) {
       console.error("Connect failed:", err);

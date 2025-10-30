@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -44,7 +43,7 @@ const clashDisplay = localFont({
 export const metadata: Metadata = {
   title: "Trazen",
   description: "A web3 discovery platform",
-  icons: "/favicon.svg"
+  icons: "/favicon.svg",
 };
 
 export default async function RootLayout({
@@ -52,15 +51,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headersList = await headers();
-  const cookie = headersList.get("cookie") ?? "";
-
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${clashDisplay.className} antialiased`}
       >
-        <ClientProvider cookie={cookie}>{children}</ClientProvider>
+        <ClientProvider>{children}</ClientProvider>
       </body>
     </html>
   );

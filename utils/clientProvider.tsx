@@ -9,11 +9,6 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import { Toaster } from "react-hot-toast";
 
-interface ClientProviderProps {
-  cookie: string;
-  children: React.ReactNode;
-}
-
 const projectID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
 
 const config = getDefaultConfig({
@@ -25,7 +20,7 @@ const config = getDefaultConfig({
 
 const queryClient = new QueryClient();
 
-const ClientProvider = ({ children, cookie }: ClientProviderProps) => {
+const ClientProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <ReduxProvider>
       <WagmiProvider config={config}>

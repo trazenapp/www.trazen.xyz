@@ -129,6 +129,7 @@ const Solutions = () => {
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
             {users_solutions.map((item, index) => (
               <SpotlightCard
+                key={item.title + index}
                 className={`custom-spotlight-card card-${index + 1} bg-[#161616] rounded-4xl border-[#434343] ${tabValue === "users" ? "card z-500 overflow-hidden relative grid-card" : ""}`}
               >
                 <Card

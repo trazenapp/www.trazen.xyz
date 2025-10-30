@@ -2,32 +2,39 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { AuthState, AUTH_STEPS_ROUTE } from "@/types/auth.types";
 
 const getInitialState = (): AuthState => {
-  if (typeof window !== undefined) {
-    const savedRole = localStorage.getItem("authUserRole") as
-      | "USER"
-      | "PIONEER"
-      | null;
-    const savedStep = localStorage.getItem("authLastCompletedStep");
-    const lastCompletedStep = savedStep ? parseInt(savedStep, 10) : 0;
-    const nextStep = lastCompletedStep + 1;
-
-    return {
-      isAuthenticated: false,
-      authSteps: nextStep,
-      lastCompletedStep,
-      currentRoute:
-        AUTH_STEPS_ROUTE[nextStep as 1 | 2 | 3] || AUTH_STEPS_ROUTE[1],
-      role: savedRole,
-    };
-  }
-
-  return {
+  let initialState: AuthState = {
     isAuthenticated: false,
     authSteps: 1,
     lastCompletedStep: 0,
     currentRoute: AUTH_STEPS_ROUTE[1],
     role: null,
   };
+
+  if (typeof window !== undefined) {
+    try {
+      const savedRole = localStorage.getItem("authUserRole") as
+        | "USER"
+        | "PIONEER"
+        | null;
+      const savedStep = localStorage.getItem("authLastCompletedStep");
+      const lastCompletedStep = savedStep ? parseInt(savedStep, 10) : 0;
+      const nextStep = lastCompletedStep + 1;
+
+      initialState = {
+        isAuthenticated: false,
+        authSteps: nextStep,
+        lastCompletedStep,
+        currentRoute:
+          AUTH_STEPS_ROUTE[nextStep as 1 | 2 | 3] || AUTH_STEPS_ROUTE[1],
+        role: savedRole,
+      };
+    } catch (error) {
+      console.warn("Failed to read from localStorage", error);
+      // Fall back to default state
+    }
+  }
+
+  return initialState;
 };
 
 const authSlice = createSlice({

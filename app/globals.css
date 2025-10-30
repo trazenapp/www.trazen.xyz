@@ -276,3 +276,20 @@ div.select__menu div.select__option--is-focused {
     }
   }
 }
+
+/* NO CSSBELOW THIS LINE */
+.text-type {
+  display: inline-block;
+  white-space: pre-wrap;
+}
+
+.text-type__cursor {
+  margin-left: 0.25rem;
+  display: inline-block;
+  opacity: 1;
+}
+
+.text-type__cursor--hidden {
+  display: none;
+}
+

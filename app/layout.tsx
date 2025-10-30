@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import "@rainbow-me/rainbowkit/styles.css";
 import ClientProvider from "@/utils/clientProvider";
 
 const geistSans = Geist({

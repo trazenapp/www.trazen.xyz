@@ -34,6 +34,7 @@
     "@rainbow-me/rainbowkit": "^2.2.9",
     "@reduxjs/toolkit": "^2.8.2",
     "@solar-icons/react": "^1.0.1",
+    "@tailwindcss/postcss": "^4.1.16",
     "@tanstack/react-query": "^5.90.2",
     "@tiptap/extension-image": "^3.6.2",
     "@tiptap/extension-link": "^3.6.2",

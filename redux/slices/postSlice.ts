@@ -295,25 +295,6 @@ export const bookmarkPost = createAsyncThunk<
     return rejectWithValue(
       err?.response?.data?.message || "Error bookmarking post"
     );
-
-    const response = await axiosInstance.post(
-      `/v1/post/bookmark/${post_uuid}`,
-      {
-        headers: {
-          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
-          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    console.log("Bookmark response:", response.data);
-    return response.data;
-  } catch (err: any) {
-    console.error("bookmarkPost error", err?.response?.data || err.message);
-    return rejectWithValue(
-      err?.response?.data?.message || "Error bookmarking post"
-    );
   }
 });
 
@@ -381,7 +362,7 @@ export const followPost = createAsyncThunk<
       );
     }
   }
-});
+);
 
 export const createPost = createAsyncThunk<Post, { state: RootState }>(
   "post/createPost",

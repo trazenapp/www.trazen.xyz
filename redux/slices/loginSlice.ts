@@ -26,20 +26,19 @@ export const signIn = createAsyncThunk(
   "sign-in",
   async (SignInData, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(
-        "/v1/auth/login",
-        SignInData,
-        {
-          headers: {
-            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
-            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-            "x-device-token": localStorage.getItem("fcmToken"),
-          },
-        }
-      );
-      
+      const response = await axiosInstance.post("/v1/auth/login", SignInData, {
+        headers: {
+          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+          "x-device-token": localStorage.getItem("fcmToken"),
+        },
+      });
+
       const { user, token } = response.data.data;
-      localStorage.setItem("token", token);
+      
+      if (typeof window !== "undefined") {
+        localStorage.setItem("token", token);
+      }
 
       await fetch("/api/auth/set-token", {
         method: "POST",
@@ -55,10 +54,13 @@ export const signIn = createAsyncThunk(
   }
 );
 
-export const logoutUser = createAsyncThunk("logout", async(_, { dispatch }) => {
-  await fetch("api/auth/logout", { method: "POST" });
-  dispatch(logout());
-})
+export const logoutUser = createAsyncThunk(
+  "logout",
+  async (_, { dispatch }) => {
+    await fetch("api/auth/logout", { method: "POST" });
+    dispatch(logout());
+  }
+);
 
 const loginSlice = createSlice({
   name: "signIn",
@@ -85,8 +87,7 @@ const loginSlice = createSlice({
       state.isAuthenticated = false;
       state.token = null;
       state.error = null;
-      
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -109,7 +110,13 @@ const loginSlice = createSlice({
   },
 });
 
-export const { clearError, setUser, updateFormData, setLoading, resetForm, logout } =
-  loginSlice.actions;
+export const {
+  clearError,
+  setUser,
+  updateFormData,
+  setLoading,
+  resetForm,
+  logout,
+} = loginSlice.actions;
 
 export default loginSlice.reducer;

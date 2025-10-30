@@ -37,7 +37,9 @@ export const useFirebaseMessaging = () => {
 
         if (token) {
           dispatch(setFcmToken(token));
-          localStorage.setItem("fcmToken", token);
+          if (typeof window !== "undefined") {
+            localStorage.setItem("fcmToken", token);
+          }
         } else {
           console.warn("No FCM token received");
         }

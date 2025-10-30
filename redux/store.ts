@@ -20,6 +20,10 @@ import profileReducer from "@/redux/slices/userSlice";
 import eventsReducer from "@/redux/slices/eventSlice";
 import hiringReducer from "@/redux/slices/hiringSlice";
 import bookmarkReducer from "@/redux/slices/bookmarkSlice";
+import changePasswordReducer from "@/redux/slices/changePasswordSlice";
+import profileSettingsReducer from "@/redux/slices/profileSlice";
+import createWalletReducer from "@/redux/slices/createWallet";
+import discoverPostReducer from "@/redux/slices/discoverPostSlice";
 import dashboardReducer from "@/redux/slices/dashboardSlice";
 
 
@@ -47,6 +51,10 @@ const rootReducer = combineReducers({
   events: eventsReducer,
   hiring: hiringReducer,
   bookmark: bookmarkReducer,
+  changePassword: changePasswordReducer,
+  profileSettings: profileSettingsReducer,
+  createWallet: createWalletReducer,
+  discoverPost: discoverPostReducer,
   bounties: bountiesReducer,
   dashboard: dashboardReducer,
 });

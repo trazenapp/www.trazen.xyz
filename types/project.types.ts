@@ -29,6 +29,7 @@ export interface ProjectDetail {
   is_approved: boolean;
   created_at: string;
   updated_at: string;
+  total_followers?: number;
   isBookmarked: boolean;
 }
 

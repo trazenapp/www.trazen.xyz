@@ -1,27 +1,88 @@
 "use client";
-import React, { use } from "react";
+import React, { use, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { FaArrowLeft } from "react-icons/fa6";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import {
+  discoverPost,
+  resetDiscoverPosts,
+  setQuery,
+} from "@/redux/slices/discoverPostSlice";
+import { PostItem } from "@/types/post.types";
+import { Loader2 } from "lucide-react";
 
-const page = ({
-  params,
-}: {
-  params: Promise<{ slug: string }>
-}) => {
+const page = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const {
+    data: posts,
+    loading,
+    hasMore,
+    page,
+    limit,
+    query,
+  } = useAppSelector((state) => state.discoverPost);
+
+  const observerTarget = useRef<HTMLDivElement>(null);
+  const isInitialized = useRef(false);
+  const pendingRequest = useRef(false);
+
+  useEffect(() => {
+    if (!isInitialized.current) {
+      isInitialized.current = true;
+      dispatch(resetDiscoverPosts());
+      if (slug) {
+        dispatch(setQuery(slug.toLowerCase()));
+      }
+      dispatch(discoverPost({ page: 1, limit, query: slug.toLowerCase() }));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (slug.toLowerCase() !== query && isInitialized.current) {
+      dispatch(resetDiscoverPosts());
+      dispatch(setQuery(slug.toLowerCase()));
+      dispatch(discoverPost({ page: 1, limit, query: slug.toLowerCase() }));
+    }
+  }, [slug.toLowerCase()]);
+
+  const handleIntersection = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      if (
+        entries[0].isIntersecting &&
+        hasMore &&
+        !loading &&
+        !pendingRequest.current &&
+        posts.length > 0
+      ) {
+        pendingRequest.current = true;
+        dispatch(discoverPost({ page, limit, query })).finally(() => {
+          pendingRequest.current = false;
+        });
+      }
+    },
+    [dispatch, page, limit, query, hasMore, loading, posts.length]
+  );
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(handleIntersection, {
+      threshold: 0.1,
+    });
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [handleIntersection]);
 
   return (
     <div>
@@ -36,44 +97,46 @@ const page = ({
           </p>
         </div>
       </div>
-      <div className="gris grid-cols-1">
-        <Link
-          href="/profile"
-          className="border border-[#303030] py-3 px-4 rounded-[12px] w-full flex items-center gap-x-4 text-base text-[#f4f4f4] font-medium font-sans"
-        >
-          <div className="w-10 h-10 rounded-full overflow-hidden">
-            <Image
-              src="https://github.com/shadcn.png"
-              alt="avatar image"
-              width={40}
-              height={40}
-            />
-          </div>
-            <p className="text-[#f4f4f4] text-base font-medium">World of Women (WoW)</p>
-        </Link>
+      <div>
+        {posts.length === 0 && !loading && (
+          <p className="text-center text-[#f4f4f4] py-4">
+            No posts found for "{slug}"
+          </p>
+        )}
       </div>
-      <Pagination className="font-sans mt-11">
-        <PaginationContent className="gap-x-2">
-          <PaginationItem>
-            <PaginationPrevious href="#" className="px-2.5 py-1.5 rounded-[6px]" />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#" isActive className="px-2.5 py-1.5 rounded-[6px]">1</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#" className="px-2.5 py-1.5 rounded-[6px]">2</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationLink href="#" className="px-2.5 py-1.5 rounded-[6px]">3</PaginationLink>
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationEllipsis className="px-2.5 py-1.5 rounded-[6px]" />
-          </PaginationItem>
-          <PaginationItem>
-            <PaginationNext href="#" className="px-2.5 py-1.5 rounded-[6px]" />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+      <div className="grid grid-cols-1 gap-4">
+        {posts.map((post: PostItem, index) => (
+          <Link
+            href={`/profile/${post.project_uuid}`}
+            key={post.project_uuid! + index * 5}
+            className="border border-[#303030] py-3 px-4 rounded-[12px] w-full flex items-center gap-x-4 text-base text-[#f4f4f4] font-medium font-sans"
+          >
+            <div className="w-10 h-10 relative rounded-full overflow-hidden">
+              <Image
+                src={`${post.project?.avatar}`}
+                alt="avatar image"
+                quality={100}
+                fill
+                className="object-cover object-center"
+              />
+            </div>
+            <p className="text-[#f4f4f4] text-base font-medium">
+              {post.project?.name}
+            </p>
+          </Link>
+        ))}
+      </div>
+      <div ref={observerTarget} className="flex justify-center py-8">
+        {loading && (
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span>Loading more posts...</span>
+          </div>
+        )}
+        {!hasMore && posts.length > 0 && (
+          <p className="text-muted-foreground">No more posts to load</p>
+        )}
+      </div>
     </div>
   );
 };

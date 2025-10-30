@@ -22,6 +22,7 @@ import bookmarkReducer from "@/redux/slices/bookmarkSlice";
 import changePasswordReducer from "@/redux/slices/changePasswordSlice";
 import profileSettingsReducer from "@/redux/slices/profileSlice";
 import createWalletReducer from "@/redux/slices/createWallet";
+import discoverPostReducer from "@/redux/slices/discoverPostSlice";
 
 const persistConfig = {
   key: "root",
@@ -49,6 +50,7 @@ const rootReducer = combineReducers({
   changePassword: changePasswordReducer,
   profileSettings: profileSettingsReducer,
   createWallet: createWalletReducer,
+  discoverPost: discoverPostReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

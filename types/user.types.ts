@@ -16,8 +16,8 @@ export interface UserProfile {
   username: string;
   title: string | null;
   social: string | null;
-  skills: string | null;
-  interests: string | null;
+  skills: string | null | string[];
+  interests: string | null | string[];
   role: string;
   ref: string | null;
   email_verified_at: string | null;

@@ -1,9 +1,6 @@
 "use client";
 import React from "react";
 import ReduxProvider from "@/redux/ReduxProvider";
-import Provider from "@/context/web3AuthContext";
-import { ToastContainer } from "react-toastify";
-import { cookieToWeb3AuthState } from "@web3auth/modal";
 import "@rainbow-me/rainbowkit/styles.css";
 import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { WagmiProvider } from "wagmi";
@@ -27,7 +24,6 @@ const config = getDefaultConfig({
 const queryClient = new QueryClient();
 
 const ClientProvider = ({ children, cookie }: ClientProviderProps) => {
-  const web3authInitialState = cookieToWeb3AuthState(cookie);
   return (
     <ReduxProvider>
       <WagmiProvider config={config}>

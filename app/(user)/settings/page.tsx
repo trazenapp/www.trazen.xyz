@@ -4,7 +4,7 @@ import AccountManagementTab from "@/components/profile/accountManagement";
 import SecurityTab from "@/components/profile/SecurityTab";
 
 const Settings = () => {
-  const [tab, setTab] = useState<"account" | "security">("security");
+  const [tab, setTab] = useState<"account" | "security">("account");
 
   return (
     <div className="min-h-screen text-white font-sans w-full">

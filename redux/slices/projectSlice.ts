@@ -66,9 +66,7 @@ export const getProjectDetail = createAsyncThunk(
   "project/getProjectDetail",
   async (project_uuid: string, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(
-        `/v1/project/${project_uuid}`
-      );
+      const response = await axiosInstance.get(`/v1/project/${project_uuid}`);
 
       return response.data.data.project;
     } catch (error: any) {

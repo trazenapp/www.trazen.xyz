@@ -107,7 +107,7 @@ const page = ({ params }: { params: Promise<{ slug: string }> }) => {
       <div className="grid grid-cols-1 gap-4">
         {posts.map((post: PostItem, index) => (
           <Link
-            href="/profile"
+            href={`/profile/${post.project_uuid}`}
             key={post.project_uuid! + index * 5}
             className="border border-[#303030] py-3 px-4 rounded-[12px] w-full flex items-center gap-x-4 text-base text-[#f4f4f4] font-medium font-sans"
           >

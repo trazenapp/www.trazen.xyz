@@ -36,6 +36,8 @@ export const ConnectWallet = () => {
             chainName: chain.name,
           };
 
+          console.log(account.address, chain.name);
+
           // Only send if address OR chain name changed
           if (
             current.address !== lastSent.current.address ||
@@ -96,12 +98,13 @@ export const ConnectWallet = () => {
                 userSelect: "none",
               },
             })}
+            className="w-full border rounded-[14px] border-[#303030] "
           >
             {connected ? (
               <button
                 onClick={() => disconnect()}
                 type="button"
-                className="cursor-pointer"
+                className="cursor-pointer w-full py-3.5"
               >
                 Disconnect Wallet
               </button>
@@ -109,7 +112,7 @@ export const ConnectWallet = () => {
               <button
                 onClick={openConnectModal}
                 type="button"
-                className="cursor-pointer"
+                className="cursor-pointer  w-full py-3.5"
               >
                 Connect Wallet
               </button>

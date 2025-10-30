@@ -82,7 +82,15 @@ function SecurityTab() {
     <div className="flex-1 p-8 bg-transparent md:bg-[#161616] ml-0 md:ml-4">
       <h2 className="text-white mb-6">Security</h2>
 
-      <ConnectWallet />
+      <div className="">
+        <label htmlFor="link-wallet" className="font-medium">
+          Linked Wallet
+        </label>
+
+        <div id="link-wallet" className="mt-4">
+          <ConnectWallet />
+        </div>
+      </div>
       <h2 className="mt-6">Change Password</h2>
 
       <form

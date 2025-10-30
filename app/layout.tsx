@@ -4,7 +4,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import ClientProvider from "@/utils/clientProvider";
-import favicon from "@/public/favicon.svg";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,22 +18,22 @@ const geistMono = Geist_Mono({
 const clashDisplay = localFont({
   src: [
     {
-      path: "../public/fonts/ClashDisplay-Light.woff2",
+      path: "/fonts/ClashDisplay-Light.woff2",
       style: "normal",
       weight: "300",
     },
     {
-      path: "../public/fonts/ClashDisplay-Medium.woff2",
+      path: "/fonts/ClashDisplay-Medium.woff2",
       style: "normal",
       weight: "500",
     },
     {
-      path: "../public/fonts/ClashDisplay-Semibold.woff2",
+      path: "/fonts/ClashDisplay-Semibold.woff2",
       style: "normal",
       weight: "600",
     },
     {
-      path: "../public/fonts/ClashDisplay-Bold.woff2",
+      path: "/fonts/ClashDisplay-Bold.woff2",
       style: "normal",
       weight: "700",
     },

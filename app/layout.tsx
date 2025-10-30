@@ -18,22 +18,22 @@ const geistMono = Geist_Mono({
 const clashDisplay = localFont({
   src: [
     {
-      path: "/fonts/ClashDisplay-Light.woff2",
+      path: "./fonts/ClashDisplay-Light.woff2",
       style: "normal",
       weight: "300",
     },
     {
-      path: "/fonts/ClashDisplay-Medium.woff2",
+      path: "./fonts/ClashDisplay-Medium.woff2",
       style: "normal",
       weight: "500",
     },
     {
-      path: "/fonts/ClashDisplay-Semibold.woff2",
+      path: "./fonts/ClashDisplay-Semibold.woff2",
       style: "normal",
       weight: "600",
     },
     {
-      path: "/fonts/ClashDisplay-Bold.woff2",
+      path: "./fonts/ClashDisplay-Bold.woff2",
       style: "normal",
       weight: "700",
     },

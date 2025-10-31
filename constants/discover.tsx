@@ -60,6 +60,9 @@ export const discoverItems = [
   { name: "Sushiswap", type: "PROJECT", url: "/sushiswap" },
 ];
 
-export const getAlphabeticallySortedTags = () => {
-  return [...discoverItems].sort((a, b) => a.name.localeCompare(b.name));
-};
+export const Chains = discoverItems
+  .filter((item) => item.type === "CHAIN")
+  .sort((a, b) => a.name.localeCompare(b.name));
+export const Niches = discoverItems
+  .filter((item) => item.type === "NICHE")
+  .sort((a, b) => a.name.localeCompare(b.name));

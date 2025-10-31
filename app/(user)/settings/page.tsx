@@ -8,9 +8,6 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen text-white font-sans w-full">
-      {/* Header */}
-      <h1 className="text-xl font-medium mb-4 hidden lg:flex">Settings</h1>
-
       {/* Main Container */}
       <div className="flex flex-col md:flex-row gap-0 bg-transparent md:bg-[#161616] h-full w-full relative rounded-lg overflow-hidden">
         {/* Left Sidebar */}

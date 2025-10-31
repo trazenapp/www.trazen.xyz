@@ -66,6 +66,12 @@ export interface SignInData {
   password: string;
 }
 
+export interface SignInWalletData {
+  network: string;
+  address: string;
+  signature: string;
+}
+
 export interface VerifyEmailData {
   email: string;
   token: string;
@@ -91,14 +97,16 @@ export interface ResetPasswordData {
 // }
 
 export const AUTH_STEPS_ROUTE = {
-  1: "/sign-up", 2: "/on-boarding", 3: "create-project"
-}
+  1: "/sign-up",
+  2: "/on-boarding",
+  3: "create-project",
+};
 
 export interface AuthState {
   isAuthenticated: boolean;
   authSteps?: number;
   lastCompletedStep: number;
-  currentRoute: typeof AUTH_STEPS_ROUTE[1];
+  currentRoute: (typeof AUTH_STEPS_ROUTE)[1];
   role: "USER" | "PIONEER" | null;
 }
 
@@ -158,10 +166,9 @@ export interface SignInResponseData {
 }
 
 export interface SignInResponse {
-  data: SignInResponseData
+  data: SignInResponseData;
 }
 
 export interface ForgotPasswordResponse {
   message: string;
 }
-

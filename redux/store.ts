@@ -26,8 +26,6 @@ import createWalletReducer from "@/redux/slices/createWallet";
 import discoverPostReducer from "@/redux/slices/discoverPostSlice";
 import dashboardReducer from "@/redux/slices/dashboardSlice";
 
-
-
 const persistConfig = {
   key: "root",
   storage,

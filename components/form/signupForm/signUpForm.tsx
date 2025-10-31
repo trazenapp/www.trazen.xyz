@@ -7,6 +7,7 @@ import {
   setLoading,
   signUp,
   resetForm,
+  continueWithGoogle,
 } from "@/redux/slices/registerSlice";
 import { setUserRole } from "@/redux/slices/authSlice";
 import { useForm, Controller } from "react-hook-form";
@@ -48,7 +49,14 @@ const SignUpForm = () => {
   };
   const passwordType = showPassword ? "text" : "password";
 
-  const registerWithGoogle = async () => {};
+  const registerWithGoogle = async () => {
+    const res = await dispatch(continueWithGoogle());
+    console.log(res);
+    const redirectUrl = res.payload;
+    if (redirectUrl && typeof redirectUrl === 'string') {
+      window.location.href = redirectUrl;
+    }
+  };
 
   const onSubmit = async (data: SignUpData) => {
     console.log(data);

@@ -4,7 +4,7 @@ import Image from "next/image";
 import defaultProfile from "@/public/default-profile.svg";
 import cancel from "@/public/cancel.svg";
 import { Button } from "@/components/ui/button";
-import { options, OptionType } from "@/constants/options";
+import { options, OptionType, ChainAndNicheOptions } from "@/constants/options";
 import { useAppDispatch, useAppSelector, RootState } from "@/redux/store";
 import {
   ProfileData,
@@ -290,11 +290,11 @@ function AccountManagementTab() {
         <div className="bg-[#171717]">
           <Select<OptionType, true>
             isMulti
-            options={options}
-            value={options.filter((option) =>
+            options={ChainAndNicheOptions}
+            value={ChainAndNicheOptions.filter((option) =>
               (formData.interests || []).includes(option.value)
             )}
-            isDisabled={true}
+            menuPlacement="auto"
             onChange={(selected) => handleSelectChange(selected, "interests")}
             className="basic-multi-select font-sans !bg-[#171717] !border-[#434343]"
             classNamePrefix="select"

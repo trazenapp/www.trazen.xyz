@@ -3,6 +3,7 @@ import axiosInstance from "@/utils/axios";
 import { getMessaging, getToken } from "firebase/messaging";
 import {
   SignInData,
+  SignInWalletData,
   SignInResponse,
   User,
   SignInState,
@@ -21,6 +22,7 @@ const initialState: SignInState = {
   data: formData,
   token: null,
 };
+
 // /app/api/auth/set-token/route.ts
 export const signIn = createAsyncThunk(
   "sign-in",
@@ -35,7 +37,7 @@ export const signIn = createAsyncThunk(
       });
 
       const { user, token } = response.data.data;
-      
+
       if (typeof window !== "undefined") {
         localStorage.setItem("token", token);
       }
@@ -49,6 +51,41 @@ export const signIn = createAsyncThunk(
       return { user, token };
     } catch (error: any) {
       console.log("Sign In Error: ", error);
+      return rejectWithValue(error.response?.data?.message || "Sign In Failed");
+    }
+  }
+);
+
+export const signInWithWallet = createAsyncThunk(
+  "sign-in-with-wallet",
+  async (SignInWalletData, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(
+        "/v1/auth/wallet",
+        SignInWalletData,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            "x-device-token": localStorage.getItem("fcmToken"),
+          },
+        }
+      );
+
+      const { user, token } = response.data.data;
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem("token", token);
+      }
+
+      await fetch("/api/auth/set-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      return { user, token };
+    } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || "Sign In Failed");
     }
   }
@@ -103,6 +140,22 @@ const loginSlice = createSlice({
         state.token = action.payload.token;
       })
       .addCase(signIn.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+        state.isAuthenticated = false;
+      })
+      .addCase(signInWithWallet.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(signInWithWallet.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.error = null;
+        state.token = action.payload.token;
+      })
+      .addCase(signInWithWallet.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
         state.isAuthenticated = false;

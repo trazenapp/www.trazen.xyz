@@ -39,7 +39,7 @@ export interface OnboardingData {
   interests: string[];
   chains?: string[];
   niche?: string[];
-  projects?: string[];
+  projects?: string[] | null;
   ref: string;
 }
 
@@ -81,7 +81,7 @@ export interface ResetPasswordData {
 export const AUTH_STEPS_ROUTE = {
   1: "/sign-up",
   2: "/on-boarding",
-  3: "create-project",
+  3: "/create-project",
 };
 
 export interface AuthState {

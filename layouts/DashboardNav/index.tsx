@@ -31,7 +31,7 @@ const DashboardNav = ({ pioneer = false, editProject = false }) => {
 
   return (
     <nav
-      className={` sticky top-0 z-10  lg:bg-[#161616] md:bg-[#0B0B0B]/[50%] backdrop-blur-md lg:backdrop-blur-none px-5 py-[18px] flex items-center justify-between lg:border-b lg:border-b-[#303030] w-full ${pioneer ? "max-sm:w-[100vw]" : ""}`}
+      className={` sticky top-0 z-10  lg:bg-[#161616] md:bg-[#0B0B0B]/50 backdrop-blur-md lg:backdrop-blur-none px-5 py-[18px] flex items-center justify-between lg:border-b lg:border-b-[#303030] w-full ${pioneer ? "max-sm:w-screen" : ""}`}
     >
       {/* desktop view */}
       <Link href="/" className="hidden lg:flex">
@@ -52,12 +52,12 @@ const DashboardNav = ({ pioneer = false, editProject = false }) => {
             <Button
               // disabled
               onClick={() => router.push("/dashboard")}
-              className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8"
+              className="flex gap-x-2.5! rounded-full font-sans bg-[#430B68] py-3! px-8!"
             >
               Dashboard
             </Button>
           ) : (
-            <Button className="flex !gap-x-2.5 rounded-full font-sans bg-[#430B68] !py-3 !px-8">
+            <Button className="flex gap-x-2.5! rounded-full font-sans bg-[#430B68] py-3! px-8!">
               Create Project <ArrowRight />
             </Button>
           )}
@@ -67,19 +67,19 @@ const DashboardNav = ({ pioneer = false, editProject = false }) => {
       {/* tablet and mobile view */}
       <Button
         onClick={handleToggleSidebar}
-        className="lg:hidden !p-0 bg-transparent"
+        className="lg:hidden p-0! bg-transparent"
       >
         <IoIosMenu className="text-3xl" />
       </Button>
 
       <h3
-        className={`lg:hidden text-[#F4F4F4F4] font-sans font-medium text-base capitalize ${pioneer ? "w-[100%] text-center text-[20px] " : ""} `}
+        className={`lg:hidden text-[#F4F4F4F4] font-sans font-medium text-base capitalize ${pioneer ? "w-full text-center text-[20px] " : ""} `}
       >
         {editProject ? "Dashboard" : title}
       </h3>
 
       {!pioneer && (
-        <Button className="lg:hidden !p-0">
+        <Button className="lg:hidden p-0!">
           <Search className="text-[#F4F4F4F4] text-xl" size={20} />
         </Button>
       )}

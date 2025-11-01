@@ -40,7 +40,7 @@ export const signIn = createAsyncThunk(
       });
 
       const { user, token } = response.data.data;
-      console.log(user)
+      console.log(user);
 
       if (typeof window !== "undefined") {
         localStorage.setItem("token", token);
@@ -130,6 +130,9 @@ const loginSlice = createSlice({
       state.data = formData;
     },
     addSession: (state, action: PayloadAction<Session>) => {
+      if (!state.sessions) {
+        state.sessions = []; 
+      }
       const exists = state.sessions.find(
         (s) => s.user.email === action.payload.user.email
       );

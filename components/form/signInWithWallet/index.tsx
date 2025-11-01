@@ -17,8 +17,8 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-function SignInButton() {
-  const { connect, connectors } = useConnect();
+export default function SignInWithWallet() {
+  // const { connect, connectors } = useConnect();
   const { address, isConnected } = useAccount();
   const { chain } = useNetwork();
   const { signMessage } = useSignMessage();

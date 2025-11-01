@@ -31,7 +31,7 @@ import {
   followPost,
 } from "@/redux/slices/postSlice";
 import { PostItem } from "@/types/post.types";
-import {ProjectDetail} from "@/types/project.types";
+import { ProjectDetail } from "@/types/project.types";
 import { ClipLoader } from "react-spinners";
 import { useShare } from "@/hooks/useShareOptions";
 import EditPost from "../editPost";
@@ -54,7 +54,12 @@ interface FeedsCardProps {
   project?: ProjectDetail;
 }
 
-const FeedsCard = ({ post, removeBookmark, isPrivate, project }: FeedsCardProps) => {
+const FeedsCard = ({
+  post,
+  removeBookmark,
+  isPrivate,
+  project,
+}: FeedsCardProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { shareContent } = useShare();
@@ -134,21 +139,25 @@ const FeedsCard = ({ post, removeBookmark, isPrivate, project }: FeedsCardProps)
 
   return (
     <>
-      <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0 mb-4">
+      <Card className="md:px-[23px]! md:py-5! p-3! flex flex-col gap-y-5 rounded-[16px]! border-0! mb-4">
         <div className="flex justify-between items-start">
           <div className="flex items-start gap-x-2.5 font-sans">
             <Link href="/profile" className="flex items-start gap-x-2.5">
-              {!isPrivate ? <AvatarProfile
-                createdAt={post?.created_at}
-                name={post?.project?.name}
-                avatar={post?.project?.avatar}
-                is_approved={post?.project?.is_approved}
-              /> : <AvatarProfile
-                createdAt={project?.created_at}
-                name={project?.name}
-                avatar={project?.avatar}
-                is_approved={project?.is_approved}
-              />}
+              {!isPrivate ? (
+                <AvatarProfile
+                  createdAt={post?.created_at}
+                  name={post?.project?.name}
+                  avatar={post?.project?.avatar}
+                  is_approved={post?.project?.is_approved}
+                />
+              ) : (
+                <AvatarProfile
+                  createdAt={project?.created_at}
+                  name={project?.name}
+                  avatar={project?.avatar}
+                  is_approved={project?.is_approved}
+                />
+              )}
             </Link>
             {post?.isFollowing && isPrivate && (
               <Button

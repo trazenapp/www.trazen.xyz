@@ -11,7 +11,7 @@ import useAuthStepsGuard from "@/hooks/useAuthStepsGuard";
 import { setSteps } from "@/redux/slices/projectSlice";
 
 const CreateProject = () => {
-  useAuthStepsGuard(3);
+  // useAuthStepsGuard(3);
   const dispatch = useAppDispatch();
   const { steps } = useAppSelector((state: RootState) => state.project);
   const handlePrevStep = (steps: number) => {

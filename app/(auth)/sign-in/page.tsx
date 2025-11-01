@@ -17,7 +17,7 @@ const SignIn = () => {
         />
       </div>
       <div className="flex flex-col gap-y-4 w-full mb-8">
-        <SignInWithWallet />
+        {/* <SignInWithWallet /> */}
         <SignInWithGoogle />
       </div>
       <DividerText text="Or sign in with" />

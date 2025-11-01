@@ -82,7 +82,7 @@ const settingUpForm = () => {
         <FormHeading
           title={formTitle}
           subtitle={formSubTitle}
-          className="!text-left"
+          className="text-left!"
         />
       </div>
       <form
@@ -114,7 +114,8 @@ const settingUpForm = () => {
                   required: true,
                   validate: (value) => {
                     const url = xUrlCheck(value || "");
-                    const regexCheck = /^https:\/\/x\.com\/@([A-Za-z0-9_]{1,15})$/;
+                    const regexCheck =
+                      /^https:\/\/x\.com\/@([A-Za-z0-9_]{1,15})$/;
 
                     return regexCheck.test(url)
                       ? true
@@ -173,7 +174,7 @@ const settingUpForm = () => {
               <Select<OptionType, true>
                 isMulti
                 options={options as OptionType[]}
-                className="basic-multi-select font-sans !bg-[#171717] !border-[#434343]"
+                className="basic-multi-select font-sans bg-[#171717]! border-[#434343]!"
                 classNamePrefix="select"
                 isOptionDisabled={() => field.value?.length >= 5}
                 value={options.filter((opt) =>

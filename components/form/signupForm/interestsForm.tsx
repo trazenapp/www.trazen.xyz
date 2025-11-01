@@ -57,20 +57,22 @@ const InterestsForm = () => {
   });
 
   const finalData = (formData: any) => {
-    return {
-      email: userEmail,
-      username: uUsername,
-      title: formData.title,
-      social: formData.social,
-      skills: formData.skills,
-      interests: [
-        ...(formData.chains || []),
-        ...(formData.niche || []),
-        ...(formData.projects ? [formData.projects] : []),
-      ],
-      ref: formData.ref,
-    };
+  const interests = [
+    ...(formData.chains || []),
+    ...(formData.niche || []),
+    ...(formData.projects ? [formData.projects] : []),
+  ].filter(Boolean); 
+
+  return {
+    email: userEmail,
+    username: uUsername,
+    title: formData.title,
+    social: formData.social,
+    skills: formData.skills,
+    ...(interests.length > 0 && { interests }), 
+    ref: formData.ref,
   };
+};
 
   const onSubmit = async (data: OnboardingData) => {
     try {
@@ -78,8 +80,8 @@ const InterestsForm = () => {
       const finalFormData = finalData(data);
       const mergedData = { ...finalFormData };
       console.log(mergedData);
-      dispatch(updateFormData(mergedData));
-      await dispatch(onboarding(mergedData)).unwrap();
+      dispatch(updateFormData(mergedData as OnboardingData));
+      await dispatch(onboarding(mergedData as OnboardingData)).unwrap();
       toast.success((t) => <div>Onboarding Steps Complete</div>, {
         style: {
           background: "#161616",
@@ -87,9 +89,9 @@ const InterestsForm = () => {
         },
       });
       dispatch(setLoading(false));
-      userRole === "USER"
-        ? dispatch(setSteps(steps + 1))
-        : router.push("/create-project");
+      userRole === "PIONEER"
+      ? router.push("/create-project")
+        : dispatch(setSteps(steps + 1));
     } catch (error: any) {
       console.log(error);
       toast.error((t) => <div>{error}</div>, {

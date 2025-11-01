@@ -27,7 +27,6 @@ const SwitchAccount = ({ profile }: SwitchAccountProps) => {
   const { sessions, currentUser } = useAppSelector(
     (state: RootState) => state.login
   );
-  console.log(sessions, currentUser);
 
   const handleUserSwitch = (email: string) => {
     dispatch(switchSession(email));
@@ -58,7 +57,6 @@ const SwitchAccount = ({ profile }: SwitchAccountProps) => {
                 const avatarUrl = session?.user?.email
                   ? session?.user?.avatar || ""
                   : "https://github.com/shadcn.png";
-                console.log(session?.user?.email === profile?.email);
                 return (
                   <Button
                     key={session?.user?.uuid}

@@ -19,7 +19,7 @@ import { OnboardingData } from "@/types/auth.types";
 import { chainOptions, nicheOptions } from "@/constants/options";
 import FormCheckbox from "@/components/form/formCheckbox";
 import { FaCheck } from "react-icons/fa6";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 const ProjectCategory = () => {
   const dispatch = useAppDispatch();
@@ -57,17 +57,21 @@ const ProjectCategory = () => {
       console.log(mergedData);
       dispatch(updateFormData(mergedData));
       await dispatch(addProject(mergedData)).unwrap();
-      toast(<div>Project created successfully</div>, {
-        theme: "dark",
-        type: "success",
+      toast.success((t) => <div>Project created successfully</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setLoading(false));
       dispatch(setSteps(steps + 1));
     } catch (error: any) {
       console.log(error);
-      toast(<div>{error}</div>, {
-        theme: "dark",
-        type: "error",
+      toast.error((t) => <div>{error}</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setLoading(false));
     }

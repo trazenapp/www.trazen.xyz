@@ -67,7 +67,7 @@ const Home = () => {
           </TabsList>
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="h-fit !text-2xl !px-5 !py-4 bg-transparent border border-[#303030] rounded-2xl">
+              <Button className="h-fit text-2xl! px-5! py-4! bg-transparent border border-[#303030] rounded-2xl">
                 <MdFilterList />
               </Button>
             </DialogTrigger>

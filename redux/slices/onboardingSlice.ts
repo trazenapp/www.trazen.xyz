@@ -16,7 +16,7 @@ const formData: OnboardingData = {
   hearAboutUs: "",
   interests: [],
   niche: [],
-  projects: [],
+  projects: null,
   chains: [],
   ref: "",
 };

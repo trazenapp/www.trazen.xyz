@@ -48,6 +48,28 @@ const CreateFirstProjectForm = () => {
 
   const isTeamValue = watch("isTeam");
 
+  const xUrlCheck = (value: string) => {
+    if (!value) return value;
+
+    let handle = value.trim();
+
+    if (handle.startsWith("https://") && handle.includes("@@")) {
+      handle = handle.replace("@@", "@");
+    }
+
+    if (!handle.startsWith("http")) {
+      handle = handle.replace(/^@/, ""); // remove leading @ if present
+      return `https://x.com/@${handle}`;
+    }
+
+    handle = handle
+      .replace("https://twitter.com/", "https://x.com/")
+      .replace("https://mobile.twitter.com/", "https://x.com/");
+
+    const extractedUsername = handle.split(/@/).pop();
+    return `https://x.com/@${extractedUsername}`;
+  };
+
   const onSubmit = async (data: AddProjectData) => {
     try {
       console.log(data);
@@ -131,7 +153,17 @@ const CreateFirstProjectForm = () => {
           <Controller
             name="social"
             control={control}
-            rules={{ required: true }}
+            rules={{
+              required: true,
+              validate: (value) => {
+                const url = xUrlCheck(value || "");
+                const regexCheck = /^https:\/\/x\.com\/@([A-Za-z0-9_]{1,15})$/;
+
+                return regexCheck.test(url)
+                  ? true
+                  : "Invalid URL: Use format https://x.com/username or use a valid X(Twitter) username";
+              },
+            }}
             render={({ field }) => (
               <Input
                 type="text"

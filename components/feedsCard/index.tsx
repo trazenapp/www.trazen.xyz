@@ -31,6 +31,7 @@ import {
   followPost,
 } from "@/redux/slices/postSlice";
 import { PostItem } from "@/types/post.types";
+import {ProjectDetail} from "@/types/project.types";
 import { ClipLoader } from "react-spinners";
 import { useShare } from "@/hooks/useShareOptions";
 import EditPost from "../editPost";
@@ -50,9 +51,10 @@ interface FeedsCardProps {
   post?: PostItem;
   removeBookmark?: (bookmark_uuid: string) => void;
   isPrivate?: boolean;
+  project?: ProjectDetail;
 }
 
-const FeedsCard = ({ post, removeBookmark, isPrivate }: FeedsCardProps) => {
+const FeedsCard = ({ post, removeBookmark, isPrivate, project }: FeedsCardProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { shareContent } = useShare();
@@ -73,7 +75,7 @@ const FeedsCard = ({ post, removeBookmark, isPrivate }: FeedsCardProps) => {
     shareContent({
       title: post?.name || "",
       text: post?.content || "",
-      url: window.location.href,
+      url: post?.uuid || "",
     });
   };
 
@@ -136,14 +138,19 @@ const FeedsCard = ({ post, removeBookmark, isPrivate }: FeedsCardProps) => {
         <div className="flex justify-between items-start">
           <div className="flex items-start gap-x-2.5 font-sans">
             <Link href="/profile" className="flex items-start gap-x-2.5">
-              <AvatarProfile
+              {!isPrivate ? <AvatarProfile
                 createdAt={post?.created_at}
                 name={post?.project?.name}
                 avatar={post?.project?.avatar}
                 is_approved={post?.project?.is_approved}
-              />
+              /> : <AvatarProfile
+                createdAt={project?.created_at}
+                name={project?.name}
+                avatar={project?.avatar}
+                is_approved={project?.is_approved}
+              />}
             </Link>
-            {!post?.isFollowing && (
+            {post?.isFollowing && isPrivate && (
               <Button
                 type="button"
                 onClick={() =>
@@ -165,12 +172,12 @@ const FeedsCard = ({ post, removeBookmark, isPrivate }: FeedsCardProps) => {
               className="bg-[#272727] !min-w-0 !p-0 border-0 w-32"
               align="end"
             >
-              {/* <DropdownMenuItem
+              <DropdownMenuItem
                 onClick={handleShareClick}
                 className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
               >
                 <TbShare3 /> Share
-              </DropdownMenuItem> */}
+              </DropdownMenuItem>
 
               {isPrivate ? (
                 <>

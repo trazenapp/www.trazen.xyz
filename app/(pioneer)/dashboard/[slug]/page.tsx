@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Feedscard from "@/components/feedsCard";
 import EventCard from "@/components/eventCard";
 import BountyCard from "@/components/bountyCard";
 import HiringCard from "@/components/hiringCard";
@@ -90,6 +89,8 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
     pagination: bountyPagination,
     hasMore: bountyHasMore,
   } = useAppSelector((state: RootState) => state.bounties);
+
+  console.log(projectDetail)
 
   const [page, setPage] = useState({
     feed: 1,
@@ -331,16 +332,18 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                   ? [...Array(5)].map((_, i) => (
                       <Skeleton key={i} className="w-full h-[200px] my-4" />
                     ))
-                  : privatePosts.map((post, index) => (
+                  : privatePosts.map((post, index) => {
+                    console.log(post)
+                    return(
                       <div
                         key={post.uuid}
                         ref={
                           index === privatePosts.length - 1 ? ref : undefined
                         }
                       >
-                        <MemoizedFeedsCard post={post} isPrivate />
+                        <MemoizedFeedsCard post={post} isPrivate project={projectDetail} />
                       </div>
-                    ))}
+                    )})}
 
                 {postLoading && privatePosts.length > 0 && (
                   <Skeleton className="w-full h-[200px] my-4" />
@@ -358,7 +361,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                         key={event.uuid}
                         ref={index === events.length - 1 ? ref : undefined}
                       >
-                        <MemoizedEventCard event={event} isPrivate />
+                        <MemoizedEventCard event={event} isPrivate project={projectDetail} />
                       </div>
                     ))}
                 {eventLoading && events && events.length > 0 && (
@@ -405,7 +408,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                         key={bounty.uuid}
                         ref={index === bountyData?.length - 1 ? ref : undefined}
                       >
-                        <MemoizedBountyCard bounty={bounty} isPrivate />
+                        <MemoizedBountyCard bounty={bounty} isPrivate project={projectDetail} />
                       </div>
                     ))}
                 {bountyLoading && bountyData && bountyData?.length > 0 && (

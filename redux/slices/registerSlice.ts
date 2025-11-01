@@ -29,15 +29,16 @@ export const continueWithGoogle = createAsyncThunk(
   "register/continueWithGoogle",
   async (redirect_uri, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/v1/auth/google/redirect`,
-          {headers: {
-            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
-            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-          },});
-          console.log(response)
+      const response = await axiosInstance.get(`/v1/auth/google/redirect`, {
+        headers: {
+          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+        },
+      });
+      console.log(response);
       return response.data.data.url;
     } catch (err: any) {
-      console.log(err)
+      console.log(err);
       return rejectWithValue(
         err.response?.data?.message || "Google auth failed"
       );
@@ -51,10 +52,12 @@ export const fetchGoogleUser = createAsyncThunk(
     try {
       const response = await axiosInstance.get(
         `/v1/auth/google/callback?code=${code}`,
-          {headers: {
+        {
+          headers: {
             "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
             "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-          },}
+          },
+        }
       );
       return response.data;
     } catch (err: any) {

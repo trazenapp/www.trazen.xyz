@@ -53,7 +53,7 @@ const SignUpForm = () => {
     const res = await dispatch(continueWithGoogle());
     console.log(res);
     const redirectUrl = res.payload;
-    if (redirectUrl && typeof redirectUrl === 'string') {
+    if (redirectUrl && typeof redirectUrl === "string") {
       window.location.href = redirectUrl;
     }
   };

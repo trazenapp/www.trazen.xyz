@@ -7,6 +7,7 @@ import {
   SignInResponse,
   User,
   SignInState,
+  Session,
 } from "@/types/auth.types";
 
 const formData: SignInData = {
@@ -21,12 +22,14 @@ const initialState: SignInState = {
   isAuthenticated: false,
   data: formData,
   token: null,
+  sessions: [],
+  currentUser: null,
 };
 
 // /app/api/auth/set-token/route.ts
 export const signIn = createAsyncThunk(
   "sign-in",
-  async (SignInData, { rejectWithValue }) => {
+  async (SignInData, { rejectWithValue, dispatch }) => {
     try {
       const response = await axiosInstance.post("/v1/auth/login", SignInData, {
         headers: {
@@ -37,6 +40,7 @@ export const signIn = createAsyncThunk(
       });
 
       const { user, token } = response.data.data;
+      console.log(user)
 
       if (typeof window !== "undefined") {
         localStorage.setItem("token", token);
@@ -48,6 +52,8 @@ export const signIn = createAsyncThunk(
         body: JSON.stringify({ token }),
       });
 
+      dispatch(addSession({ user, token }));
+
       return { user, token };
     } catch (error: any) {
       console.log("Sign In Error: ", error);
@@ -58,7 +64,7 @@ export const signIn = createAsyncThunk(
 
 export const signInWithWallet = createAsyncThunk(
   "sign-in-with-wallet",
-  async (SignInWalletData, { rejectWithValue }) => {
+  async (SignInWalletData, { rejectWithValue, dispatch }) => {
     try {
       const response = await axiosInstance.post(
         "/v1/auth/wallet",
@@ -83,6 +89,8 @@ export const signInWithWallet = createAsyncThunk(
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
+
+      dispatch(addSession({ user, token }));
 
       return { user, token };
     } catch (error: any) {
@@ -118,6 +126,37 @@ const loginSlice = createSlice({
     },
     resetForm: (state) => {
       state.data = formData;
+    },
+    addSession: (state, action: PayloadAction<Session>) => {
+      const exists = state.sessions.find(
+        (s) => s.user.email === action.payload.user.email
+      );
+      if (!exists) {
+        state.sessions.push(action.payload);
+      }
+      state.currentUser = action.payload;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("sessions", JSON.stringify(state.sessions));
+        localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
+      }
+    },
+    switchSession: (state, action: PayloadAction<string>) => {
+      const found = state.sessions.find((s) => s.user.email === action.payload);
+      if (found) {
+        state.currentUser = found;
+        if (typeof window !== "undefined") {
+          localStorage.setItem("currentUser", JSON.stringify(found));
+          localStorage.setItem("token", found.token);
+        }
+      }
+    },
+    loadSessions: (state) => {
+      if (typeof window !== "undefined") {
+        const sessions = localStorage.getItem("sessions");
+        const currentUser = localStorage.getItem("currentUser");
+        state.sessions = sessions ? JSON.parse(sessions) : [];
+        state.currentUser = currentUser ? JSON.parse(currentUser) : null;
+      }
     },
     logout: (state) => {
       state.user = null;
@@ -170,6 +209,9 @@ export const {
   setLoading,
   resetForm,
   logout,
+  addSession,
+  switchSession,
+  loadSessions,
 } = loginSlice.actions;
 
 export default loginSlice.reducer;

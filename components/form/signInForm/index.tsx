@@ -17,7 +17,7 @@ import {
   signIn,
 } from "@/redux/slices/loginSlice";
 import { ClipLoader } from "react-spinners";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { useFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
 
 const SignInForm = () => {
@@ -47,18 +47,22 @@ const SignInForm = () => {
       dispatch(updateFormData(data));
       console.log(data);
       await dispatch(signIn(data as any)).unwrap();
-      toast(<div>Login Successful</div>, {
-        theme: "dark",
-        type: "success",
+      toast((t) => <div>Login Successful</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setLoading(false));
       dispatch(resetForm());
       router.replace("/home");
     } catch (err: any) {
       console.log(err);
-      toast(<div>{err}</div>, {
-        theme: "dark",
-        type: "error",
+      toast((t) => <div>{err}</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setLoading(false));
     }

@@ -32,17 +32,19 @@ import { Edit, Trash2 } from "lucide-react";
 import { PiBookmarkSimpleBold, PiBookmarkSimpleFill } from "react-icons/pi";
 import EditBounties from "../editBounties";
 import DeleteBounties from "../deleteBounties";
+import { ProjectDetail } from "@/types/project.types";
 
 interface BountyCardProps {
   bounty?: BountyItemResponse;
   isPrivate?: boolean;
+  project?: ProjectDetail;
 }
 
-const BountyCard = ({ bounty, isPrivate }: BountyCardProps) => {
+const BountyCard = ({ bounty, isPrivate, project }: BountyCardProps) => {
   const [editPostModal, setEditPostModal] = useState(false);
   const [deletePostModal, setDeletePostModal] = useState(false);
   const avatarUrl =
-    bounty?.project?.user?.avatar || "https://github.com/shadcn.png";
+    (!isPrivate) ? (bounty?.project?.avatar || "https://github.com/shadcn.png") : project?.avatar;
   const { isVisited, markVisited } = useVisitedLinks();
   const visited = bounty?.link ? isVisited(bounty.link) : false;
   return (
@@ -56,7 +58,7 @@ const BountyCard = ({ bounty, isPrivate }: BountyCardProps) => {
         <div className="flex justify-between items-center">
           <div className="flex items-start gap-x-3.5 font-sans w-11/12">
             <Avatar className="h-[60px] w-[60px] rounded-full overflow-hidden">
-              <AvatarImage src={avatarUrl} className="object-cover w-full" />
+              <AvatarImage src={avatarUrl} className="object-cover w-full h-full" />
               <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
                 CN
               </AvatarFallback>

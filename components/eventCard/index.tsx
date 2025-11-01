@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-// import Link from "next/link";
+import Link from "next/link";
 import Card from "@/components/card";
 import {
   DropdownMenu,
@@ -18,7 +18,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "../ui/dialog";
-import { Link } from "lucide-react";
 import { CgFlagAlt } from "react-icons/cg";
 import { MdMoreHoriz, MdOutlineCalendarMonth } from "react-icons/md";
 import { FaRegClock } from "react-icons/fa6";
@@ -32,13 +31,15 @@ import EditEvent from "../EditEvent";
 import DeleteEvent from "../deleteEvent";
 import ReportEvent from "../reportEvent";
 import { Edit, Trash2 } from "lucide-react";
+import { ProjectDetail } from "@/types/project.types";
 
 interface EventCardProps {
   event: EventsItem;
   isPrivate?: boolean;
+  project?: ProjectDetail;
 }
 
-const EventCard = ({ event, isPrivate }: EventCardProps) => {
+const EventCard = ({ event, isPrivate, project }: EventCardProps) => {
   const [editEventModal, setEditEventModal] = useState(false);
   const [deleteEventModal, setDeleteEventModal] = useState(false);
   const [reportEventModal, setReportEventModal] = useState(false);
@@ -58,15 +59,22 @@ const EventCard = ({ event, isPrivate }: EventCardProps) => {
     <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0">
       <div className="flex justify-between items-start">
         <div className="flex items-start gap-x-2.5 font-sans">
-          <AvatarProfile
-            createdAt={event.created_at}
-            name={event?.project?.user?.username}
-            avatar={
-              (event?.project?.user?.avatar as string) ||
-              "https://github.com/shadcn.png"
-            }
-            is_approved={event?.project?.is_approved}
-          />
+          <Link href="/profile" className="flex items-start gap-x-2.5">
+          {!isPrivate ? (
+            <AvatarProfile
+              createdAt={event?.created_at}
+              name={event?.project?.name}
+              avatar={event?.project?.avatar as string}
+              is_approved={event?.project?.is_approved}
+            />
+          ) : (
+            <AvatarProfile
+              createdAt={project?.created_at}
+              name={project?.name}
+              avatar={project?.avatar}
+              is_approved={project?.is_approved}
+            />
+          )}</Link>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -78,17 +86,26 @@ const EventCard = ({ event, isPrivate }: EventCardProps) => {
             className="bg-[#272727] !min-w-0 !p-0 border-0 w-32"
             align="end"
           >
-            {(isPrivate === true) ? (
+            {isPrivate === true ? (
               <>
-                <DropdownMenuItem onSelect={() => setEditEventModal(true)} className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3">
+                <DropdownMenuItem
+                  onSelect={() => setEditEventModal(true)}
+                  className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                >
                   <Edit size={12} /> Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => setDeleteEventModal(true)} className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3">
+                <DropdownMenuItem
+                  onSelect={() => setDeleteEventModal(true)}
+                  className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                >
                   <Trash2 size={12} className="text-[#FF5151]" /> Delete
                 </DropdownMenuItem>
               </>
             ) : (
-              <DropdownMenuItem onSelect={() => setReportEventModal(true)} className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3">
+              <DropdownMenuItem
+                onSelect={() => setReportEventModal(true)}
+                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+              >
                 <CgFlagAlt color="#ddd" /> Report
               </DropdownMenuItem>
             )}

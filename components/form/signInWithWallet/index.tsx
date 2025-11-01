@@ -17,81 +17,58 @@ import {
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
-export const SignInWithWallet = () => {
-  const { signMessageAsync, isPending } = useSignMessage();
-  const [message] = useState(
-    `Confirm sign-in to Trazen on ${new Date().toISOString()}`
-  );
+function SignInButton() {
+  const { connect, connectors } = useConnect();
+  const { address, isConnected } = useAccount();
+  const { chain } = useNetwork();
+  const { signMessage } = useSignMessage();
+  const [hasSigned, setHasSigned] = useState(false);
 
-  const dispatch = useAppDispatch();
-  const router = useRouter();
+  // Message to sign
+  const message = `Sign in to Wallet Demo\nTimestamp: ${Date.now()}`;
 
-  const handleSignTransaction = async ({ connected, account, chain }: any) => {
-    if (connected) {
-      try {
-        const signature = await signMessageAsync({ message });
-        const data = {
-          network: chain.name,
-          address: account.address,
-          signature: signature,
-        } as SignInWalletData;
-
-        dispatch(clearError());
-        dispatch(setLoading(true));
-        await dispatch(signInWithWallet(data as any)).unwrap();
-        toast(<div>Sign in successful</div>, {
-          theme: "dark",
-          type: "success",
-        });
-        router.replace("/home");
-        dispatch(setLoading(false));
-      } catch (error: any) {
-        console.log("Signature rejected or failed:", error);
-        toast(<div>{error}</div>, {
-          theme: "dark",
-          type: "error",
-        });
-        dispatch(setLoading(false));
-      }
+  // After connection, immediately trigger signature
+  useEffect(() => {
+    if (isConnected && address && !hasSigned) {
+      setHasSigned(true); // prevent re-trigger
+      signMessage(
+        { message },
+        {
+          onSuccess: (signature) => {
+            console.log("Signature:", signature);
+            console.log("Wallet Address:", address);
+            console.log("Network:", chain?.name ?? "Unknown");
+          },
+          onError: (error) => {
+            console.error("Signature failed:", error);
+            setHasSigned(false); // allow retry
+          },
+        }
+      );
     }
-  };
+  }, [isConnected, address, signMessage, hasSigned, chain]);
+
+  // Reset signed state when disconnected
+  useEffect(() => {
+    if (!isConnected) {
+      setHasSigned(false);
+    }
+  }, [isConnected]);
 
   return (
     <ConnectButton.Custom>
-      {({ account, chain, openConnectModal, mounted }) => {
-        const ready = mounted;
-        const connected = ready && account && chain && !chain.unsupported;
-
-        React.useEffect(() => {
-          handleSignTransaction({ connected, account, chain });
-        }, [connected == true]);
+      {({ openConnectModal, mounted }) => {
+        if (!mounted) return null;
 
         return (
-          <div
-            {...(!ready && {
-              "aria-hidden": true,
-              style: {
-                opacity: 0,
-                pointerEvents: "none",
-                userSelect: "none",
-              },
-            })}
-            className="w-full"
+          <button
+            onClick={openConnectModal}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition"
           >
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={openConnectModal}
-              className="bg-transparent border border-[#303030] rounded-full w-full flex justify-center items-center gap-x-2.5 hover:bg-transparent text-[#F4F4F4F4] hover:text-[#F4F4F4F4] font-sans text-base md:text-xl font-medium h-[62px]"
-            >
-              <Image src={wallet} alt="wallet" width={24} />
-              Continue with wallet
-            </button>
-          </div>
+            {isConnected ? "Connected" : "Sign in with Wallet"}
+          </button>
         );
       }}
     </ConnectButton.Custom>
   );
-};
-
-export default SignInWithWallet;
+}

@@ -46,6 +46,7 @@ import {
 } from "../ui/dialog";
 import DeletePost from "../deletePost";
 import ReportPost from "../reportPost";
+import { BsPatchCheckFill } from "react-icons/bs";
 
 interface FeedsCardProps {
   post?: PostItem;
@@ -159,7 +160,7 @@ const FeedsCard = ({
                 />
               )}
             </Link>
-            {post?.isFollowing && isPrivate && (
+            {(post?.isFollowing && isPrivate) ? (
               <Button
                 type="button"
                 onClick={() =>
@@ -169,12 +170,12 @@ const FeedsCard = ({
               >
                 Follow
               </Button>
-            )}
+            ) : <BsPatchCheckFill size={12} color="#B348F9" />}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button className="!w-fit !h-fit p-0">
-                <MdMoreHoriz size={36} />
+                <MdMoreHoriz size={48} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent

@@ -22,7 +22,7 @@ import { useFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
 
 const SignInForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { data, loading } = useAppSelector((state: RootState) => state.login);
+  const { data, loading, error } = useAppSelector((state: RootState) => state.login);
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -47,7 +47,7 @@ const SignInForm = () => {
       dispatch(updateFormData(data));
       console.log(data);
       await dispatch(signIn(data as any)).unwrap();
-      toast((t) => <div>Login Successful</div>, {
+      toast.success((t) => <div>Login Successful</div>, {
         style: {
           background: "#161616",
           color: "#fff",

@@ -85,7 +85,10 @@ export const nicheOptions = [
   { value: "Gaming", label: "Gaming" },
   { value: "Decentralized Identity", label: "Decentralized Identity" },
   { value: "RWAs", label: "RWAs" },
-  { value: "Decentralized Infrastructure", label: "Decentralized Infrastructure" },
+  {
+    value: "Decentralized Infrastructure",
+    label: "Decentralized Infrastructure",
+  },
 ];
 
 export const projectOptions = [
@@ -98,3 +101,7 @@ export const projectOptions = [
   { value: "Pancakeswap", label: "Pancakeswap" },
   { value: "Base", label: "Base" },
 ];
+
+export const ChainAndNicheOptions = [...chainOptions, ...nicheOptions].sort(
+  (a, b) => a.label.localeCompare(b.label)
+);

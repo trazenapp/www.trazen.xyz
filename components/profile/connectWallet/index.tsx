@@ -73,12 +73,12 @@ export const ConnectWallet = () => {
                 dispatch(setLoading(false));
                 dispatch(resetForm());
               } catch (error: any) {
-                // Handle error if needed
-                console.log(error);
-                toast(<div>{error}</div>, {
-                  theme: "dark",
-                  type: "error",
-                });
+                if (error != "Wallet already exists") {
+                  toast(<div>{error}</div>, {
+                    theme: "dark",
+                    type: "error",
+                  });
+                }
                 dispatch(setLoading(false));
               }
             };

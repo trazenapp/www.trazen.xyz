@@ -84,6 +84,8 @@ export const signInWithWallet = createAsyncThunk(
         localStorage.setItem("token", token);
       }
 
+      console.log("Wallet Sign In Success: ", { user, token });
+
       await fetch("/api/auth/set-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

@@ -155,10 +155,10 @@ function AccountManagementTab() {
       setProfileImage(null);
     } catch (err: any) {
       console.log(err);
-      toast(<div>{err}</div>, {
-        theme: "dark",
-        type: "error",
-      });
+        toast(<div>{err}</div>, {
+          theme: "dark",
+          type: "error",
+        });
     }
   };
 

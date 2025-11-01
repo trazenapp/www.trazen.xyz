@@ -12,8 +12,8 @@ import { Toaster } from "react-hot-toast";
 const projectID = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
 
 const config = getDefaultConfig({
-  appName: "Trazen",
-  projectId: `${projectID}`,
+  appName: "Trazen2.0",
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
   chains: [mainnet, polygon, optimism, arbitrum, base],
   ssr: true,
 });

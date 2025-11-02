@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MdMoreHoriz } from "react-icons/md";
+import { TfiMoreAlt } from "react-icons/tfi";
 import AvatarProfile from "@/components/avatarProfile";
 import FeedsMedia from "@/components/feedsMedia";
 import FeedsComment from "@/components/feedsComment";
@@ -47,6 +47,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import ReportPost from "@/components/reportPost";
+import { Badge } from "@/components/ui/badge";
 
 const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
@@ -65,7 +66,7 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
   useEffect(() => {
     dispatch(fetchPostDetails({ post_uuid: slug }));
   }, [dispatch, slug]);
-
+  
   const handleShareClick = () => {
     shareContent({
       title: postDetails?.name || "",
@@ -159,7 +160,7 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
         </Button>
         <div className="flex gap-x-2.5">
           <p className="text-[#f4f4f4] text-xl font-medium">Post</p>
-          <p className="text-[#7F7F7F] text-xl font-light">1.2k views</p>
+          {/* <p className="text-[#7F7F7F] text-xl font-light">1.2k views</p> */}
         </div>
       </div>
       <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0">
@@ -167,27 +168,34 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
           <div className="flex items-start gap-x-2.5 font-sans">
             <Link href="/profile" className="flex items-start gap-x-2.5">
               <AvatarProfile
-                createdAt={postDetails?.project?.created_at}
+                createdAt={postDetails?.created_at}
                 name={postDetails?.project?.name}
                 avatar={postDetails?.project?.avatar}
                 is_approved={postDetails?.project?.is_approved}
               />
             </Link>
-            <Button
-              type="button"
-              onClick={() =>
-                postDetails?.project_uuid &&
-                handleFollowPost(postDetails?.project_uuid)
-              }
-              className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]"
-            >
-              Follow
-            </Button>
+
+            {postDetails?.isFollowing ? (
+              <Badge className="h-4 min-w-5 rounded-full px-1.5 bg-white text-[#272727] text-[7px]">
+                Following
+              </Badge>
+            ) : (
+              <Button
+                type="button"
+                onClick={() =>
+                  postDetails?.project_uuid &&
+                  handleFollowPost(postDetails?.project_uuid)
+                }
+                className="py-1! px-2.5! border border-[#DDDDDD]! text-[#DDDDDD]! rounded-full text-[10px]"
+              >
+                Follow Me
+              </Button>
+            )}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button className="!w-fit !h-fit p-0">
-                <MdMoreHoriz size={36} />
+                <TfiMoreAlt size={64} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -236,7 +244,7 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
               className="font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-8/12 lg:w-10/12 md:w-[85vw] overflow-auto"
               style={{ scrollbarWidth: "none" }}
             >
-              <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+              <DialogHeader className="sm:px-7 p-4 border-b border-b-[#383838] h-auto!">
                 <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
                   <p className="max-sm:text-[16px]">Report Post</p>
                 </DialogTitle>
@@ -245,7 +253,7 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
             </DialogContent>
           </Dialog>
         </div>
-        <p className="cursor-pointer text-[#F4F4F4F4] text-sm lg:text-base  font-normal font-sans">
+        <p className="cursor-pointer text-[#F4F4F4F4] text-sm  font-normal font-sans">
           {postDetails?.content}
         </p>
         <div className="overflow-hidden rounded-[12px]">
@@ -257,30 +265,42 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
         >
           <Button
             onClick={() => handleVote("UPVOTE", postDetails?.uuid || "")}
-            className={`flex-1 !h-fit !py-1.5 !px-6 rounded-full ${postDetails?.voteStatus === "UPVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm`}
+            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${postDetails?.voteStatus === "UPVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
           >
             <PiArrowFatUp />
-            {upVoteCount}
+            {postDetails?.upvoteCount}
+            {postDetails?.upvoteCount === 1 ? (
+              <span className="hidden md:flex"> up vote</span>
+            ) : (
+              <span className="hidden md:flex"> up votes</span>
+            )}
           </Button>
           <Button
             onClick={() => handleVote("DOWNVOTE", postDetails?.uuid || "")}
-            className={`flex-1 !h-fit !py-1.5 !px-6 rounded-full ${postDetails?.voteStatus === "DOWNVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm`}
+            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${postDetails?.voteStatus === "DOWNVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
           >
             <PiArrowFatDown />
-            {downVoteCount}
+            {postDetails?.downvoteCount}
+            {postDetails?.downvoteCount === 1 ? (
+              <span className="hidden md:flex"> down vote</span>
+            ) : (
+              <span className="hidden md:flex"> down votes</span>
+            )}
           </Button>
-          <Button
-            onClick={() => router.push(`/home/${postDetails?.uuid || ""}`)}
-            className="flex-1 !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
-          >
+          <Button className="flex-1 h-fit! py-1.5! px-6! rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]">
             <IoChatbubbleOutline />
             {postDetails?.commentCount}
+            {postDetails?.commentCount === 1 ? (
+              <span className="hidden md:flex"> comment</span>
+            ) : (
+              <span className="hidden md:flex"> comments</span>
+            )}
           </Button>
         </div>
         <FeedsComment isComment={true} uuid={postDetails?.uuid} />
         <div className="flex flex-col gap-y-5">
           {postDetails?.comments?.map((comment) => (
-            <FeedsCommentItem key={comment.uuid} comment={comment} />
+            <FeedsCommentItem key={comment.uuid} comment={comment} postDetails={postDetails} />
           ))}
         </div>
       </Card>

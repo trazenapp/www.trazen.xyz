@@ -53,14 +53,14 @@ const Home = () => {
         <div className="flex flex-row items-center gap-x-5 fixed top-[60px] lg:top-[83px] w-[95%] lg:w-[48.5%] bg-[#0B0B0B] z-10 h-20">
           <TabsList className="bg-transparent border border-[#303030] py-1.5 px-2 md:px-[11px] md:py-[5px] h-fit flex-1 rounded-2xl w-full font-sans">
             <TabsTrigger
-              value="personal-feed"
-              className="text-[#9F9F9F] font-normal py-2 data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-[#430B68]"
+              value="my-space"
+              className="text-[#9F9F9F] font-normal py-2 data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-[#430B68] cursor-pointer"
             >
-              Personal Feed
+              My Space
             </TabsTrigger>
             <TabsTrigger
               value="explore"
-              className="text-[#9F9F9F] font-normal py-2 data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-[#430B68]"
+              className="text-[#9F9F9F] font-normal py-2 data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-[#430B68] cursor-pointer"
             >
               Explore
             </TabsTrigger>
@@ -107,7 +107,7 @@ const Home = () => {
             </DialogContent>
           </Dialog>
         </div>
-        <TabsContent className="relative w-full h-full" value="personal-feed">
+        <TabsContent className="relative w-full h-full" value="my-space">
           <div className="w-full h-full mt-[60px]">
             <Feeds isPrivate={true} />
           </div>

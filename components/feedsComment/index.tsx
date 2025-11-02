@@ -9,25 +9,44 @@ import { MdOutlineImage } from "react-icons/md";
 import { useFileUpload } from "@/utils/uploadPostMedia";
 import { commentOnPost } from "@/redux/slices/postSlice";
 import { RootState, useAppDispatch, useAppSelector } from "@/redux/store";
-import Picker, { Theme } from "emoji-picker-react";
+import Picker, { EmojiStyle, Theme } from "emoji-picker-react";
 import { Emoji32Regular } from "@fluentui/react-icons";
 import { X } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
 import { toast } from "react-toastify";
+import { PostItem } from "@/types/post.types";
+import AvatarProfile from "../avatarProfile";
 
 interface FeedsCommmentProps {
   isComment: boolean;
   uuid?: string;
+  post?: PostItem;
 }
 
-const FeedsComment = ({ isComment = false, uuid }: FeedsCommmentProps) => {
+const FeedsComment = ({
+  isComment = false,
+  uuid,
+  post,
+}: FeedsCommmentProps) => {
   const dispatch = useAppDispatch();
   const { result, uploading, uploadFiles, reset } = useFileUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [localPreviews, setLocalPreviews] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!showEmojiPicker) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [showEmojiPicker]);
 
   const {
     control,
@@ -35,7 +54,7 @@ const FeedsComment = ({ isComment = false, uuid }: FeedsCommmentProps) => {
     formState: { errors },
     watch,
     setValue,
-    resetField
+    resetField,
   } = useForm({
     defaultValues: {
       content: "",
@@ -80,7 +99,10 @@ const FeedsComment = ({ isComment = false, uuid }: FeedsCommmentProps) => {
     if (!data.content.trim()) return;
     try {
       const res = await dispatch(
-        commentOnPost({ post_uuid: uuid as string, content: data.content })
+        commentOnPost({
+          post_uuid: post?.uuid as string,
+          content: data.content,
+        })
       ).unwrap();
       console.log("Comment success:", res);
       // setComment(""); // reset
@@ -104,17 +126,12 @@ const FeedsComment = ({ isComment = false, uuid }: FeedsCommmentProps) => {
     <>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex items-start gap-x-2.5 border border-[#303030] rounded-[10px] py-2.5 px-3.5"
+        className="flex items-center gap-x-2.5 border border-[#303030] rounded-[10px] py-2.5 px-3.5"
       >
-        <div className="flex flex-col gap-y-2.5">
-          <Avatar>
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
-              CN
-            </AvatarFallback>
-          </Avatar>
+        <div className="flex flex-col justify-center items-center h-fit">
+          <AvatarProfile avatar={post?.avatar} />
           {/* {isComment && (
-            <div className="flex gap-x-1.5">
+            <div className="flex gap-x-1.5 mt-2.5">
               <Button className="!p-0 !bg-transparent">
                 <MdOutlineImage />
               </Button>
@@ -131,12 +148,26 @@ const FeedsComment = ({ isComment = false, uuid }: FeedsCommmentProps) => {
           rules={{ required: true }}
           render={({ field }) => (
             <Textarea
-              placeholder="Add a comment"
-              className="flex-1 border-0 shadow-none font-sans focus-visible:ring-0 font-light text-sm"
               {...field}
+              ref={(el: any) => {
+                field.ref(el);
+                if (el) {
+                  el.style.height = "auto";
+                  el.style.height = el.scrollHeight + "px";
+                }
+              }}
+              placeholder="Add a comment ..."
+              className="flex-1 resize-none overflow-hidden border-0 shadow-none font-sans focus-visible:ring-0 font-light text-sm min-h-[36px] leading-tight transition-[height] duration-200 ease-in-out"
+              onChange={(e) => {
+                field.onChange(e);
+                const target = e.target;
+                target.style.height = "auto";
+                target.style.height = `${target.scrollHeight}px`;
+              }}
             />
           )}
         />
+
         {!isComment && (
           <>
             <div className=" flex sm:flex-row flex-col items-start gap-7 sm:items-center sm:justify-between">
@@ -157,21 +188,34 @@ const FeedsComment = ({ isComment = false, uuid }: FeedsCommmentProps) => {
                     />
                     <MdOutlineImage />
                   </Label> */}
-                  <Button
-                    type="button"
-                    onClick={() => setShowEmojiPicker((prev) => !prev)}
-                    className="bg-transparent !p-0 hover:bg-transparent"
-                  >
-                    <Emoji32Regular />
-                  </Button>
-                  {showEmojiPicker && (
-                    <div className="absolute z-50 top-10 left-0">
-                      <Picker
-                        theme={Theme.DARK}
-                        onEmojiClick={handleEmojiClick}
-                      />
-                    </div>
-                  )}
+                  <div className="relative">
+                    <Button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation(); 
+                        setShowEmojiPicker((prev) => !prev);
+                      }}
+                      className="bg-transparent p-0! hover:bg-transparent"
+                    >
+                      <Emoji32Regular />
+                    </Button>
+                    {showEmojiPicker && (
+                      <div
+                        ref={pickerRef}
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute z-50 right-0 top-full"
+                      >
+                        <Picker
+                          theme={Theme.DARK}
+                          onEmojiClick={handleEmojiClick}
+                          emojiStyle={EmojiStyle.GOOGLE}
+                          lazyLoadEmojis={true}
+                          width={320}
+                          height={400}
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

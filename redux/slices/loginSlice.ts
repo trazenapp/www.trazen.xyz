@@ -26,6 +26,11 @@ const initialState: SignInState = {
   currentUser: null,
 };
 
+let fcmToken = null;
+if (typeof window !== "undefined") {
+  fcmToken = localStorage.getItem("fcmToken");
+}
+
 // /app/api/auth/set-token/route.ts
 export const signIn = createAsyncThunk(
   "sign-in",
@@ -35,7 +40,7 @@ export const signIn = createAsyncThunk(
         headers: {
           "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
           "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-          "x-device-token": localStorage.getItem("fcmToken"),
+          "x-device-token": fcmToken,
         },
       });
 
@@ -74,7 +79,7 @@ export const continueWithGoogle = createAsyncThunk(
           headers: {
             "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
             "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-            "x-device-token": localStorage.getItem("fcmToken"),
+            "x-device-token": fcmToken,
           },
         }
       );
@@ -116,6 +121,10 @@ export const signInWithWallet = createAsyncThunk(
   "sign-in-with-wallet",
   async (SignInWalletData, { rejectWithValue, dispatch }) => {
     try {
+      let fcmToken = null;
+      if (typeof window !== "undefined") {
+        fcmToken = localStorage.getItem("fcmToken");
+      }
       const response = await axiosInstance.post(
         "/v1/auth/wallet",
         SignInWalletData,
@@ -123,7 +132,7 @@ export const signInWithWallet = createAsyncThunk(
           headers: {
             "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
             "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-            "x-device-token": localStorage.getItem("fcmToken"),
+            "x-device-token": fcmToken,
           },
         }
       );

@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MdMoreHoriz } from "react-icons/md";
+import { TfiMoreAlt } from "react-icons/tfi";
 import AvatarProfile from "@/components/avatarProfile";
 import FeedsMedia from "../feedsMedia";
 import FeedsComment from "../feedsComment";
@@ -47,6 +47,7 @@ import {
 import DeletePost from "../deletePost";
 import ReportPost from "../reportPost";
 import { BsPatchCheckFill } from "react-icons/bs";
+import { Badge } from "../ui/badge";
 
 interface FeedsCardProps {
   post?: PostItem;
@@ -160,26 +161,30 @@ const FeedsCard = ({
                 />
               )}
             </Link>
-            {(post?.isFollowing && isPrivate) ? (
+            {post?.isFollowing && !isPrivate ? (
+              <Badge className="h-4 min-w-5 rounded-full px-1.5 bg-white text-[#272727] text-[7px]">
+                Following
+              </Badge>
+            ) : (
               <Button
                 type="button"
                 onClick={() =>
                   post?.project_uuid && handleFollowPost(post?.project_uuid)
                 }
-                className="!py-1 !px-2.5 border !border-[#DDDDDD] !text-[#DDDDDD] rounded-full text-[10px]"
+                className="py-1! px-2.5! border border-[#DDDDDD]! text-[#DDDDDD]! rounded-full text-[10px]"
               >
-                Follow
+                Follow Me
               </Button>
-            ) : <BsPatchCheckFill size={12} color="#B348F9" />}
+            )}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="!w-fit !h-fit p-0">
-                <MdMoreHoriz size={48} />
+              <Button className="w-fit! h-fit! p-0">
+                <TfiMoreAlt size={64} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="bg-[#272727] !min-w-0 !p-0 border-0 w-32"
+              className="bg-[#272727] min-w-0! p-0! border-0 w-32"
               align="end"
             >
               <DropdownMenuItem
@@ -279,7 +284,7 @@ const FeedsCard = ({
         </div>
         <p
           onClick={() => handlePageClick(post?.uuid || "")}
-          className="cursor-pointer text-[#F4F4F4F4] text-sm lg:text-base font-normal font-sans line-clamp-2"
+          className="cursor-pointer text-[#F4F4F4F4] text-sm font-normal font-sans line-clamp-2"
         >
           {post?.content}
         </p>
@@ -292,27 +297,42 @@ const FeedsCard = ({
         >
           <Button
             onClick={() => handleVote("UPVOTE", post?.uuid || "")}
-            className={`flex-1 !h-fit !py-1.5 !px-6 rounded-full ${post?.voteStatus === "UPVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm`}
+            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${post?.voteStatus === "UPVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
           >
             <PiArrowFatUp />
             {upVoteCount}
+            {upVoteCount === 1 ? (
+              <span className="hidden md:flex"> up vote</span>
+            ) : (
+              <span className="hidden md:flex"> up votes</span>
+            )}
           </Button>
           <Button
             onClick={() => handleVote("DOWNVOTE", post?.uuid || "")}
-            className={`flex-1 !h-fit !py-1.5 !px-6 rounded-full ${post?.voteStatus === "DOWNVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm`}
+            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${post?.voteStatus === "DOWNVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
           >
             <PiArrowFatDown />
             {downVoteCount}
+            {downVoteCount === 1 ? (
+              <span className="hidden md:flex"> down vote</span>
+            ) : (
+              <span className="hidden md:flex"> down votes</span>
+            )}
           </Button>
           <Button
             onClick={() => router.push(`/home/${post?.uuid || ""}`)}
-            className="flex-1 !h-fit !py-1.5 !px-6 rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm"
+            className="flex-1 h-fit! py-1.5! px-6! rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]"
           >
             <IoChatbubbleOutline />
             {post?.commentCount}
+            {post?.commentCount === 1 ? (
+              <span className="hidden md:flex"> comment</span>
+            ) : (
+              <span className="hidden md:flex"> comments</span>
+            )}
           </Button>
         </div>
-        <FeedsComment uuid={post?.uuid || ""} isComment={false} />
+        <FeedsComment post={post} isComment={false} />
       </Card>
     </>
   );

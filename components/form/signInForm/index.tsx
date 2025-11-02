@@ -22,7 +22,9 @@ import { useFirebaseMessaging } from "@/hooks/useFirebaseMessaging";
 
 const SignInForm = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const { data, loading, error } = useAppSelector((state: RootState) => state.login);
+  const { data, loading, error } = useAppSelector(
+    (state: RootState) => state.login
+  );
 
   const dispatch = useAppDispatch();
   const router = useRouter();

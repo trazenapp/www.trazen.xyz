@@ -21,6 +21,9 @@ export interface CommentItem {
   user: UserProfile;
   uuid: string;
   id: number;
+  upvoteCount?: number;
+  downvoteCount?: number;
+  voteStatus?: "UPVOTE" | "DOWNVOTE" | null;
   comments: {
     comment_uuid: string;
     content: string;

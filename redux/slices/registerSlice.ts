@@ -25,48 +25,6 @@ const initialState: SignUpState = {
   token: null,
 };
 
-export const continueWithGoogle = createAsyncThunk(
-  "register/continueWithGoogle",
-  async (redirect_uri, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.get(`/v1/auth/google/redirect`, {
-        headers: {
-          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
-          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-        },
-      });
-      console.log(response);
-      return response.data.data.url;
-    } catch (err: any) {
-      console.log(err);
-      return rejectWithValue(
-        err.response?.data?.message || "Google auth failed"
-      );
-    }
-  }
-);
-
-export const fetchGoogleUser = createAsyncThunk(
-  "register/fetchGoogleUser",
-  async (code: string, { rejectWithValue }) => {
-    try {
-      const response = await axiosInstance.get(
-        `/v1/auth/google/callback?code=${code}`,
-        {
-          headers: {
-            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
-            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-          },
-        }
-      );
-      return response.data;
-    } catch (err: any) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to fetch google user"
-      );
-    }
-  }
-);
 
 export const signUp = createAsyncThunk(
   "register/sign-up",
@@ -142,38 +100,6 @@ const registerSlice = createSlice({
         state.token = action.payload.token;
       })
       .addCase(signUp.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
-      .addCase(continueWithGoogle.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(continueWithGoogle.fulfilled, (state, action) => {
-        state.loading = false;
-      })
-      .addCase(continueWithGoogle.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload as string;
-      })
-
-      .addCase(fetchGoogleUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(
-        fetchGoogleUser.fulfilled,
-        (state, action: PayloadAction<{ user: User; token: string }>) => {
-          state.loading = false;
-          state.user = action.payload.user;
-          state.isAuthenticated = true;
-          if (typeof window !== "undefined") {
-            localStorage.setItem("token", action.payload.token);
-          }
-        }
-      )
-      .addCase(fetchGoogleUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
       });

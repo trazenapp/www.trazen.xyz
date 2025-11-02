@@ -25,7 +25,7 @@ const Home = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [scrollUp, setScrollUp] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
-  
+
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
@@ -47,7 +47,7 @@ const Home = () => {
   return (
     <div className="">
       <Tabs
-        defaultValue="general-feed"
+        defaultValue="explore"
         className="w-full flex flex-col items-center"
       >
         <div className="flex flex-row items-center gap-x-5 fixed top-[60px] lg:top-[83px] w-[95%] lg:w-[48.5%] bg-[#0B0B0B] z-10 h-20">
@@ -59,10 +59,10 @@ const Home = () => {
               Personal Feed
             </TabsTrigger>
             <TabsTrigger
-              value="general-feed"
+              value="explore"
               className="text-[#9F9F9F] font-normal py-2 data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-[#430B68]"
             >
-              General Feed
+              Explore
             </TabsTrigger>
           </TabsList>
           <Dialog>
@@ -112,13 +112,13 @@ const Home = () => {
             <Feeds isPrivate={true} />
           </div>
         </TabsContent>
-        <TabsContent className="relative w-full h-full" value="general-feed">
+        <TabsContent className="relative w-full h-full" value="explore">
           <div className="w-full h-full mt-[60px]">
             <Feeds isPrivate={false} />
           </div>
         </TabsContent>
       </Tabs>
-      
+
       <AnimatePresence>
         {showScrollTop && (
           <motion.button

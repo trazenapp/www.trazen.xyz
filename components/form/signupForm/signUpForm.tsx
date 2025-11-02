@@ -7,7 +7,6 @@ import {
   setLoading,
   signUp,
   resetForm,
-  continueWithGoogle,
 } from "@/redux/slices/registerSlice";
 import { setUserRole } from "@/redux/slices/authSlice";
 import { useForm, Controller } from "react-hook-form";
@@ -16,8 +15,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
-import DividerText from "@/components/dividerText";
-import SignInWithGoogle from "@/components/form/signInWithGoogle";
+// import DividerText from "@/components/dividerText";
+// import SignInWithGoogle from "@/components/form/signInWithGoogle";
 import Card from "@/components/card";
 import FormHeading from "@/components/formHeading";
 import { SignUpData } from "@/types/auth.types";
@@ -48,15 +47,6 @@ const SignUpForm = () => {
     setShowPassword(!showPassword);
   };
   const passwordType = showPassword ? "text" : "password";
-
-  const registerWithGoogle = async () => {
-    const res = await dispatch(continueWithGoogle());
-    console.log(res);
-    const redirectUrl = res.payload;
-    if (redirectUrl && typeof redirectUrl === "string") {
-      window.location.href = redirectUrl;
-    }
-  };
 
   const onSubmit = async (data: SignUpData) => {
     console.log(data);
@@ -102,10 +92,10 @@ const SignUpForm = () => {
           subtitle="Enter your details to create an account"
         />
       </div>
-      <div className="flex flex-col gap-y-4 w-full mb-8">
+      {/* <div className="flex flex-col gap-y-4 w-full mb-8">
         <SignInWithGoogle onClick={registerWithGoogle} />
       </div>
-      <DividerText text="Or sign up with" />
+      <DividerText text="Or sign up with" /> */}
       <form
         className="font-sans text-[#F4F4F4F4] w-full mt-8 flex flex-col gap-y-8"
         onSubmit={handleSubmit(onSubmit)}

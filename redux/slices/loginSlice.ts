@@ -62,6 +62,56 @@ export const signIn = createAsyncThunk(
   }
 );
 
+export const continueWithGoogle = createAsyncThunk(
+  "register/continueWithGoogle",
+  async (_, { rejectWithValue }) => {
+    const REDIRECT_URI = process.env.NEXT_PUBLIC_REDIRECT_URI as string;
+    try {
+      console.log(REDIRECT_URI);
+      const response = await axiosInstance.get(
+        `/v1/auth/google/redirect?redirect_uri=${REDIRECT_URI}`,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            "x-device-token": localStorage.getItem("fcmToken"),
+          },
+        }
+      );
+      console.log(response);
+      return response.data.data.url;
+    } catch (err: any) {
+      console.log(err);
+      return rejectWithValue(
+        err.response?.data?.message || "Google auth failed"
+      );
+    }
+  }
+);
+
+export const fetchGoogleUser = createAsyncThunk(
+  "register/fetchGoogleUser",
+  async (code: string, { rejectWithValue }) => {
+    const REDIRECT_URI = process.env.NEXT_PUBLIC_REDIRECT_URI as string;
+    try {
+      const response = await axiosInstance.get(
+        `/v1/auth/google/callback?code=${code}&redirect_uri=${REDIRECT_URI}`,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+          },
+        }
+      );
+      return response.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to fetch google user"
+      );
+    }
+  }
+);
+
 export const signInWithWallet = createAsyncThunk(
   "sign-in-with-wallet",
   async (SignInWalletData, { rejectWithValue, dispatch }) => {
@@ -131,7 +181,7 @@ const loginSlice = createSlice({
     },
     addSession: (state, action: PayloadAction<Session>) => {
       if (!state.sessions) {
-        state.sessions = []; 
+        state.sessions = [];
       }
       const exists = state.sessions.find(
         (s) => s.user.email === action.payload.user.email
@@ -203,6 +253,37 @@ const loginSlice = createSlice({
         state.loading = false;
         state.error = action.payload as string;
         state.isAuthenticated = false;
+      })
+
+      .addCase(continueWithGoogle.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(continueWithGoogle.fulfilled, (state, action) => {
+        state.loading = false;
+      })
+      .addCase(continueWithGoogle.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      .addCase(fetchGoogleUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(
+        fetchGoogleUser.fulfilled,
+        (state, action: PayloadAction<{ user: User; token: string }>) => {
+          state.loading = false;
+          state.user = action.payload.user;
+          state.isAuthenticated = true;
+          state.error = null;
+          state.token = action.payload.token;
+        }
+      )
+      .addCase(fetchGoogleUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });

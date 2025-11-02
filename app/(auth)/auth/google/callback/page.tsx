@@ -2,8 +2,9 @@
 import React, { useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/redux/store';
-import { fetchGoogleUser } from '@/redux/slices/registerSlice';
+import { fetchGoogleUser } from '@/redux/slices/loginSlice';
 import { ClipLoader } from "react-spinners";
+import { toast } from "react-hot-toast";
 
 const GoogleCallbackPage = () => {
   const searchParams = useSearchParams();
@@ -12,14 +13,17 @@ const GoogleCallbackPage = () => {
 
   useEffect(() => {
     const code = searchParams.get("code");
+    console.log(code);
     if (code) {
       dispatch(fetchGoogleUser(code)).then((res: any) => {
         if (res.meta.requestStatus === "fulfilled") {
-          router.replace("/on-boarding");
+          router.replace("http://127.0.0.1:3000/home");
         } else {
-          router.replace("/sign-up?error=google_auth_failed");
+          router.replace("http://127.0.0.1:3000/sign-in");
         }
       })
+    } else {
+      router.replace("http://127.0.0.1:3000/sign-in");
     }
   }, [searchParams, dispatch, router]);
   return (

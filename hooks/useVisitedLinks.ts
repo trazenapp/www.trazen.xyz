@@ -5,14 +5,19 @@ export function useVisitedLinks() {
   const [visitedLinks, setVisitedLinks] = useState<string[]>([]);
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("visitedLinks") || "[]");
+    let saved: string[] = [];
+    if (typeof window !== "undefined") {
+      saved = JSON.parse(localStorage.getItem("visitedLinks") || "[]");
+    }
     setVisitedLinks(saved);
   }, []);
 
   const markVisited = (url: string) => {
     setVisitedLinks((prev) => {
       const updated = [...new Set([...prev, url])];
-      localStorage.setItem("visitedLinks", JSON.stringify(updated));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("visitedLinks", JSON.stringify(updated));
+      }
       return updated;
     });
   };

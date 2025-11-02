@@ -21,15 +21,21 @@ const ResetPasswordForm = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [showPassword, setShowPassword] = useState(false);
-  const { data, loading } = useAppSelector((state: RootState) => state.resetPassword);
+  const { data, loading } = useAppSelector(
+    (state: RootState) => state.resetPassword
+  );
 
   const togglePassword = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setShowPassword(!showPassword);
   };
   const passwordType = showPassword ? "text" : "password";
-  const getEmail = localStorage.getItem("email") || "";
-  const getToken = localStorage.getItem("code") || "";
+  let getEmail: string = "";
+  let getToken: string = "";
+  if (typeof window !== "undefined") {
+    getEmail = localStorage.getItem("email") || "";
+    getToken = localStorage.getItem("code") || "";
+  }
 
   const {
     control,
@@ -43,7 +49,13 @@ const ResetPasswordForm = () => {
   const onSubmit = async (data: ResetPasswordData) => {
     try {
       dispatch(setLoading(true));
-      dispatch(updateFormData({ ...data, email: getEmail as string, token: getToken as string }));
+      dispatch(
+        updateFormData({
+          ...data,
+          email: getEmail as string,
+          token: getToken as string,
+        })
+      );
       await dispatch(resetPassword(data)).unwrap();
       toast(<div>Password reset successfully</div>, {
         theme: "dark",
@@ -115,24 +127,24 @@ const ResetPasswordForm = () => {
           control={control}
           rules={{ required: true }}
           render={({ field }) => (
-        <div className="relative">
-          <Input
-            type={passwordType}
-            id="confirmPassword"
-            placeholder="password"
-            className="border-[#434343] rounded-[8px] py-[19px] px-4 pr-14"
-            {...field}
-          />
-          <Button
-            onClick={togglePassword}
-            className="p-0 bg-transparent absolute top-1/2 right-4 -translate-y-1/2"
-          >
-            {showPassword ? <EyeIcon /> : <EyeOffIcon />}
-          </Button>
-        </div>
+            <div className="relative">
+              <Input
+                type={passwordType}
+                id="confirmPassword"
+                placeholder="password"
+                className="border-[#434343] rounded-[8px] py-[19px] px-4 pr-14"
+                {...field}
+              />
+              <Button
+                onClick={togglePassword}
+                className="p-0 bg-transparent absolute top-1/2 right-4 -translate-y-1/2"
+              >
+                {showPassword ? <EyeIcon /> : <EyeOffIcon />}
+              </Button>
+            </div>
           )}
         />
-          {errors.cPassword && (
+        {errors.cPassword && (
           <p className="text-red-500 text-sm">
             {errors.cPassword.message || "Passwords don't match"}
           </p>
@@ -144,7 +156,7 @@ const ResetPasswordForm = () => {
         disabled={loading}
         className="bg-[#430B68] hover:bg-[#430B68] rounded-full font-semibold"
       >
-          {loading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Confirm"}
+        {loading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Confirm"}
       </Button>
     </form>
   );

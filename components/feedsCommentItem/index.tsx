@@ -212,7 +212,7 @@ const FeedsCommentItem = ({ comment, postDetails }: FeedsCommentItemProps) => {
                       <Button className="p-0! bg-transparent!">
                         <MdOutlineImage />
                       </Button>
-                      <Button className="!p-0 !bg-transparent">
+                      <Button className="p-0! bg-transparent!">
                         <Emoji32Regular />
                       </Button>
                     </div>
@@ -268,7 +268,7 @@ const FeedsCommentItem = ({ comment, postDetails }: FeedsCommentItemProps) => {
                       {fallbackStr}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex gap-x-2">
+                  <div className="flex items-center gap-x-2">
                     <p className="text-[#F4F4F4F4] font-medium text-sm">
                       {item?.user?.username}
                     </p>

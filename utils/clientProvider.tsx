@@ -11,6 +11,9 @@ import { Toaster } from "react-hot-toast";
 
 const projectId = process.env.WALLETCONNECT_PROJECT_ID; 
 
+console.log('DEBUG: NODE_ENV is:', process.env.NODE_ENV);
+console.log('DEBUG: Found Project ID:', projectId);
+
 if (!projectId) {
   throw new Error("WalletConnect Project ID is required...");
 }

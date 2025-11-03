@@ -15,9 +15,6 @@ RUN npm ci
 # Copy the local code to the container image.
 COPY . .
 
-ARG NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
-
-ENV NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=${NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID} 
 # Build the Next.js application
 RUN npm run build
 

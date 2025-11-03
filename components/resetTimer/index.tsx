@@ -21,10 +21,7 @@ const ResetTimer = ({
   );
 
   useEffect(() => {
-    let savedStopTime: string | null = null;
-    if (typeof window !== "undefined") {
-      savedStopTime = localStorage.getItem(storageKey);
-      }
+    const savedStopTime = localStorage.getItem(storageKey);
     if (savedStopTime) {
       const diff = Math.floor((+savedStopTime - Date.now()) / 1000);
       setTimeLeft(diff > 0 ? diff : 0);
@@ -50,9 +47,7 @@ const ResetTimer = ({
   const resetTimer = useCallback(() => {
     const newStopTime = Date.now() + (initialSeconds || 0) * 1000;
 
-    if (typeof window !== "undefined") {
-        localStorage.setItem(storageKey, newStopTime.toString());
-      }
+    localStorage.setItem(storageKey, newStopTime.toString());
     setTimeLeft(initialSeconds);
 
     onResend();

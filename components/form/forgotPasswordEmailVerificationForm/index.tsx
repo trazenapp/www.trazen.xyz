@@ -31,10 +31,7 @@ const ForgotPasswordEmailVerificationForm = () => {
   const { formData, loading, resendLoading } = useAppSelector(
     (state: RootState) => state.verifyEmail
   );
-  let getEmail: string | null = null;
-  if (typeof window !== "undefined") {
-    getEmail = localStorage.getItem("email") || "";
-  }
+  const getEmail = localStorage.getItem("email") || "";
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -63,9 +60,7 @@ const ForgotPasswordEmailVerificationForm = () => {
   const onSubmit = async (data: VerifyEmailData) => {
     try {
       dispatch(setLoading(true));
-      if (typeof window !== "undefined") {
-        localStorage.setItem("code", data.token);
-      }
+      localStorage.setItem("code", data.token);
       dispatch(updateFormData({ ...data, email: getEmail as string }));
       await dispatch(verifyEmail(data)).unwrap();
       toast(<div>Email verified successfully</div>, {

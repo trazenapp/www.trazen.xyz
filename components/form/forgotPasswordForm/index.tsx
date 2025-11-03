@@ -37,9 +37,7 @@ const ForgotPasswordForm = () => {
     try {
       dispatch(setLoading(true));
       dispatch(updateFormData(data));
-      if (typeof window !== "undefined") {
-        localStorage.setItem("email", data.email);
-      }
+      localStorage.setItem("email", data.email);
       console.log(data);
       await dispatch(forgotPassword(data)).unwrap();
       toast(<div>Password reset email sent</div>, {

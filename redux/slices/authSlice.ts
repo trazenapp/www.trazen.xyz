@@ -10,7 +10,7 @@ const getInitialState = (): AuthState => {
     role: null,
   };
 
-  if (typeof window !== "undefined") {
+  if (typeof window !== undefined) {
     try {
       const savedRole = localStorage.getItem("authUserRole") as
         | "USER"

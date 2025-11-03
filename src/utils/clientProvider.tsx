@@ -1,19 +1,17 @@
-"use client";
-import React from "react";
-import ReduxProvider from "@/src/redux/ReduxProvider";
-import "@rainbow-me/rainbowkit/styles.css";
-import { getDefaultConfig, RainbowKitProvider } from "@rainbow-me/rainbowkit";
-import { WagmiProvider } from "wagmi";
-import { mainnet, polygon, optimism, arbitrum, base } from "wagmi/chains";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { ToastContainer } from "react-toastify";
-import { Toaster } from "react-hot-toast";
-
-const projectId: string = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
+'use client';
+import React from 'react';
+import ReduxProvider from '@/src/redux/ReduxProvider';
+import '@rainbow-me/rainbowkit/styles.css';
+import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { WagmiProvider } from 'wagmi';
+import { mainnet, polygon, optimism, arbitrum, base } from 'wagmi/chains';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { ToastContainer } from 'react-toastify';
+import { Toaster } from 'react-hot-toast';
 
 const config = getDefaultConfig({
-  appName: "Trazen2.0",
-  projectId: projectId,
+  appName: 'Trazen2.0',
+  projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
   chains: [mainnet, polygon, optimism, arbitrum, base],
   ssr: false,
 });
@@ -28,7 +26,7 @@ const ClientProvider = ({ children }: { children: React.ReactNode }) => {
           <RainbowKitProvider>
             {children}
             <ToastContainer />
-            <Toaster position="bottom-center" reverseOrder={false} />
+            <Toaster position='bottom-center' reverseOrder={false} />
           </RainbowKitProvider>
         </QueryClientProvider>
       </WagmiProvider>

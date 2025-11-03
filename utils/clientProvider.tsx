@@ -15,7 +15,7 @@ const config = getDefaultConfig({
   appName: "Trazen2.0",
   projectId: projectId,
   chains: [mainnet, polygon, optimism, arbitrum, base],
-  ssr: true,
+  ssr: false,
 });
 
 const queryClient = new QueryClient();

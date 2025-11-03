@@ -1,36 +1,25 @@
-# ===== Stage 1: Build =====
-FROM node:22-bullseye AS builder
-WORKDIR /app
+# Use the official Node.js image.
+# https://hub.docker.com/_/node
+FROM node:22-alpine
 
-# Copy only package files first (for better caching)
+# Create and change to the app directory.
+WORKDIR /usr/src/app
+
+# Copy application dependency manifests to the container image.
+# A wildcard is used to ensure both package.json AND package-lock.json are copied.
 COPY package*.json ./
 
-# Install dependencies (including dev)
+# Install production dependencies.
 RUN npm ci
 
-# Copy the rest of your app
+# Copy the local code to the container image.
 COPY . .
 
-# Set Node memory limit (4GB is a good middle ground)
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+# Build the Next.js application
+RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
-# Build Next.js app
-RUN npm run build
-
-
-# ===== Stage 2: Production =====
-FROM node:22-alpine AS runner
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-# Copy only what’s needed from the builder stage
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/package*.json ./
-
-# Install only production dependencies
-RUN npm ci --omit=dev
-
+# Expose the port the app runs on
 EXPOSE 3000
-CMD ["npm", "start"]
+
+# Run the web service on container startup.
+CMD ["npm", "run", "start"]

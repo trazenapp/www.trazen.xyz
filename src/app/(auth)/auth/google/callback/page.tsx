@@ -1,4 +1,5 @@
-"use client"
+'use client';
+
 import React, { useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/src/redux/store';
@@ -11,25 +12,40 @@ const GoogleCallbackPage = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    const code = searchParams.get("code");
-    console.log(code);
-    if (code) {
-      dispatch(fetchGoogleUser(code)).then((res: any) => {
-        if (res.meta.requestStatus === "fulfilled") {
-          router.replace("http://127.0.0.1:3000/home");
-        } else {
-          router.replace("http://127.0.0.1:3000/sign-in");
-        }
-      })
-    } else {
-      router.replace("http://127.0.0.1:3000/sign-in");
-    }
-  }, [searchParams, dispatch, router]);
-  return (
-    <div className='bg-[#0B0B0B]/50 backdrop-blur-xs'>
-      <ClipLoader color="#F4F4F4F4" size={50} />
-    </div>
-  )
-}
+    const code = searchParams.get('code');
 
-export default GoogleCallbackPage
+    // Guard: no code → redirect immediately
+    if (!code) {
+      router.replace('/sign-in');
+      return;
+    }
+
+    const handleAuth = async () => {
+      try {
+        const res = await dispatch(fetchGoogleUser(code));
+
+        if (res.meta.requestStatus === 'fulfilled') {
+          toast.success('Signed in successfully!');
+          router.replace('/home');
+        } else {
+          toast.error('Sign-in failed. Please try again.');
+          router.replace('/sign-in');
+        }
+      } catch (err) {
+        console.error('Google auth error:', err);
+        toast.error('Something went wrong. Please try again.');
+        router.replace('/sign-in');
+      }
+    };
+
+    handleAuth();
+  }, []);
+
+  return (
+    <div className='flex items-center justify-center min-h-screen bg-[#0B0B0B]/50 backdrop-blur-sm'>
+      <ClipLoader color='#F4F4F4' size={50} />
+    </div>
+  );
+};
+
+export default GoogleCallbackPage;

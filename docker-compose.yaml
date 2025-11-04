@@ -1,0 +1,13 @@
+version: '3'
+services:
+  trazen-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: trazen-app:1.0.0
+    container_name: trazen-app
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: production

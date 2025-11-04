@@ -5,9 +5,12 @@ import { Skeleton } from "@/src/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/src/redux/store";
 import { getEvents } from "@/src/redux/slices/eventSlice";
 import { EventsItem } from "@/src/types/event.types";
-import { AnimatePresence, motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { ArrowUp } from "lucide-react";
+import { gsap } from "gsap";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+
+gsap.registerPlugin(ScrollToPlugin);
 
 const Event = () => {
   const dispatch = useAppDispatch();
@@ -54,9 +57,17 @@ const Event = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  // --- GSAP SCROLL IMPLEMENTATION ---
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    gsap.to(window, {
+      scrollTo: {
+        y: 0,
+      },
+      duration: 0.8, // Smooth GSAP animation duration
+      ease: 'power2.inOut', // Professional GSAP easing
+    });
   };
+  // ------------------------------------
 
   return (
     <>
@@ -83,25 +94,19 @@ const Event = () => {
         {loading && events && events.length > 0 && (
           <Skeleton className="w-full h-[200px] my-4" />
         )}
-
-        <AnimatePresence>
-          {showScrollTop && (
-            <motion.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{
-                opacity: scrollUp ? 0.5 : 1,
-                y: 0,
-              }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.2 }}
-              onClick={scrollToTop}
-              className="fixed bottom-6 right-1/2 -translate-x-1/2 z-50 p-3 rounded-full bg-[#1E1E1E] text-white shadow-lg border border-[#303030] backdrop-blur-md hover:opacity-100 transition"
-              aria-label="Scroll to top"
-            >
-              <ArrowUp className="w-5 h-5" />
-            </motion.button>
-          )}
-        </AnimatePresence>
+        
+        {/* --- BACK-TO-TOP BUTTON (GSAP Scroll, CSS Transition) --- */}
+        {showScrollTop && (
+          <button
+            onClick={scrollToTop}
+            // Added transition-opacity and duration for a simple fade effect
+            className="fixed bottom-6 right-1/2 -translate-x-1/2 z-50 p-3 rounded-full bg-[#1E1E1E] text-white shadow-lg border border-[#303030] backdrop-blur-md transition-opacity duration-300 hover:opacity-100"
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </button>
+        )}
+        {/* -------------------------------------------------------- */}
       </div>
     </>
   );

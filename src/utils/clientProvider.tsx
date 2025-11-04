@@ -1,8 +1,6 @@
 'use client';
 import React from 'react';
 import ReduxProvider from '@/src/redux/ReduxProvider';
-import '@rainbow-me/rainbowkit/styles.css';
-import { getDefaultConfig, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { WagmiProvider } from 'wagmi';
 import { mainnet, polygon, optimism, arbitrum, base } from 'wagmi/chains';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
@@ -23,11 +21,10 @@ const ClientProvider = ({ children }: { children: React.ReactNode }) => {
     <ReduxProvider>
       <WagmiProvider config={config}>
         <QueryClientProvider client={queryClient}>
-          <RainbowKitProvider>
+          
             {children}
             <ToastContainer />
             <Toaster position='bottom-center' reverseOrder={false} />
-          </RainbowKitProvider>
         </QueryClientProvider>
       </WagmiProvider>
     </ReduxProvider>

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import wallet from "@/public/solar_wallet.svg";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+
 import { useSignMessage } from "wagmi";
 import { useAppDispatch } from "@/src/redux/store";
 import { SignInWalletData } from "@/src/types/auth.types";

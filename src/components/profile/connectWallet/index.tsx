@@ -1,4 +1,4 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+
 import { useDisconnect } from "wagmi";
 import { useEffect, useRef } from "react";
 import { useAppDispatch } from "@/src/redux/store";

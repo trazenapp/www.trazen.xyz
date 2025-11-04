@@ -15,7 +15,8 @@ RUN npm ci
 # Copy the local code to the container image.
 COPY . .
 
-# Build the Next.js application
+COPY .env .env
+
 RUN NODE_OPTIONS="--max-old-space-size=4096" npm run build
 
 # Expose the port the app runs on

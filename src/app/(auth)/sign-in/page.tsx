@@ -4,7 +4,7 @@ import Card from "@/src/components/card";
 import FormHeading from "@/src/components/formHeading";
 import DividerText from "@/src/components/dividerText";
 import SignInWithGoogle from "@/src/components/form/signInWithGoogle";
-import SignInWithWallet from "@/src/components/form/signInWithWallet";
+// import SignInWithWallet from "@/src/components/form/signInWithWallet";
 import SignInForm from "@/src/components/form/signInForm";
 
 const SignIn = () => {

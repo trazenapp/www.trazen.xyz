@@ -4,7 +4,8 @@ import React, { useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/src/redux/store';
 import { fetchGoogleUser } from '@/src/redux/slices/loginSlice';
-import { ClipLoader } from "react-spinners";
+import { ClipLoader } from 'react-spinners';
+import { toast } from 'react-hot-toast';
 
 const GoogleCallbackPage = () => {
   const searchParams = useSearchParams();

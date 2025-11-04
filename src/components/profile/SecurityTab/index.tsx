@@ -15,7 +15,6 @@ import {
   clearError,
 } from "@/src/redux/slices/changePasswordSlice";
 import { toast } from "react-toastify";
-import { ConnectWallet } from "../connectWallet";
 
 interface FormData {
   oldPassword: string;
@@ -87,9 +86,9 @@ function SecurityTab() {
           Linked Wallet
         </label>
 
-        <div id="link-wallet" className="mt-4">
+        {/* <div id="link-wallet" className="mt-4">
           <ConnectWallet />
-        </div>
+        </div> */}
       </div>
       <h2 className="mt-6">Change Password</h2>
 

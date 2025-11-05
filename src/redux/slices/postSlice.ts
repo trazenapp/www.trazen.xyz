@@ -8,9 +8,9 @@ import {
   PostItem,
   PostPagination,
   ReportItem,
+  CommentItem,
 } from "@/src/types/post.types";
 import { RootState } from "@/src/redux/store";
-import { string } from "slate";
 
 const initialState: PostState = {
   loading: false,
@@ -43,6 +43,7 @@ const initialState: PostState = {
     reason: "SCAM",
     details: "",
   },
+  comments: [],
 };
 
 export const fetchPublicPosts = createAsyncThunk<
@@ -138,6 +139,29 @@ export const fetchPostDetails = createAsyncThunk<
   }
 });
 
+export const fetchComments = createAsyncThunk<
+  any,
+  { comment_uuid: string; page: number; limit: number },
+  { state: RootState }
+>(
+  "post/fetchComments",
+  async ({ comment_uuid, page = 1, limit = 10 }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get(
+        `/v1/comment/${comment_uuid}?page=${page}&limit=${limit}`
+      );
+      const data = response.data?.data;
+      console.log(data);
+      return { comment: data.posts, pagination: data.pagination };
+    } catch (err: any) {
+      console.error("getComments error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error fetching comments"
+      );
+    }
+  }
+);
+
 export const votePost = createAsyncThunk<
   any,
   { post_uuid: string; voteType: string },
@@ -167,6 +191,40 @@ export const votePost = createAsyncThunk<
       console.error("votePost error", err);
       return rejectWithValue(
         err?.response?.data?.message || "Error voting on post"
+      );
+    }
+  }
+);
+
+export const voteComment = createAsyncThunk<
+  any,
+  { comment_uuid: string; voteType: string },
+  { state: RootState }
+>(
+  "post/voteComment",
+  async ({ comment_uuid, voteType }, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const token = (state as RootState).register.token || null;
+
+      const response = await axiosInstance.post(
+        `/v1/comment/vote/${comment_uuid}`,
+        { voteType },
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log(response.data);
+      return response.data;
+    } catch (err: any) {
+      console.error("voteComment error", err);
+      return rejectWithValue(
+        err?.response?.data?.message || "Error voting on comment"
       );
     }
   }
@@ -604,6 +662,28 @@ const postSlice = createSlice({
         state.hasMore = pagination.page < pagination.totalPages;
       })
       .addCase(fetchPrivatePosts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Something went wrong";
+      })
+      .addCase(fetchComments.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchComments.fulfilled, (state, action) => {
+        state.loading = false;
+        const newComments = action.payload.comments;
+        const { pagination } = action.payload;
+
+        if (pagination.page === 1) {
+          state.comments = newComments;
+        } else {
+          state.comments = [...state.comments, ...newComments];
+        }
+
+        state.pagination = pagination;
+        state.hasMore = pagination.page < pagination.totalPages;
+      })
+      .addCase(fetchComments.rejected, (state, action) => {
         state.loading = false;
         state.error = (action.payload as string) || "Something went wrong";
       })

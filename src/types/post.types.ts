@@ -84,6 +84,7 @@ export interface PostState {
   postDetails: PostItem;
   bookmark: boolean;
   reportData: ReportItem;
+  comments: CommentItem[];
 }
 
 export interface Draft {

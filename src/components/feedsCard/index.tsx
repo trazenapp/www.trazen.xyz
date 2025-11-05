@@ -32,7 +32,6 @@ import {
 } from "@/src/redux/slices/postSlice";
 import { PostItem } from "@/src/types/post.types";
 import { ProjectDetail } from "@/src/types/project.types";
-import { ClipLoader } from "react-spinners";
 import { useShare } from "@/src/hooks/useShareOptions";
 import EditPost from "../editPost";
 import {
@@ -47,7 +46,7 @@ import {
 import DeletePost from "../deletePost";
 import ReportPost from "../reportPost";
 import { BsPatchCheckFill } from "react-icons/bs";
-import { Badge } from "../ui/badge";
+import { CiCirclePlus } from "react-icons/ci";
 
 interface FeedsCardProps {
   post?: PostItem;
@@ -67,6 +66,7 @@ const FeedsCard = ({
   const { shareContent } = useShare();
   const { loading } = useAppSelector((state: RootState) => state.post);
 
+  const [voteStatus, setVoteStatus] = useState(post?.voteStatus);
   const [isFollowing, setIsFollowing] = useState(false);
   const [upVoteCount, setUpVoteCount] = useState(post?.upvoteCount);
   const [downVoteCount, setDownVoteCount] = useState(post?.downvoteCount);
@@ -87,29 +87,62 @@ const FeedsCard = ({
   };
 
   // vote post
-  const handleVote = async (
-    voteType: "UPVOTE" | "DOWNVOTE",
-    post_uuid: string
-  ) => {
-    if (!post_uuid) {
-      console.log("No post_uuid in state");
-      return;
-    }
+const handleVote = async (
+  voteType: "UPVOTE" | "DOWNVOTE",
+  post_uuid: string
+) => {
+  if (!post_uuid) {
+    console.warn("No post_uuid in state");
+    return;
+  }
 
-    try {
-      const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
-      if (voteType === "UPVOTE") {
-        console.log(res?.upvoteCount);
-        setUpVoteCount(res?.upvoteCount);
-      } else if (voteType === "DOWNVOTE") {
-        console.log(res?.downvoteCount);
-        setDownVoteCount(res?.downvoteCount);
-      }
-      console.log("Vote response:", res);
-    } catch (error) {
-      console.error("Vote error:", error);
+  let prevUpvotes = upVoteCount || 0;
+  let prevDownvotes = downVoteCount || 0;
+  const prevStatus = voteStatus;
+
+  let newUpvotes = prevUpvotes;
+  let newDownvotes = prevDownvotes;
+  let newStatus = prevStatus;
+
+  if (voteType === "UPVOTE") {
+    if (prevStatus === "UPVOTE") {
+      newUpvotes -= 1;
+      newStatus = null;
+    } else {
+      newUpvotes += 1;
+      if (prevStatus === "DOWNVOTE") newDownvotes -= 1;
+      newStatus = "UPVOTE";
     }
-  };
+  } else if (voteType === "DOWNVOTE") {
+    if (prevStatus === "DOWNVOTE") {
+      newDownvotes -= 1;
+      newStatus = null;
+    } else {
+      newDownvotes += 1;
+      if (prevStatus === "UPVOTE") newUpvotes -= 1;
+      newStatus = "DOWNVOTE";
+    }
+  }
+
+  setUpVoteCount(newUpvotes);
+  setDownVoteCount(newDownvotes);
+  setVoteStatus(newStatus);
+
+  try {
+    const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
+
+    setUpVoteCount(res?.upvoteCount ?? newUpvotes);
+    setDownVoteCount(res?.downvoteCount ?? newDownvotes);
+    setVoteStatus(res?.voteStatus ?? newStatus);
+  } catch (error) {
+    console.error("Vote error:", error);
+
+    setUpVoteCount(prevUpvotes);
+    setDownVoteCount(prevDownvotes);
+    setVoteStatus(prevStatus);
+  }
+};
+
 
   // bookmark post
   const handleBookmark = async (post_uuid: string) => {
@@ -141,7 +174,7 @@ const FeedsCard = ({
 
   return (
     <>
-      <Card className="md:px-[23px]! md:py-5! p-3! flex flex-col gap-y-5 rounded-[16px]! border-0! mb-4">
+      <Card className="md:px-[23px]! md:py-5! p-3! flex flex-col gap-y-5 rounded-2xl! border-0! mb-4">
         <div className="flex justify-between items-start">
           <div className="flex items-start gap-x-2.5 font-sans">
             <Link href="/profile" className="flex items-start gap-x-2.5">
@@ -162,9 +195,7 @@ const FeedsCard = ({
               )}
             </Link>
             {post?.isFollowing && !isPrivate ? (
-              <Badge className="h-4 min-w-5 rounded-full px-1.5 bg-white text-[#272727] text-[7px]">
-                Following
-              </Badge>
+              <BsPatchCheckFill color="#430B68" className="mt-1" />
             ) : (
               <Button
                 type="button"
@@ -173,7 +204,7 @@ const FeedsCard = ({
                 }
                 className="py-1! px-2.5! border border-[#DDDDDD]! text-[#DDDDDD]! rounded-full text-[10px]"
               >
-                Follow Me
+                <CiCirclePlus />
               </Button>
             )}
           </div>
@@ -189,7 +220,7 @@ const FeedsCard = ({
             >
               <DropdownMenuItem
                 onClick={handleShareClick}
-                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
               >
                 <TbShare3 /> Share
               </DropdownMenuItem>
@@ -198,13 +229,13 @@ const FeedsCard = ({
                 <>
                   <DropdownMenuItem
                     onSelect={() => setEditPostModal(true)}
-                    className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                    className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
                   >
                     <Edit /> Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onSelect={() => setDeletePostModal(true)}
-                    className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                    className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
                   >
                     <Trash2 className="text-[#FF5151]" /> Delete
                   </DropdownMenuItem>
@@ -213,7 +244,7 @@ const FeedsCard = ({
                 <>
                   <DropdownMenuItem
                     onSelect={() => setReportPostModal(true)}
-                    className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                    className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
                   >
                     <TbFlag3 /> Report
                   </DropdownMenuItem>
@@ -229,7 +260,7 @@ const FeedsCard = ({
                         handleBookmark(post?.uuid || "");
                       }
                     }}
-                    className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                    className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
                   >
                     {post?.isBookmarked ? (
                       <PiBookmarkSimpleFill color="#430B68" />
@@ -244,10 +275,10 @@ const FeedsCard = ({
           </DropdownMenu>
           <Dialog open={editPostModal} onOpenChange={setEditPostModal}>
             <DialogContent
-              className="sm:w-10/12 md:w-10/12 lg:10/12 font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[50vw] lg:max-w-[65vw] md:max-w-[85vw] max-md:!max-w-[95vw]  md:max-h-[95vh] max-h-[98vh] min-h-[45vh] overflow-auto"
+              className="sm:w-10/12 md:w-10/12 lg:10/12 font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[50vw] lg:max-w-[65vw] md:max-w-[85vw] max-md:max-w-[95vw]!  md:max-h-[95vh] max-h-[98vh] min-h-[45vh] overflow-auto"
               style={{ scrollbarWidth: "none" }}
             >
-              <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+              <DialogHeader className="sm:px-7 p-4 border-b border-b-[#383838] h-auto!">
                 <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
                   <p className="max-sm:text-[16px]">Edit Post</p>
                 </DialogTitle>
@@ -260,7 +291,7 @@ const FeedsCard = ({
               className="font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-5/12 lg:w-10/12 md:w-[85vw] overflow-auto"
               style={{ scrollbarWidth: "none" }}
             >
-              <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+              <DialogHeader className="sm:px-7 p-4 border-b border-b-[#383838] h-auto!">
                 <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
                   <p className="max-sm:text-[16px]">Delete Post</p>
                 </DialogTitle>
@@ -273,7 +304,7 @@ const FeedsCard = ({
               className="font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-7/12 lg:w-10/12 md:w-[85vw] overflow-auto"
               style={{ scrollbarWidth: "none" }}
             >
-              <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+              <DialogHeader className="sm:px-7 p-4 border-b border-b-[#383838] h-auto!">
                 <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
                   <p className="max-sm:text-[16px]">Report Post</p>
                 </DialogTitle>
@@ -297,26 +328,26 @@ const FeedsCard = ({
         >
           <Button
             onClick={() => handleVote("UPVOTE", post?.uuid || "")}
-            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${post?.voteStatus === "UPVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
+            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${voteStatus === "UPVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
           >
             <PiArrowFatUp />
             {upVoteCount}
             {upVoteCount === 1 ? (
-              <span className="hidden md:flex"> up vote</span>
+              <span className="hidden md:flex"> Upvote</span>
             ) : (
-              <span className="hidden md:flex"> up votes</span>
+              <span className="hidden md:flex"> Upvotes</span>
             )}
           </Button>
           <Button
             onClick={() => handleVote("DOWNVOTE", post?.uuid || "")}
-            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${post?.voteStatus === "DOWNVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
+            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${voteStatus === "DOWNVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
           >
             <PiArrowFatDown />
             {downVoteCount}
             {downVoteCount === 1 ? (
-              <span className="hidden md:flex"> down vote</span>
+              <span className="hidden md:flex"> Downvote</span>
             ) : (
-              <span className="hidden md:flex"> down votes</span>
+              <span className="hidden md:flex"> Downvotes</span>
             )}
           </Button>
           <Button
@@ -326,13 +357,13 @@ const FeedsCard = ({
             <IoChatbubbleOutline />
             {post?.commentCount}
             {post?.commentCount === 1 ? (
-              <span className="hidden md:flex"> comment</span>
+              <span className="hidden md:flex"> Comment</span>
             ) : (
-              <span className="hidden md:flex"> comments</span>
+              <span className="hidden md:flex"> Comments</span>
             )}
           </Button>
         </div>
-        <FeedsComment post={post} isComment={false} />
+        <FeedsComment post={post} />
       </Card>
     </>
   );

@@ -4,26 +4,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/ta
 import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/src/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/src/components/ui/dialog";
 import Feeds from "@/src/components/feeds";
 import { chainOptions, nicheOptions } from "@/src/constants/options";
 import FormRadio from "@/src/components/form/formRadio";
 import { MdFilterList } from "react-icons/md";
 import { FaCheck } from "react-icons/fa6";
 import { ArrowUp } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { gsap } from "gsap";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+
+gsap.registerPlugin(ScrollToPlugin);
 
 const Home = () => {
   const router = useRouter();
   const [showScrollTop, setShowScrollTop] = useState(false);
-  const [scrollUp, setScrollUp] = useState(false);
+  const [scrollUp, setScrollUp] = useState(false); 
   const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
@@ -37,12 +33,17 @@ const Home = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
+  // --- GSAP SCROLL IMPLEMENTATION ---
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
+    gsap.to(window, {
+      scrollTo: {
+        y: 0,
+      },
+      duration: 0.8,
+      ease: 'power2.inOut',
     });
   };
+  // ------------------------------------
 
   return (
     <div className="">
@@ -119,24 +120,18 @@ const Home = () => {
         </TabsContent>
       </Tabs>
 
-      <AnimatePresence>
-        {showScrollTop && (
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{
-              opacity: scrollUp ? 0.5 : 1,
-              y: 0,
-            }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.2 }}
-            onClick={scrollToTop}
-            className="fixed bottom-6 right-1/2 -translate-x-1/2 z-50 p-3 rounded-full bg-[#1E1E1E] text-white shadow-lg border border-[#303030] backdrop-blur-md hover:opacity-100 transition"
-            aria-label="Scroll to top"
-          >
-            <ArrowUp className="w-5 h-5" />
-          </motion.button>
-        )}
-      </AnimatePresence>
+      {/* --- BACK-TO-TOP BUTTON --- */}
+      {showScrollTop && (
+        <button
+          id="back-to-top-button"
+          onClick={scrollToTop} 
+          className="fixed bottom-6 right-1/2 -translate-x-1/2 z-50 p-3 rounded-full bg-[#1E1E1E] text-white shadow-lg border border-[#303030] backdrop-blur-md transition-opacity duration-300 hover:opacity-100"
+          aria-label="Scroll to top"
+        >
+          <ArrowUp className="w-5 h-5" />
+        </button>
+      )}
+      {/* ---- */}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 export const navMenu = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/https://trazen-1.gitbook.io/trazen/" },
+  { label: "About", href: "https://trazen-1.gitbook.io/trazen/" },
   { label: "Features", href: "#features" },
   { label: "FAQ", href: "#faq" },
 ];

@@ -32,7 +32,6 @@ import {
 } from "@/src/redux/slices/postSlice";
 import { PostItem } from "@/src/types/post.types";
 import { ProjectDetail } from "@/src/types/project.types";
-import { ClipLoader } from "react-spinners";
 import { useShare } from "@/src/hooks/useShareOptions";
 import EditPost from "../editPost";
 import {
@@ -48,7 +47,6 @@ import DeletePost from "../deletePost";
 import ReportPost from "../reportPost";
 import { BsPatchCheckFill } from "react-icons/bs";
 import { CiCirclePlus } from "react-icons/ci";
-import { Badge } from "../ui/badge";
 
 interface FeedsCardProps {
   post?: PostItem;

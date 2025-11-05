@@ -20,18 +20,21 @@ import {
 } from "../ui/dialog";
 import { CgFlagAlt } from "react-icons/cg";
 import { MdMoreHoriz, MdOutlineCalendarMonth } from "react-icons/md";
+import { TfiMoreAlt } from "react-icons/tfi";
 import { FaRegClock } from "react-icons/fa6";
 import { IoIosTimer } from "react-icons/io";
 import AvatarProfile from "@/src/components/avatarProfile";
 import { Button } from "@/src/components/ui/button";
 import { EventsItem } from "@/src/types/event.types";
-import { useTimeRemaining } from "@/src/hooks/useTimeRemaining";
+import { useTimeAgo } from "@/src/hooks/useTimeAgo";
 import { useGoogleCalendarLink } from "@/src/hooks/useGoogleCalendarLink";
 import EditEvent from "../EditEvent";
 import DeleteEvent from "../deleteEvent";
 import ReportEvent from "../reportEvent";
 import { Edit, Trash2 } from "lucide-react";
 import { ProjectDetail } from "@/src/types/project.types";
+import { useFormattedDate } from "@/src/hooks/useFormattedDate";
+import { useFormattedTime } from "@/src/hooks/useFormattedTime";
 
 interface EventCardProps {
   event: EventsItem;
@@ -47,7 +50,9 @@ const EventCard = ({ event, isPrivate, project }: EventCardProps) => {
   const dateString = event?.date_time?.toString();
   const [datePart, timePartRaw] = dateString.split("T");
   const timePart = timePartRaw.replace("Z", "").split(".")[0];
-  const timeRemaining = useTimeRemaining(event?.date_time);
+  const timeAgoText = useTimeAgo(event?.date_time);
+  const formatDate = useFormattedDate(datePart);
+  const formatTime = useFormattedTime(timePart);
   const googleCalendarLink = useGoogleCalendarLink(
     event?.title,
     event?.date_time,
@@ -56,47 +61,48 @@ const EventCard = ({ event, isPrivate, project }: EventCardProps) => {
     event?.location
   );
   return (
-    <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0">
+    <Card className="md:px-[23px]! md:py-5! p-3! flex flex-col gap-y-5 rounded-2xl! border-0!">
       <div className="flex justify-between items-start">
         <div className="flex items-start gap-x-2.5 font-sans">
           <Link href="/profile" className="flex items-start gap-x-2.5">
-          {!isPrivate ? (
-            <AvatarProfile
-              createdAt={event?.created_at}
-              name={event?.project?.name}
-              avatar={event?.project?.avatar as string}
-              is_approved={event?.project?.is_approved}
-            />
-          ) : (
-            <AvatarProfile
-              createdAt={project?.created_at}
-              name={project?.name}
-              avatar={project?.avatar}
-              is_approved={project?.is_approved}
-            />
-          )}</Link>
+            {!isPrivate ? (
+              <AvatarProfile
+                createdAt={event?.created_at}
+                name={event?.project?.name}
+                avatar={event?.project?.avatar as string}
+                is_approved={event?.project?.is_approved}
+              />
+            ) : (
+              <AvatarProfile
+                createdAt={project?.created_at}
+                name={project?.name}
+                avatar={project?.avatar}
+                is_approved={project?.is_approved}
+              />
+            )}
+          </Link>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button className="!w-fit !h-fit p-0">
-              <MdMoreHoriz size={36} />
+            <Button className="w-fit! h-fit! p-0">
+              <TfiMoreAlt size={36} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="bg-[#272727] !min-w-0 !p-0 border-0 w-32"
+            className="bg-[#272727] min-w-0! p-0! border-0 w-32"
             align="end"
           >
             {isPrivate === true ? (
               <>
                 <DropdownMenuItem
                   onSelect={() => setEditEventModal(true)}
-                  className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                  className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
                 >
                   <Edit size={12} /> Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onSelect={() => setDeleteEventModal(true)}
-                  className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                  className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
                 >
                   <Trash2 size={12} className="text-[#FF5151]" /> Delete
                 </DropdownMenuItem>
@@ -104,7 +110,7 @@ const EventCard = ({ event, isPrivate, project }: EventCardProps) => {
             ) : (
               <DropdownMenuItem
                 onSelect={() => setReportEventModal(true)}
-                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
               >
                 <CgFlagAlt color="#ddd" /> Report
               </DropdownMenuItem>
@@ -113,10 +119,10 @@ const EventCard = ({ event, isPrivate, project }: EventCardProps) => {
         </DropdownMenu>
         <Dialog open={editEventModal} onOpenChange={setEditEventModal}>
           <DialogContent
-            className="sm:w-10/12 md:w-10/12 lg:10/12 font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[50vw] lg:max-w-[65vw] md:max-w-[85vw] max-md:!max-w-[95vw]  md:max-h-[95vh] max-h-[98vh] min-h-[45vh] overflow-auto"
+            className="sm:w-10/12 md:w-10/12 lg:10/12 font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[50vw] lg:max-w-[65vw] md:max-w-[85vw] max-md:max-w-[95vw]!  md:max-h-[95vh] max-h-[98vh] min-h-[45vh] overflow-auto"
             style={{ scrollbarWidth: "none" }}
           >
-            <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+            <DialogHeader className="sm:px-7 p-4 border-b border-b-[#383838] h-auto!">
               <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
                 <p className="max-sm:text-[16px]">Edit Post</p>
               </DialogTitle>
@@ -129,7 +135,7 @@ const EventCard = ({ event, isPrivate, project }: EventCardProps) => {
             className="font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-5/12 lg:w-10/12 md:w-[85vw] overflow-auto"
             style={{ scrollbarWidth: "none" }}
           >
-            <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+            <DialogHeader className="sm:px-7 p-4 border-b border-b-[#383838] h-auto!">
               <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
                 <p className="max-sm:text-[16px]">Delete Post</p>
               </DialogTitle>
@@ -142,7 +148,7 @@ const EventCard = ({ event, isPrivate, project }: EventCardProps) => {
             className="font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-7/12 lg:w-10/12 md:w-[85vw] overflow-auto"
             style={{ scrollbarWidth: "none" }}
           >
-            <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+            <DialogHeader className="sm:px-7 p-4 border-b border-b-[#383838] h-auto!">
               <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
                 <p className="max-sm:text-[16px]">Report Post</p>
               </DialogTitle>
@@ -154,20 +160,24 @@ const EventCard = ({ event, isPrivate, project }: EventCardProps) => {
       <div className="flex flex-col gap-4 justify-between ">
         <div className="flex flex-wrap gap-2.5">
           <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
-            <MdOutlineCalendarMonth /> {datePart}
+            <MdOutlineCalendarMonth /> {formatDate}
           </div>
           <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
-            <FaRegClock /> {timePart}
+            <FaRegClock /> {formatTime}
           </div>
           <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
-            <IoIosTimer /> {timeRemaining}
+            <IoIosTimer /> {timeAgoText}
           </div>
-          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
+          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans capitalize!">
             {event.type}
           </div>
+          {(event?.type === "HYBRID" || event?.type === "ONSITE") &&<div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans capitalize!">
+            {event?.location}
+          </div>}
         </div>
       </div>
-      <p className="cursor-pointer text-[#F4F4F4F4] text-base font-normal font-sans line-clamp-3">
+      <h4 className="text-[#f4f4f4] text-base font-medium font-sans">{event?.title}</h4>
+      <p className="text-[#F4F4F4F4] text-sm font-normal font-sans line-clamp-3">
         {event.description}
       </p>
       <div className="flex justify-center items-center h-[350px]">

@@ -86,6 +86,7 @@ export const getEvents = createAsyncThunk(
       );
 
       const data = res.data?.data;
+      console.log("Fetched events:", data.events);
       return { events: data.events, pagination: data.pagination };
     } catch (err: any) {
       const msg =
@@ -194,7 +195,7 @@ export const reportPost = createAsyncThunk(
 export const deleteEvents = createAsyncThunk<
   string,
   string,
-  { state: RootState } 
+  { state: RootState }
 >("post/deleteEvents", async (event_uuid, { rejectWithValue, getState }) => {
   try {
     const state = getState();

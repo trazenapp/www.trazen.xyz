@@ -1,6 +1,10 @@
 import React from "react";
 import { BsPatchCheckFill } from "react-icons/bs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
 import { useTimeAgo } from "@/src/hooks/useTimeAgo";
 import ProfilePhoto from "../profilePhoto";
 
@@ -17,18 +21,18 @@ const AvatarProfile = ({
   name,
   avatar,
   is_approved,
-  title
+  title,
 }: AvatarProfileProps) => {
   const timeAgoText = useTimeAgo(createdAt);
-  const fallbackStr = title ? [title[0].toUpperCase(), title[title.length - 1]] : [];
+  const fallbackStr = title
+    ? [title[0].toUpperCase(), title[title.length - 1]]
+    : [];
 
   return (
     <>
       <Avatar className="h-10 w-10">
         <AvatarImage
-          src={
-            avatar ? avatar : "https://github.com/shadcn.png"
-          }
+          src={avatar ? avatar : "https://github.com/shadcn.png"}
           className="h-full w-full"
         />
         <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">

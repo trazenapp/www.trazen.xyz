@@ -5,7 +5,11 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
 import { RootState, useAppDispatch, useAppSelector } from "@/src/redux/store";
-import { createEvent, setLoading, updateForm } from "@/src/redux/slices/eventSlice";
+import {
+  createEvent,
+  setLoading,
+  updateForm,
+} from "@/src/redux/slices/eventSlice";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
@@ -87,7 +91,7 @@ function EventsPost({ projectId }: EventPostProps) {
           render={({ field }) => (
             <Input
               id="title"
-              className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              className="border-[#434343] text-xs! text-[#f4f4f4] font-light h-11 focus-visible:border-[#434343]! focus-visible:ring-[0]!"
               {...field}
             />
           )}
@@ -106,7 +110,8 @@ function EventsPost({ projectId }: EventPostProps) {
           render={({ field }) => (
             <Textarea
               {...field}
-              className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              className="border-[#434343] text-xs! text-[#f4f4f4] font-light h-11 focus-visible:border-[#434343]! focus-visible:ring-[0]!"
+              maxLength={160}
             />
           )}
         />
@@ -127,7 +132,7 @@ function EventsPost({ projectId }: EventPostProps) {
               {...field}
               id="dateTime"
               type="datetime-local"
-              className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              className="border-[#434343] text-xs! text-[#f4f4f4] font-light h-11 focus-visible:border-[#434343]! focus-visible:ring-[0]!"
               placeholder="Select date"
             />
           )}
@@ -187,7 +192,7 @@ function EventsPost({ projectId }: EventPostProps) {
             render={({ field }) => (
               <Input
                 id="location"
-                className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+                className="border-[#434343] text-xs! text-[#f4f4f4] font-light h-11 focus-visible:border-[#434343]! focus-visible:ring-[0]!"
                 {...field}
               />
             )}

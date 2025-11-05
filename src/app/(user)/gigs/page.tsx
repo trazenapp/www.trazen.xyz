@@ -1,5 +1,10 @@
 import React from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/src/components/ui/tabs";
 import Hiring from "@/src/components/hiring";
 import Bounty from "@/src/components/bounty";
 

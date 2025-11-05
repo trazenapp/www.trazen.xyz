@@ -121,6 +121,7 @@ function HiringPost({ projectId }: HiringPostProps) {
             <Textarea
               {...field}
               className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
+              maxLength={160}
             />
           )}
         />

@@ -31,7 +31,7 @@ const Bounty = () => {
   const { ref, inView } = useInView({
     threshold: 0.1,
   });
-  
+
   useEffect(() => {
     dispatch(getBounties({ page: 1, limit: 100 }));
   }, [dispatch]);
@@ -83,7 +83,7 @@ const Bounty = () => {
         y: 0,
       },
       duration: 0.8, // Smooth GSAP animation duration
-      ease: 'power2.inOut', // Professional GSAP easing
+      ease: "power2.inOut", // Professional GSAP easing
     });
   };
   // ------------------------------------

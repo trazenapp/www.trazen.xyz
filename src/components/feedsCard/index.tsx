@@ -87,62 +87,61 @@ const FeedsCard = ({
   };
 
   // vote post
-const handleVote = async (
-  voteType: "UPVOTE" | "DOWNVOTE",
-  post_uuid: string
-) => {
-  if (!post_uuid) {
-    console.warn("No post_uuid in state");
-    return;
-  }
-
-  let prevUpvotes = upVoteCount || 0;
-  let prevDownvotes = downVoteCount || 0;
-  const prevStatus = voteStatus;
-
-  let newUpvotes = prevUpvotes;
-  let newDownvotes = prevDownvotes;
-  let newStatus = prevStatus;
-
-  if (voteType === "UPVOTE") {
-    if (prevStatus === "UPVOTE") {
-      newUpvotes -= 1;
-      newStatus = null;
-    } else {
-      newUpvotes += 1;
-      if (prevStatus === "DOWNVOTE") newDownvotes -= 1;
-      newStatus = "UPVOTE";
+  const handleVote = async (
+    voteType: "UPVOTE" | "DOWNVOTE",
+    post_uuid: string
+  ) => {
+    if (!post_uuid) {
+      console.warn("No post_uuid in state");
+      return;
     }
-  } else if (voteType === "DOWNVOTE") {
-    if (prevStatus === "DOWNVOTE") {
-      newDownvotes -= 1;
-      newStatus = null;
-    } else {
-      newDownvotes += 1;
-      if (prevStatus === "UPVOTE") newUpvotes -= 1;
-      newStatus = "DOWNVOTE";
+
+    let prevUpvotes = upVoteCount || 0;
+    let prevDownvotes = downVoteCount || 0;
+    const prevStatus = voteStatus;
+
+    let newUpvotes = prevUpvotes;
+    let newDownvotes = prevDownvotes;
+    let newStatus = prevStatus;
+
+    if (voteType === "UPVOTE") {
+      if (prevStatus === "UPVOTE") {
+        newUpvotes -= 1;
+        newStatus = null;
+      } else {
+        newUpvotes += 1;
+        if (prevStatus === "DOWNVOTE") newDownvotes -= 1;
+        newStatus = "UPVOTE";
+      }
+    } else if (voteType === "DOWNVOTE") {
+      if (prevStatus === "DOWNVOTE") {
+        newDownvotes -= 1;
+        newStatus = null;
+      } else {
+        newDownvotes += 1;
+        if (prevStatus === "UPVOTE") newUpvotes -= 1;
+        newStatus = "DOWNVOTE";
+      }
     }
-  }
 
-  setUpVoteCount(newUpvotes);
-  setDownVoteCount(newDownvotes);
-  setVoteStatus(newStatus);
+    setUpVoteCount(newUpvotes);
+    setDownVoteCount(newDownvotes);
+    setVoteStatus(newStatus);
 
-  try {
-    const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
+    try {
+      const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
 
-    setUpVoteCount(res?.upvoteCount ?? newUpvotes);
-    setDownVoteCount(res?.downvoteCount ?? newDownvotes);
-    setVoteStatus(res?.voteStatus ?? newStatus);
-  } catch (error) {
-    console.error("Vote error:", error);
+      setUpVoteCount(res?.upvoteCount ?? newUpvotes);
+      setDownVoteCount(res?.downvoteCount ?? newDownvotes);
+      setVoteStatus(res?.voteStatus ?? newStatus);
+    } catch (error) {
+      console.error("Vote error:", error);
 
-    setUpVoteCount(prevUpvotes);
-    setDownVoteCount(prevDownvotes);
-    setVoteStatus(prevStatus);
-  }
-};
-
+      setUpVoteCount(prevUpvotes);
+      setDownVoteCount(prevDownvotes);
+      setVoteStatus(prevStatus);
+    }
+  };
 
   // bookmark post
   const handleBookmark = async (post_uuid: string) => {

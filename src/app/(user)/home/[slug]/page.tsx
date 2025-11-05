@@ -48,11 +48,15 @@ import {
 } from "@/src/components/ui/dialog";
 import ReportPost from "@/src/components/reportPost";
 import { Badge } from "@/src/components/ui/badge";
+import { BsPatchCheckFill } from "react-icons/bs";
+import { CiCirclePlus } from "react-icons/ci";
 
 const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
   const router = useRouter();
-  const { postDetails, loading, error } = useAppSelector((state) => state.post);
+  const { postDetails, loading, pagination, hasMore } = useAppSelector(
+    (state) => state.post
+  );
   const dispatch = useAppDispatch();
   const { shareContent } = useShare();
 
@@ -66,7 +70,7 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
   useEffect(() => {
     dispatch(fetchPostDetails({ post_uuid: slug }));
   }, [dispatch, slug]);
-  
+
   const handleShareClick = () => {
     shareContent({
       title: postDetails?.name || "",
@@ -159,11 +163,11 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
           <FaArrowLeft />
         </Button>
         <div className="flex gap-x-2.5">
-          <p className="text-[#f4f4f4] text-xl font-medium">Post</p>
+          <p className="text-[#f4f4f4] text-sm font-medium">Post</p>
           {/* <p className="text-[#7F7F7F] text-xl font-light">1.2k views</p> */}
         </div>
       </div>
-      <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0">
+      <Card className="md:px-[23px]! md:py-5! p-3! flex flex-col gap-y-5 rounded-2xl! border-0!">
         <div className="flex justify-between items-start">
           <div className="flex items-start gap-x-2.5 font-sans">
             <Link href="/profile" className="flex items-start gap-x-2.5">
@@ -176,9 +180,7 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
             </Link>
 
             {postDetails?.isFollowing ? (
-              <Badge className="h-4 min-w-5 rounded-full px-1.5 bg-white text-[#272727] text-[7px]">
-                Following
-              </Badge>
+              <BsPatchCheckFill color="#430B68" className="mt-1" />
             ) : (
               <Button
                 type="button"
@@ -186,25 +188,25 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
                   postDetails?.project_uuid &&
                   handleFollowPost(postDetails?.project_uuid)
                 }
-                className="py-1! px-2.5! border border-[#DDDDDD]! text-[#DDDDDD]! rounded-full text-[10px]"
+                className="p-1! text-[#DDDDDD]! rounded-full text-[10px]"
               >
-                Follow Me
+                <CiCirclePlus />
               </Button>
             )}
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="!w-fit !h-fit p-0">
+              <Button className="w-fit! h-fit! p-0">
                 <TfiMoreAlt size={64} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="bg-[#272727] !min-w-0 !p-0 border-0 w-32"
+              className="bg-[#272727] min-w-0! p-0! border-0 w-32"
               align="end"
             >
               <DropdownMenuItem
                 onClick={handleShareClick}
-                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
               >
                 <TbShare3 /> Share
               </DropdownMenuItem>
@@ -222,7 +224,7 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
                     handleBookmark(postDetails?.uuid || "");
                   }
                 }}
-                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
               >
                 {postDetails?.isBookmarked ? (
                   <PiBookmarkSimpleFill color="#430B68" />
@@ -233,7 +235,7 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => setReportPostModal(true)}
-                className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
               >
                 <TbFlag3 /> Report
               </DropdownMenuItem>
@@ -270,9 +272,9 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
             <PiArrowFatUp />
             {postDetails?.upvoteCount}
             {postDetails?.upvoteCount === 1 ? (
-              <span className="hidden md:flex"> up vote</span>
+              <span className="hidden md:flex"> Upvote</span>
             ) : (
-              <span className="hidden md:flex"> up votes</span>
+              <span className="hidden md:flex"> Upvotes</span>
             )}
           </Button>
           <Button
@@ -282,25 +284,29 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
             <PiArrowFatDown />
             {postDetails?.downvoteCount}
             {postDetails?.downvoteCount === 1 ? (
-              <span className="hidden md:flex"> down vote</span>
+              <span className="hidden md:flex"> Downvote</span>
             ) : (
-              <span className="hidden md:flex"> down votes</span>
+              <span className="hidden md:flex"> Downvotes</span>
             )}
           </Button>
           <Button className="flex-1 h-fit! py-1.5! px-6! rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]">
             <IoChatbubbleOutline />
             {postDetails?.commentCount}
             {postDetails?.commentCount === 1 ? (
-              <span className="hidden md:flex"> comment</span>
+              <span className="hidden md:flex"> Comment</span>
             ) : (
-              <span className="hidden md:flex"> comments</span>
+              <span className="hidden md:flex"> Comments</span>
             )}
           </Button>
         </div>
-        <FeedsComment isComment={true} uuid={postDetails?.uuid} />
+        <FeedsComment uuid={postDetails?.uuid} post={postDetails} />
         <div className="flex flex-col gap-y-5">
           {postDetails?.comments?.map((comment) => (
-            <FeedsCommentItem key={comment.uuid} comment={comment} postDetails={postDetails} />
+            <FeedsCommentItem
+              key={comment.uuid}
+              comment={comment}
+              details={postDetails}
+            />
           ))}
         </div>
       </Card>

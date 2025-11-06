@@ -96,7 +96,6 @@ const HiringCard = ({
     <Card className="md:px-[23px]! md:py-5! p-3! flex flex-col gap-y-5 rounded-2xl! border-0!">
       <div className="flex justify-between items-start gap-x-2.5">
         <div className="flex items-start gap-x-2.5 font-sans">
-          <Link href={"/profile"} className="w-fit h-fit flex">
             <Avatar className="h-10 w-10 rounded-full overflow-hidden">
               <AvatarImage
                 src={projectDetail?.avatar}
@@ -106,7 +105,6 @@ const HiringCard = ({
                 {fallbackStr}
               </AvatarFallback>
             </Avatar>
-          </Link>
           <div className="">
             <p className="font-medium text-sm md:text-base text-[#f4f4f4] w-full line-clamp-1">
               {post.title}

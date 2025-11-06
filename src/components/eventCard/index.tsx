@@ -64,23 +64,21 @@ const EventCard = ({ event, isPrivate, project }: EventCardProps) => {
     <Card className="md:px-[23px]! md:py-5! p-3! flex flex-col gap-y-5 rounded-2xl! border-0!">
       <div className="flex justify-between items-start">
         <div className="flex items-start gap-x-2.5 font-sans">
-          <Link href="/profile" className="flex items-start gap-x-2.5">
-            {!isPrivate ? (
-              <AvatarProfile
-                createdAt={event?.created_at}
-                name={event?.project?.name}
-                avatar={event?.project?.avatar as string}
-                is_approved={event?.project?.is_approved}
-              />
-            ) : (
-              <AvatarProfile
-                createdAt={project?.created_at}
-                name={project?.name}
-                avatar={project?.avatar}
-                is_approved={project?.is_approved}
-              />
-            )}
-          </Link>
+          {!isPrivate ? (
+            <AvatarProfile
+              createdAt={event?.created_at}
+              name={event?.project?.name}
+              avatar={event?.project?.avatar as string}
+              is_approved={event?.project?.is_approved}
+            />
+          ) : (
+            <AvatarProfile
+              createdAt={project?.created_at}
+              name={project?.name}
+              avatar={project?.avatar}
+              is_approved={project?.is_approved}
+            />
+          )}
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -171,12 +169,16 @@ const EventCard = ({ event, isPrivate, project }: EventCardProps) => {
           <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans capitalize!">
             {event.type}
           </div>
-          {(event?.type === "HYBRID" || event?.type === "ONSITE") &&<div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans capitalize!">
-            {event?.location}
-          </div>}
+          {(event?.type === "HYBRID" || event?.type === "ONSITE") && (
+            <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans capitalize!">
+              {event?.location}
+            </div>
+          )}
         </div>
       </div>
-      <h4 className="text-[#f4f4f4] text-base font-medium font-sans">{event?.title}</h4>
+      <h4 className="text-[#f4f4f4] text-base font-medium font-sans">
+        {event?.title}
+      </h4>
       <p className="text-[#F4F4F4F4] text-sm font-normal font-sans line-clamp-3">
         {event.description}
       </p>

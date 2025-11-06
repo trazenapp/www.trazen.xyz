@@ -72,7 +72,6 @@ export default function Page({
         <div className="border-b border-b-[#303030] flex flex-col pb-5">
           <div className="md:!px-[23px] md:!py-5 !p-3 flex justify-between items-start">
             <div className="flex items-start gap-x-2.5 font-sans">
-              <Link href={"/profile"} className="w-fit h-fit flex">
                 <Avatar className="h-10 w-10 rounded-full overflow-hidden">
                   <AvatarImage
                     src={projectDetail?.avatar}
@@ -82,7 +81,6 @@ export default function Page({
                     {fallbackStr}
                   </AvatarFallback>
                 </Avatar>
-              </Link>
               <div>
                 <p className="font-medium text-sm md:text-base text-[#f4f4f4]">
                   {hiringPostItem?.title}

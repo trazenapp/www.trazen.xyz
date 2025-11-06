@@ -134,12 +134,29 @@ function BountyPost({ projectId }: BountyPostProps) {
         <Controller
           name="reward"
           control={control}
+          rules={{
+            required: "Reward amount is required.",
+            validate: (value) => {
+              if (value === "") return "Reward cannot be empty.";
+              const numValue = parseInt(value, 10);
+              if (isNaN(numValue) || numValue < 0) {
+                return "Must be a positive whole number.";
+              }
+              return true;
+            },
+          }}
           render={({ field }) => (
             <Input
               id="reward"
               placeholder="E.g $350"
               className="border-[#434343] !text-sm text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
               {...field}
+              onChange={(e) => {
+                const rawValue = e.target.value;
+                const cleanedValue = rawValue.replace(/\D/g, "");
+                field.onChange(cleanedValue);
+              }}
+              type="tel"
             />
           )}
         />

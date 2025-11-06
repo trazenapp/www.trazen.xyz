@@ -176,23 +176,21 @@ const FeedsCard = ({
       <Card className="md:px-[23px]! md:py-5! p-3! flex flex-col gap-y-5 rounded-2xl! border-0! mb-4">
         <div className="flex justify-between items-start">
           <div className="flex items-start gap-x-2.5 font-sans">
-            <Link href="/profile" className="flex items-start gap-x-2.5">
-              {!isPrivate ? (
-                <AvatarProfile
-                  createdAt={post?.created_at}
-                  name={post?.project?.name}
-                  avatar={post?.project?.avatar}
-                  is_approved={post?.project?.is_approved}
-                />
-              ) : (
-                <AvatarProfile
-                  createdAt={project?.created_at}
-                  name={project?.name}
-                  avatar={project?.avatar}
-                  is_approved={project?.is_approved}
-                />
-              )}
-            </Link>
+            {!isPrivate ? (
+              <AvatarProfile
+                createdAt={post?.created_at}
+                name={post?.project?.name}
+                avatar={post?.project?.avatar}
+                is_approved={post?.project?.is_approved}
+              />
+            ) : (
+              <AvatarProfile
+                createdAt={project?.created_at}
+                name={project?.name}
+                avatar={project?.avatar}
+                is_approved={project?.is_approved}
+              />
+            )}
             {post?.isFollowing && !isPrivate ? (
               <BsPatchCheckFill color="#430B68" className="mt-1" />
             ) : (

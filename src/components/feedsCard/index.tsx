@@ -53,6 +53,7 @@ interface FeedsCardProps {
   removeBookmark?: (bookmark_uuid: string) => void;
   isPrivate?: boolean;
   project?: ProjectDetail;
+  isBookmarked?: boolean;
 }
 
 const FeedsCard = ({
@@ -60,6 +61,7 @@ const FeedsCard = ({
   removeBookmark,
   isPrivate,
   project,
+  isBookmarked = false,
 }: FeedsCardProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -360,7 +362,7 @@ const FeedsCard = ({
             )}
           </Button>
         </div>
-        <FeedsComment post={post} />
+        {isBookmarked === false && <FeedsComment post={post} />}
       </Card>
     </>
   );

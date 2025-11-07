@@ -5,7 +5,10 @@ import Feedscard from "@/src/components/feedsCard";
 import HiringCard from "@/src/components/hiringCard";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { RootState, useAppDispatch, useAppSelector } from "@/src/redux/store";
-import { fetchBookmark, deleteBookmark } from "@/src/redux/slices/bookmarkSlice";
+import {
+  fetchBookmark,
+  deleteBookmark,
+} from "@/src/redux/slices/bookmarkSlice";
 import { fetchPublicPosts } from "@/src/redux/slices/postSlice";
 import { fetchPublicHiring } from "@/src/redux/slices/hiringSlice";
 import { useInView } from "react-intersection-observer";
@@ -64,9 +67,7 @@ const Bookmark = () => {
       await Promise.all([
         dispatch(fetchBookmark()).unwrap(),
         dispatch(fetchPublicPosts({ search: "", page: 1, limit: 10 })).unwrap(),
-        dispatch(
-          fetchPublicHiring({ page: 1, limit: 10 })
-        ).unwrap(),
+        dispatch(fetchPublicHiring({ page: 1, limit: 10 })).unwrap(),
       ]);
     } catch (err: any) {
       console.log("Error fetching initial data:", err);
@@ -95,42 +96,47 @@ const Bookmark = () => {
     }
   };
 
-
   return (
-    <div className="grid grid-cols-1 gap-y-5">
-      {bookmark.map((bookmark) => {
-        if (bookmark && (bookmark as any).post_uuid) {
-          const post = publicPosts.find(
-            (post) => post.uuid === (bookmark as any).post_uuid
-          );
-          if (post) {
-            return (
-              <Feedscard
-                post={post}
-                removeBookmark={() =>
-                  handleDeleteBookmark((bookmark as any).uuid || "")
-                }
-              />
+    <>
+      <h4 className="mb-6 text-white text-xl font-medium font-sans lg:flex hidden">
+        Events
+      </h4>
+      <div className="grid grid-cols-1 gap-y-5">
+        {bookmark.map((bookmark) => {
+          if (bookmark && (bookmark as any).post_uuid) {
+            const post = publicPosts.find(
+              (post) => post.uuid === (bookmark as any).post_uuid
             );
-          }
-        } else if ((bookmark as any).hire_uuid) {
-          const hire = hiringPosts.find(
-            (hire) => hire.uuid === (bookmark as any).hire_uuid
-          );
-          if (hire) {
-            return (
-              <HiringCard
-                key={hire.uuid}
-                post={hire}
-                removeBookmark={() =>
-                  handleDeleteBookmark((bookmark as any).uuid || "")
-                }
-              />
+            if (post) {
+              return (
+                <Feedscard
+                  post={post}
+                  removeBookmark={() =>
+                    handleDeleteBookmark((bookmark as any).uuid || "")
+                  }
+                  isBookmarked={true}
+                />
+              );
+            }
+          } else if ((bookmark as any).hire_uuid) {
+            const hire = hiringPosts.find(
+              (hire) => hire.uuid === (bookmark as any).hire_uuid
             );
+            if (hire) {
+              return (
+                <HiringCard
+                  key={hire.uuid}
+                  post={hire}
+                  removeBookmark={() =>
+                    handleDeleteBookmark((bookmark as any).uuid || "")
+                  }
+                />
+              );
+            }
           }
-        }
-      })}
-    </div>
+        })}
+      </div>
+    </>
   );
 };
 

@@ -37,6 +37,7 @@ import { MdMoreHoriz } from "react-icons/md";
 import EditHiring from "../editHiring";
 import DeleteHiring from "../deleteHiring";
 import { TbFlag3 } from "react-icons/tb";
+import { TfiMoreAlt } from "react-icons/tfi";
 
 interface HiringCardProps {
   post: HiringPost;
@@ -56,6 +57,10 @@ const HiringCard = ({
   const [editPostModal, setEditPostModal] = useState(false);
   const [deletePostModal, setDeletePostModal] = useState(false);
   const [reportPostModal, setReportPostModal] = useState(false);
+  const title = projectDetail?.name;
+  const fallbackStr = title
+    ? [title[0].toUpperCase(), title[title.length - 1]]
+    : [];
 
   const timeAgo = useTimeAgo(post.created_at);
   const dateTimeString = "2025-10-07T17:19:45.017Z";
@@ -88,20 +93,20 @@ const HiringCard = ({
   };
 
   return (
-    <Card className="md:!px-[23px] md:!py-5 !p-3 flex flex-col gap-y-5 !rounded-[16px] !border-0">
-      <div className="flex justify-between items-start">
+    <Card className="md:px-[23px]! md:py-5! p-3! flex flex-col gap-y-5 rounded-2xl! border-0!">
+      <div className="flex justify-between items-start gap-x-2.5">
         <div className="flex items-start gap-x-2.5 font-sans">
-          <Avatar className="h-10 w-10 rounded-full overflow-hidden">
-            <AvatarImage
-              src={projectDetail?.avatar}
-              className="w-full h-full"
-            />
-            <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
-              CN
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <p className="font-medium text-sm md:text-base text-[#f4f4f4]">
+            <Avatar className="h-10 w-10 rounded-full overflow-hidden">
+              <AvatarImage
+                src={projectDetail?.avatar}
+                className="w-full h-full"
+              />
+              <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
+                {fallbackStr}
+              </AvatarFallback>
+            </Avatar>
+          <div className="">
+            <p className="font-medium text-sm md:text-base text-[#f4f4f4] w-full line-clamp-1">
               {post.title}
             </p>
             <p className="flex gap-x-1 items-center">
@@ -112,31 +117,31 @@ const HiringCard = ({
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-x-2">
-          <p className="text-base font-light font-sans text-[#A6A6A6]">
+        <div className="flex items-center">
+          <p className="text-[10px] font-light font-sans text-[#A6A6A6]">
             {timeAgo}
           </p>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button className="!w-fit !h-fit p-0">
-                <MdMoreHoriz size={36} />
+              <Button className="w-fit! h-fit! p-0">
+                <TfiMoreAlt size={64} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="bg-[#272727] !min-w-0 !p-0 border-0 w-32"
+              className="bg-[#272727] min-w-0! p-0! border-0 w-32"
               align="end"
             >
               {isPrivate ? (
                 <>
                   <DropdownMenuItem
                     onSelect={() => setEditPostModal(true)}
-                    className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                    className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
                   >
                     <Edit /> Edit
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onSelect={() => setDeletePostModal(true)}
-                    className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                    className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
                   >
                     <Trash2 className="text-[#FF5151]" /> Delete
                   </DropdownMenuItem>
@@ -155,7 +160,7 @@ const HiringCard = ({
                         handleBookmark(post?.uuid || "");
                       }
                     }}
-                    className="text-[#ddd] font-sans font-normal text-xs !w-full flex items-center gap-x-2.5 py-2.5 px-3"
+                    className="text-[#ddd] font-sans font-normal text-xs w-full! flex items-center gap-x-2.5 py-2.5 px-3"
                   >
                     {post.is_bookmarked ? (
                       <IoMdBookmark size={36} color="#430B68" />
@@ -170,10 +175,10 @@ const HiringCard = ({
           </DropdownMenu>
           <Dialog open={editPostModal} onOpenChange={setEditPostModal}>
             <DialogContent
-              className="sm:w-10/12 md:w-10/12 lg:10/12 font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[50vw] lg:max-w-[65vw] md:max-w-[85vw] max-md:!max-w-[95vw]  md:max-h-[95vh] max-h-[98vh] min-h-[45vh] overflow-auto"
+              className="sm:w-10/12 md:w-10/12 lg:10/12 font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[50vw] lg:max-w-[65vw] md:max-w-[85vw] max-md:max-w-[95vw]!  md:max-h-[95vh] max-h-[98vh] min-h-[45vh] overflow-auto"
               style={{ scrollbarWidth: "none" }}
             >
-              <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+              <DialogHeader className="sm:px-7 p-4 border-b border-b-[#383838] h-auto!">
                 <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
                   <p className="max-sm:text-[16px]">Edit Hiring</p>
                 </DialogTitle>
@@ -186,7 +191,7 @@ const HiringCard = ({
               className="font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-5/12 lg:w-10/12 md:w-[85vw] overflow-auto"
               style={{ scrollbarWidth: "none" }}
             >
-              <DialogHeader className="sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+              <DialogHeader className="sm:px-7 p-4 border-b border-b-[#383838] h-auto!">
                 <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4]">
                   <p className="max-sm:text-[16px]">Delete Hiring</p>
                 </DialogTitle>
@@ -198,24 +203,24 @@ const HiringCard = ({
       </div>
       <div className="flex flex-col gap-4 justify-between ">
         <div className="flex flex-wrap gap-2.5">
-          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
+          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans capitalize">
             {post.type}
           </div>
-          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
+          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans capitalize">
             {post.experience}
           </div>
-          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
+          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans capitalize">
             {post.location}
           </div>
-          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
+          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans capitalize">
             {post.pay_range}
           </div>
-          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans">
+          <div className="flex gap-x-2.5 items-center px-3 py-[7px] border border-[#434343] text-[#f4f4f4] rounded-full text-[10px] font-normal font-sans capitalize">
             {post.location}
           </div>
         </div>
       </div>
-      <p className="cursor-pointer text-[#F4F4F4F4] text-base font-normal font-sans line-clamp-4">
+      <p className="text-[#F4F4F4F4] text-sm font-normal font-sans line-clamp-4">
         {post.description}
       </p>
       <Link

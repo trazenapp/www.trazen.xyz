@@ -53,6 +53,7 @@ interface FeedsCardProps {
   removeBookmark?: (bookmark_uuid: string) => void;
   isPrivate?: boolean;
   project?: ProjectDetail;
+  isBookmarked?: boolean;
 }
 
 const FeedsCard = ({
@@ -60,6 +61,7 @@ const FeedsCard = ({
   removeBookmark,
   isPrivate,
   project,
+  isBookmarked = false,
 }: FeedsCardProps) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -87,62 +89,61 @@ const FeedsCard = ({
   };
 
   // vote post
-const handleVote = async (
-  voteType: "UPVOTE" | "DOWNVOTE",
-  post_uuid: string
-) => {
-  if (!post_uuid) {
-    console.warn("No post_uuid in state");
-    return;
-  }
-
-  let prevUpvotes = upVoteCount || 0;
-  let prevDownvotes = downVoteCount || 0;
-  const prevStatus = voteStatus;
-
-  let newUpvotes = prevUpvotes;
-  let newDownvotes = prevDownvotes;
-  let newStatus = prevStatus;
-
-  if (voteType === "UPVOTE") {
-    if (prevStatus === "UPVOTE") {
-      newUpvotes -= 1;
-      newStatus = null;
-    } else {
-      newUpvotes += 1;
-      if (prevStatus === "DOWNVOTE") newDownvotes -= 1;
-      newStatus = "UPVOTE";
+  const handleVote = async (
+    voteType: "UPVOTE" | "DOWNVOTE",
+    post_uuid: string
+  ) => {
+    if (!post_uuid) {
+      console.warn("No post_uuid in state");
+      return;
     }
-  } else if (voteType === "DOWNVOTE") {
-    if (prevStatus === "DOWNVOTE") {
-      newDownvotes -= 1;
-      newStatus = null;
-    } else {
-      newDownvotes += 1;
-      if (prevStatus === "UPVOTE") newUpvotes -= 1;
-      newStatus = "DOWNVOTE";
+
+    let prevUpvotes = upVoteCount || 0;
+    let prevDownvotes = downVoteCount || 0;
+    const prevStatus = voteStatus;
+
+    let newUpvotes = prevUpvotes;
+    let newDownvotes = prevDownvotes;
+    let newStatus = prevStatus;
+
+    if (voteType === "UPVOTE") {
+      if (prevStatus === "UPVOTE") {
+        newUpvotes -= 1;
+        newStatus = null;
+      } else {
+        newUpvotes += 1;
+        if (prevStatus === "DOWNVOTE") newDownvotes -= 1;
+        newStatus = "UPVOTE";
+      }
+    } else if (voteType === "DOWNVOTE") {
+      if (prevStatus === "DOWNVOTE") {
+        newDownvotes -= 1;
+        newStatus = null;
+      } else {
+        newDownvotes += 1;
+        if (prevStatus === "UPVOTE") newUpvotes -= 1;
+        newStatus = "DOWNVOTE";
+      }
     }
-  }
 
-  setUpVoteCount(newUpvotes);
-  setDownVoteCount(newDownvotes);
-  setVoteStatus(newStatus);
+    setUpVoteCount(newUpvotes);
+    setDownVoteCount(newDownvotes);
+    setVoteStatus(newStatus);
 
-  try {
-    const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
+    try {
+      const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
 
-    setUpVoteCount(res?.upvoteCount ?? newUpvotes);
-    setDownVoteCount(res?.downvoteCount ?? newDownvotes);
-    setVoteStatus(res?.voteStatus ?? newStatus);
-  } catch (error) {
-    console.error("Vote error:", error);
+      setUpVoteCount(res?.upvoteCount ?? newUpvotes);
+      setDownVoteCount(res?.downvoteCount ?? newDownvotes);
+      setVoteStatus(res?.voteStatus ?? newStatus);
+    } catch (error) {
+      console.error("Vote error:", error);
 
-    setUpVoteCount(prevUpvotes);
-    setDownVoteCount(prevDownvotes);
-    setVoteStatus(prevStatus);
-  }
-};
-
+      setUpVoteCount(prevUpvotes);
+      setDownVoteCount(prevDownvotes);
+      setVoteStatus(prevStatus);
+    }
+  };
 
   // bookmark post
   const handleBookmark = async (post_uuid: string) => {
@@ -177,23 +178,21 @@ const handleVote = async (
       <Card className="md:px-[23px]! md:py-5! p-3! flex flex-col gap-y-5 rounded-2xl! border-0! mb-4">
         <div className="flex justify-between items-start">
           <div className="flex items-start gap-x-2.5 font-sans">
-            <Link href="/profile" className="flex items-start gap-x-2.5">
-              {!isPrivate ? (
-                <AvatarProfile
-                  createdAt={post?.created_at}
-                  name={post?.project?.name}
-                  avatar={post?.project?.avatar}
-                  is_approved={post?.project?.is_approved}
-                />
-              ) : (
-                <AvatarProfile
-                  createdAt={project?.created_at}
-                  name={project?.name}
-                  avatar={project?.avatar}
-                  is_approved={project?.is_approved}
-                />
-              )}
-            </Link>
+            {!isPrivate ? (
+              <AvatarProfile
+                createdAt={post?.created_at}
+                name={post?.project?.name}
+                avatar={post?.project?.avatar}
+                is_approved={post?.project?.is_approved}
+              />
+            ) : (
+              <AvatarProfile
+                createdAt={project?.created_at}
+                name={project?.name}
+                avatar={project?.avatar}
+                is_approved={project?.is_approved}
+              />
+            )}
             {post?.isFollowing && !isPrivate ? (
               <BsPatchCheckFill color="#430B68" className="mt-1" />
             ) : (
@@ -363,7 +362,7 @@ const handleVote = async (
             )}
           </Button>
         </div>
-        <FeedsComment post={post} />
+        {isBookmarked === false && <FeedsComment post={post} />}
       </Card>
     </>
   );

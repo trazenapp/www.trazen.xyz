@@ -1,22 +1,9 @@
 import React from "react";
-import { Button } from "@/src/components/ui/button";
-import NotificationCard from "@/src/components/notificationCard";
-import { IoCheckmarkDoneSharp } from "react-icons/io5";
+import Notification from "@/src/components/notification";
 
 const Notifications = () => {
   return (
-    <>
-      <div className="flex justify-between items-center mb-6">
-        <h4 className="mb-6 text-white text-xl font-medium font-sans lg:flex hidden">
-          Notifications
-        </h4>
-        <Button className="bg-transparent font-sans text-base font-normal">
-          <IoCheckmarkDoneSharp />
-          Mark all as read
-        </Button>
-      </div>
-      <NotificationCard />
-    </>
+    <Notification />
   );
 };
 

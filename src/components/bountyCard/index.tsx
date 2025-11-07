@@ -69,7 +69,7 @@ const BountyCard = ({ bounty, isPrivate, project }: BountyCardProps) => {
               </p>
               <p className="flex gap-x-1 items-center">
                 <span className="text-[#A6A6A6] text-xs font-light">
-                  {bounty?.project?.user?.username}
+                  {bounty?.project?.name}
                 </span>
                 {bounty?.project.is_approved && (
                   <BsPatchCheckFill size={12} color="#B348F9" />
@@ -86,7 +86,7 @@ const BountyCard = ({ bounty, isPrivate, project }: BountyCardProps) => {
           </div>
           <div className="flex justify-end items-start gap-x-2 w-[17%]">
             <Image src={img} alt="usdc icon" className="w-5 h-5" />
-            <p className="text-base font-light font-sans text-[#A6A6A6] line-clamp-1">
+            <p className="text-xs font-light font-sans text-[#A6A6A6] line-clamp-1">
               {bounty?.reward}
             </p>
             {isPrivate && (

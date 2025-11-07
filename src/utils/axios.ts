@@ -19,10 +19,10 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    // if (error.response.status === 401) {
-    //   localStorage.removeItem("token");
-    //   window.location.href = "/sign-in";
-    // }
+    if (error.response.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/sign-in";
+    }
     console.log(error);
     return Promise.reject(error);
   }

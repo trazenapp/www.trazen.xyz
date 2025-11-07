@@ -135,7 +135,7 @@ const Hiring = () => {
         y: 0,
       },
       duration: 0.8, // Smooth GSAP animation duration
-      ease: 'power2.inOut', // Professional GSAP easing
+      ease: "power2.inOut", // Professional GSAP easing
     });
   };
   // ------------------------------------

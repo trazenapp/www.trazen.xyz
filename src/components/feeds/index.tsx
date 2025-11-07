@@ -4,7 +4,10 @@ import { useInView } from "react-intersection-observer";
 import Feedscard from "@/src/components/feedsCard";
 import { Skeleton } from "@/src/components/ui/skeleton";
 import { useAppDispatch, useAppSelector } from "@/src/redux/store";
-import { fetchPublicPosts, fetchFollowedPosts } from "@/src/redux/slices/postSlice";
+import {
+  fetchPublicPosts,
+  fetchFollowedPosts,
+} from "@/src/redux/slices/postSlice";
 import { deleteBookmark } from "@/src/redux/slices/bookmarkSlice";
 
 interface FeedsProps {

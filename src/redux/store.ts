@@ -25,6 +25,7 @@ import profileSettingsReducer from "@/src/redux/slices/profileSlice";
 import createWalletReducer from "@/src/redux/slices/createWallet";
 import discoverPostReducer from "@/src/redux/slices/discoverPostSlice";
 import dashboardReducer from "@/src/redux/slices/dashboardSlice";
+import notificationReducer from "@/src/redux/slices/notificationsSlice";
 
 const createNoopStorage = () => ({
   getItem(_key: string) {
@@ -38,9 +39,10 @@ const createNoopStorage = () => ({
   },
 });
 
-const lStorage = typeof window !== 'undefined' 
-  ? require('redux-persist/lib/storage').default 
-  : createNoopStorage();
+const lStorage =
+  typeof window !== "undefined"
+    ? require("redux-persist/lib/storage").default
+    : createNoopStorage();
 
 const persistConfig = {
   key: "root",
@@ -71,6 +73,7 @@ const rootReducer = combineReducers({
   discoverPost: discoverPostReducer,
   bounties: bountiesReducer,
   dashboard: dashboardReducer,
+  notifications: notificationReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

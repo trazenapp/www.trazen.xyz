@@ -31,6 +31,9 @@ const DashboardSidebar = ({ pioneer = false }) => {
 
   const { show } = useAppSelector((state: RootState) => state.dashboardSidebar);
   const { profile } = useAppSelector((state: RootState) => state.user);
+  const unreadCount = useAppSelector(
+    (state) => state.notifications.notifications.filter((n) => !n.is_read).length
+  );
   useEffect(() => {
     dispatch(fetchProfile());
   }, [dispatch]);
@@ -111,7 +114,7 @@ const DashboardSidebar = ({ pioneer = false }) => {
                     <span>{item.label}</span>
                   </div>
                   <Badge className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums bg-white text-[#7f7f7f] text-sm font-medium">
-                    0
+                    {unreadCount}
                   </Badge>
                 </Link>
               </li>

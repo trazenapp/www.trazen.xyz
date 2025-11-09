@@ -96,7 +96,7 @@ export const continueWithGoogle = createAsyncThunk(
 
 export const fetchGoogleUser = createAsyncThunk(
   "register/fetchGoogleUser",
-  async (code: string, { rejectWithValue }) => {
+  async (code: string, { rejectWithValue, dispatch }) => {
     const REDIRECT_URI = process.env.NEXT_PUBLIC_REDIRECT_URI as string;
     try {
       const response = await axiosInstance.get(
@@ -110,22 +110,18 @@ export const fetchGoogleUser = createAsyncThunk(
       );
       const { user, token } = response.data.data;
 
-      // ✅ Save token in localStorage
       if (typeof window !== "undefined") {
         localStorage.setItem("token", token);
       }
 
-      // ✅ Persist session server-side in cookies
       await fetch("/api/auth/set-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token }),
       });
 
-      // ✅ Add session to state (multi-user session system)
       dispatch(addSession({ user, token }));
 
-      // ✅ Return correct format expected by extraReducers
       return { user, token };
     } catch (err: any) {
       return rejectWithValue(

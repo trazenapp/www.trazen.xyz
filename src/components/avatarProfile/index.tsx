@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import { BsPatchCheckFill } from "react-icons/bs";
 import {
   Avatar,
@@ -30,15 +31,14 @@ const AvatarProfile = ({
 
   return (
     <>
-      <Avatar className="h-10 w-10">
-        <AvatarImage
-          src={avatar ? avatar : "https://github.com/shadcn.png"}
-          className="h-full w-full"
+      <div className="w-10 h-10 rounded-full flex justify-center items-center overflow-hidden relative">
+        <Image
+          src={avatar as string || "https://github.com/shadcn.png"}
+          alt="profile photo"
+          fill
+          className="object-cover"
         />
-        <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
-          {fallbackStr.map((i) => i)}
-        </AvatarFallback>
-      </Avatar>
+      </div>
       <div>
         <p className="flex gap-x-1 items-center">
           <span className="font-medium text-sm md:text-base">{name}</span>

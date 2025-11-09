@@ -16,6 +16,9 @@ import { Post, PostItem } from "@/src/types/post.types";
 import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
+import { Descendant, Node } from "slate";
+import RichTextEditor from "../richTextEditor";
+import { ReactEditor } from "slate-react";
 
 interface EditPostProps {
   post?: PostItem;
@@ -30,6 +33,7 @@ const EditPost = ({ post }: EditPostProps) => {
   const { loading, data, error } = useAppSelector(
     (state: RootState) => state.post
   );
+    const editorRef = useRef<ReactEditor | null>(null);
 
   const editPostData = {
     project_uuid: post?.project_uuid || "",
@@ -158,14 +162,36 @@ const EditPost = ({ post }: EditPostProps) => {
         <Controller
           name="content"
           control={control}
-          rules={{ required: true }}
-          render={({ field }) => (
-            <Textarea
-              className="max-w-full border-gray-300 rounded-md focus-visible:ring-0"
-              placeholder="Share your thoughts..."
-              {...field}
-            />
-          )}
+          rules={{
+            validate: (value) =>
+              (Array.isArray(value) &&
+                value.some((node) => Node.string(node).trim().length > 0)) ||
+              (typeof value === "string" && value.trim().length > 0) ||
+              "Content required",
+          }}
+          render={({ field }) => {
+            const safeValue: Descendant[] = Array.isArray(field.value)
+              ? field.value
+              : [
+                  {
+                    type: "paragraph",
+                    children: [
+                      {
+                        text:
+                          typeof field.value === "string" ? field.value : "",
+                      },
+                    ],
+                  },
+                ];
+
+            return (
+              <RichTextEditor
+                description={safeValue}
+                setDescription={(val) => field.onChange(val)}
+                editorRef={editorRef}
+              />
+            );
+          }}
         />
       </div>
       <div className="w-full max-sm:w-max flex flex-col gap-4">

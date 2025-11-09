@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -16,6 +16,9 @@ import { ClipLoader } from "react-spinners";
 import FileInput from "@/src/components/ui/FileInput";
 import { CreateEventPayload } from "@/src/types/event.types";
 import { Switch } from "../ui/switch";
+import { Descendant, Node } from "slate";
+import RichTextEditor from "../richTextEditor";
+import { ReactEditor } from "slate-react";
 
 type EventPostProps = {
   projectId: string;
@@ -23,6 +26,7 @@ type EventPostProps = {
 
 function EventsPost({ projectId }: EventPostProps) {
   const dispatch = useAppDispatch();
+  const editorRef = useRef<ReactEditor | null>(null);
   const { loading, data, error } = useAppSelector(
     (state: RootState) => state.events
   );
@@ -88,12 +92,26 @@ function EventsPost({ projectId }: EventPostProps) {
         <Controller
           name="title"
           control={control}
-          render={({ field }) => (
-            <Input
-              id="title"
-              className="border-[#434343] text-xs! text-[#f4f4f4] font-light h-11 focus-visible:border-[#434343]! focus-visible:ring-[0]!"
-              {...field}
-            />
+          rules={{
+            validate: (value) => {
+              const wordCount = value?.trim().split(/\s+/).length || 0;
+              return wordCount <= 10 || "Title must not exceed 10 words";
+            },
+          }}
+          render={({ field, fieldState }) => (
+            <div className="w-full">
+              <Input
+                id="title"
+                placeholder="Enter event title"
+                className="border-[#434343] text-xs! text-[#f4f4f4] font-light h-11 focus-visible:border-[#434343]! focus-visible:ring-[0]!"
+                {...field}
+              />
+              {fieldState.error && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldState.error.message}
+                </p>
+              )}
+            </div>
           )}
         />
       </div>
@@ -107,13 +125,77 @@ function EventsPost({ projectId }: EventPostProps) {
         <Controller
           name="description"
           control={control}
-          render={({ field }) => (
-            <Textarea
-              {...field}
-              className="border-[#434343] text-xs! text-[#f4f4f4] font-light h-11 focus-visible:border-[#434343]! focus-visible:ring-[0]!"
-              maxLength={160}
-            />
-          )}
+          rules={{
+            validate: (value) => {
+              // Convert Slate nodes or plain text into a string
+              const textContent = Array.isArray(value)
+                ? value.map((node) => Node.string(node)).join(" ")
+                : typeof value === "string"
+                  ? value
+                  : "";
+
+              const wordCount = textContent
+                .trim()
+                .split(/\s+/)
+                .filter(Boolean).length;
+
+              if (wordCount === 0) return "Content required";
+              if (wordCount > 160)
+                return "Description must not exceed 160 words";
+
+              return true;
+            },
+          }}
+          render={({ field, fieldState }) => {
+            const safeValue: Descendant[] = Array.isArray(field.value)
+              ? field.value
+              : [
+                  {
+                    type: "paragraph",
+                    children: [
+                      {
+                        text:
+                          typeof field.value === "string" ? field.value : "",
+                      },
+                    ],
+                  },
+                ];
+
+            // Get current word count for live display
+            const textContent = Array.isArray(safeValue)
+              ? safeValue.map((node) => Node.string(node)).join(" ")
+              : "";
+            const wordCount = textContent
+              .trim()
+              .split(/\s+/)
+              .filter(Boolean).length;
+
+            return (
+              <div className="w-full">
+                <RichTextEditor
+                  description={safeValue}
+                  setDescription={(val) => field.onChange(val)}
+                  editorRef={editorRef}
+                />
+
+                {/* Word counter and error message */}
+                <div className="flex justify-between mt-1 text-xs">
+                  <span
+                    className={`${
+                      wordCount > 160 ? "text-red-500" : "text-gray-400"
+                    }`}
+                  >
+                    {wordCount} / 160 words
+                  </span>
+                  {fieldState.error && (
+                    <span className="text-red-500">
+                      {fieldState.error.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          }}
         />
       </div>
 

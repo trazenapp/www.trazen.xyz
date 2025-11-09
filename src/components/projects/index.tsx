@@ -64,7 +64,7 @@ export function Projects() {
               <AvatarFallback>CN</AvatarFallback>
             </Avatar>
             <button
-              onClick={() => handleToggleOptions(project.name)}
+              onClick={() => handleToggleOptions(project.uuid)}
               className="text-[#ddd] text-center w-[22px] h-[22px] items-center hover:cursor-pointer hover:bg-[#323232] hover:rounded-full duration-200"
             >
               &#8942;
@@ -74,7 +74,7 @@ export function Projects() {
             )}
           </div>
           <Link
-            href={`/dashboard/${project.name}`}
+            href={`/dashboard/${project.uuid}`}
             className="w-full flex items-center space-x-2 justify-between hover:cursor-pointer "
           >
             <span className="xl:text-[13px] md:text-[11px] text-[16px] text-[#f4f4f4] line-clamp-1">
@@ -138,13 +138,13 @@ export function ProjectsPartial() {
                 <AvatarFallback>CN</AvatarFallback>
               </Avatar>
               <button
-                onClick={() => handleToggleOptions(project.name)}
+                onClick={() => handleToggleOptions(project.uuid)}
                 className="text-[#ddd] text-center w-[22px] h-[22px] items-center hover:cursor-pointer hover:bg-[#323232] hover:rounded-full duration-200"
               >
                 &#8942;
               </button>
               {activeProject === project.name && (
-                <Options className="rounded-sm border-none md:!px-2 md:!py-1.5 h-14 w-26 bg-[#272727] absolute top-8.5 right-2 text-[10px] text-[#ddd] flex flex-col gap-0.5 justify-center font-extralight " />
+                <Options className="rounded-sm border-none md:px-2! md:py-1! h-9 w-26 bg-[#272727] absolute top-8.5 right-2 text-[10px] text-[#ddd] flex flex-col gap-0.5 justify-center font-extralight " />
               )}
             </div>
             <Link

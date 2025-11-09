@@ -1,10 +1,19 @@
 "use client";
 import React, { useState, useMemo, use, useEffect, useCallback } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/src/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/src/components/ui/tabs";
 import EventCard from "@/src/components/eventCard";
 import BountyCard from "@/src/components/bountyCard";
 import HiringCard from "@/src/components/hiringCard";
@@ -33,6 +42,7 @@ import {
   getProjectDetail,
 } from "@/src/redux/slices/projectSlice";
 import FeedsCard from "@/src/components/feedsCard";
+import { ProjectDetail } from "@/src/types/project.types";
 
 const MemoizedFeedsCard = React.memo(FeedsCard);
 const MemoizedEventCard = React.memo(EventCard);
@@ -62,8 +72,8 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
   const { slug } = use(params);
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const projectDetail = useAppSelector(
-    (state: RootState) => state.project.projectDetail
+  const { projectDetail, projects } = useAppSelector(
+    (state: RootState) => state.project
   );
   const {
     privatePosts,
@@ -90,8 +100,6 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
     hasMore: bountyHasMore,
   } = useAppSelector((state: RootState) => state.bounties);
 
-  console.log(projectDetail)
-
   const [page, setPage] = useState({
     feed: 1,
     events: 1,
@@ -105,19 +113,46 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
 
   const fetchInitialData = async () => {
     try {
+      const project = await dispatch(getProjectDetail(slug)).unwrap();
       await Promise.all([
-        dispatch(getProjectDetail(slug)).unwrap(),
-        dispatch(fetchPrivatePosts({ page: 1, limit: 10 })).unwrap(),
-        dispatch(getEventsPrivate({ page: 1, limit: 10 })).unwrap(),
-        dispatch(getBountiesPrivate({ page: 1, limit: 10 })).unwrap(),
+        dispatch(getProject()).unwrap(),
         dispatch(
-          fetchPrivateHiring({ status: "", page: 1, limit: 10 })
+          fetchPrivatePosts({
+            project_uuid: project?.uuid as string,
+            page: 1,
+            limit: 10,
+          })
+        ).unwrap(),
+        dispatch(
+          getEventsPrivate({
+            project_uuid: project?.uuid as string,
+            page: 1,
+            limit: 10,
+          })
+        ).unwrap(),
+        dispatch(
+          getBountiesPrivate({
+            project_uuid: project?.uuid as string,
+            page: 1,
+            limit: 10,
+          })
+        ).unwrap(),
+        dispatch(
+          fetchPrivateHiring({
+            project_uuid: project?.uuid as string,
+            status: "",
+            page: 1,
+            limit: 10,
+          })
         ).unwrap(),
       ]);
     } catch (err: any) {
       console.log("Error fetching initial data:", err);
     }
   };
+
+  const otherProjects =
+    projects?.filter((project: ProjectDetail) => project.uuid !== slug) || [];
 
   useEffect(() => {
     fetchInitialData();
@@ -132,7 +167,11 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
           setPage((prev) => {
             const nextPage = prev.feed + 1;
             dispatch(
-              fetchPrivatePosts({ page: nextPage, limit: postPagination.limit })
+              fetchPrivatePosts({
+                project_uuid: projectDetail?.uuid as string,
+                page: nextPage,
+                limit: postPagination.limit,
+              })
             );
             return { ...prev, feed: nextPage };
           });
@@ -143,7 +182,11 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
           setPage((prev) => {
             const nextPage = prev.events + 1;
             dispatch(
-              getEventsPrivate({ page: nextPage, limit: eventPagination.limit })
+              getEventsPrivate({
+                project_uuid: projectDetail?.uuid as string,
+                page: nextPage,
+                limit: eventPagination.limit,
+              })
             );
             return { ...prev, events: nextPage };
           });
@@ -155,6 +198,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
             const nextPage = prev.hiring + 1;
             dispatch(
               fetchPrivateHiring({
+                project_uuid: projectDetail?.uuid as string,
                 status: "",
                 page: nextPage,
                 limit: hiringPagination.limit,
@@ -170,6 +214,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
             const nextPage = prev.bounties + 1;
             dispatch(
               getBountiesPrivate({
+                project_uuid: projectDetail?.uuid as string,
                 page: nextPage,
                 limit: bountyPagination.limit,
               })
@@ -227,7 +272,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
           </div>
           <div className="flex flex-col gap-y-6">
             <div className="flex flex-col md:flex-row md:items-center gap-x-5">
-              <Avatar className="lg:w-[120px] lg:h-[120px] sm:w-[100px] sm:h-[100px] w-[80px] h-[80px] ">
+              <Avatar className="lg:w-[120px] lg:h-[120px] sm:w-[100px] sm:h-[100px] w-20 h-20 ">
                 <AvatarImage src={projectDetail?.avatar} className="" />
                 <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
                   CN
@@ -245,17 +290,17 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                 </p>
               </div>
             </div>
-            <div className="flex flex-wrap md:flex-nowrap gap-y-4 items-center gap-x-4 font-sans">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 items-center gap-x-4 font-sans">
               {/* <div className="flex flex-row items-center gap-x-1.5">
                 <IoPeopleOutline color="#7f7f7f" className="text-[1.04rem]" />
-                <p className="text-[#f4f4f4] font-medium text-[0.73rem] flex gap-x-1">
+                <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
                   <span>19.3K</span>
                   <span className="text-[#7f7f7f] font-normal">Followers</span>
                 </p>
               </div> */}
               <div className="flex flex-row items-center gap-x-1.5">
                 <FaSquareXTwitter color="#7f7f7f" className="text-[1.04rem]" />
-                <p className="text-[#f4f4f4] font-medium text-[0.73rem] flex gap-x-1">
+                <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
                   <Link
                     href={projectDetail?.social as string}
                     target="blank"
@@ -266,9 +311,20 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                 </p>
               </div>
               <div className="flex flex-row items-center gap-x-1.5">
-                <HiOutlineCube color="#7f7f7f" className="text-[1.04rem]" />
-                <p className="text-[#f4f4f4] font-medium text-[0.73rem] flex gap-x-1">
-                  <span className="text-[#BCBCBC] font-normal">
+                <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
+                  <Link
+                    href={projectDetail?.whitepaper as string}
+                    target="blank"
+                    className="text-[#1768FF] font-normal"
+                  >
+                    {projectDetail?.whitepaper}
+                  </Link>
+                </p>
+              </div>
+              <div className="flex flex-row items-center gap-x-1.5">
+                <HiOutlineCube color="#7f7f7f" className="text-xl" />
+                <p className="text-[#f4f4f4] font-medium text-xs flex flex-row gap-x-1">
+                  <span className="text-[#BCBCBC] font-normal w-full flex ">
                     {projectDetail?.categories?.map((c: any) => (
                       <React.Fragment key={c}>{`${c} . `}</React.Fragment>
                     ))}
@@ -277,7 +333,7 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
               </div>
               {/* <div className="flex flex-row items-center gap-x-1.5">
                 <RxDashboard color="#7f7f7f" className="text-[1.04rem]" />
-                <p className="text-[#f4f4f4] font-medium text-[0.73rem] flex gap-x-1">
+                <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
                   <span className="text-[#BCBCBC] font-normal">NFTs</span>
                 </p>
               </div> */}
@@ -296,33 +352,39 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
               <TabsList className="bg-transparent border-b border-b-[#303030] py-0 h-fit rounded-none w-full mb-8 md:mb-8 font-sans justify-between">
                 <TabsTrigger
                   value="feed-post"
-                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white max-sm:!text-[2.5vw]"
+                  className="text-xs! text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:border-b-[1.5px]! data-[state=active]:border-b-white"
                 >
-                  Feed Post
+                  Posts
+                </TabsTrigger>
+                <TabsTrigger
+                  value="draft-post"
+                  className="text-xs! text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:border-b-[1.5px]! data-[state=active]:border-b-white"
+                >
+                  Drafts
                 </TabsTrigger>
                 <TabsTrigger
                   value="events"
-                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white max-sm:!text-[2.5vw]"
+                  className="text-xs! text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:border-b-[1.5px]! data-[state=active]:border-b-white"
                 >
                   Events
                 </TabsTrigger>
                 <TabsTrigger
                   value="hiring"
-                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white max-sm:!text-[2.5vw]"
+                  className="text-xs! text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:border-b-[1.5px]! data-[state=active]:border-b-white"
                 >
                   Hiring
                 </TabsTrigger>
                 <TabsTrigger
                   value="bounties"
-                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white max-sm:!text-[2.5vw]"
+                  className="text-xs! text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:border-b-[1.5px]! data-[state=active]:border-b-white"
                 >
                   Bounties
                 </TabsTrigger>
                 <TabsTrigger
                   value="announcements"
-                  className="text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:!border-b-[1.5px] data-[state=active]:border-b-white max-sm:!text-[2.5vw]"
+                  className="text-xs! text-[#B8B8B8] font-normal py-2 rounded-none flex-none data-[state=active]:font-medium data-[state=active]:text-[#F4F4F4F4] data-[state=active]:bg-transparent data-[state=active]:border-b-[1.5px]! data-[state=active]:border-b-white"
                 >
-                  Announcements
+                  Alphas
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -333,17 +395,22 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                       <Skeleton key={i} className="w-full h-[200px] my-4" />
                     ))
                   : privatePosts.map((post, index) => {
-                    console.log(post)
-                    return(
-                      <div
-                        key={post.uuid}
-                        ref={
-                          index === privatePosts.length - 1 ? ref : undefined
-                        }
-                      >
-                        <MemoizedFeedsCard post={post} isPrivate project={projectDetail} />
-                      </div>
-                    )})}
+                      console.log(post);
+                      return (
+                        <div
+                          key={post.uuid}
+                          ref={
+                            index === privatePosts.length - 1 ? ref : undefined
+                          }
+                        >
+                          <MemoizedFeedsCard
+                            post={post}
+                            isPrivate
+                            project={projectDetail}
+                          />
+                        </div>
+                      );
+                    })}
 
                 {postLoading && privatePosts.length > 0 && (
                   <Skeleton className="w-full h-[200px] my-4" />
@@ -361,7 +428,11 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                         key={event.uuid}
                         ref={index === events.length - 1 ? ref : undefined}
                       >
-                        <MemoizedEventCard event={event} isPrivate project={projectDetail} />
+                        <MemoizedEventCard
+                          event={event}
+                          isPrivate
+                          project={projectDetail}
+                        />
                       </div>
                     ))}
                 {eventLoading && events && events.length > 0 && (
@@ -408,7 +479,11 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                         key={bounty.uuid}
                         ref={index === bountyData?.length - 1 ? ref : undefined}
                       >
-                        <MemoizedBountyCard bounty={bounty} isPrivate project={projectDetail} />
+                        <MemoizedBountyCard
+                          bounty={bounty}
+                          isPrivate
+                          project={projectDetail}
+                        />
                       </div>
                     ))}
                 {bountyLoading && bountyData && bountyData?.length > 0 && (
@@ -435,13 +510,13 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
             <h5 className=" font-sans text-[#F4F4F4F4] text-sm font-medium">
               Trazen Announcements
             </h5>
-            <Card className="!py-3 !px-4 !rounded-[12px] flex flex-col gap-y-2 font-sans text-[#F4F4F4F4] text-sm font-normal">
+            <Card className="py-3! px-4! rounded-[12px]! flex flex-col gap-y-2 font-sans text-[#F4F4F4F4] text-sm font-normal">
               <p className="text-[#B9B9B9] text-xs ">
                 Bitcoin & equities move in tandem again and the CEO of Trazen is
                 getting married
               </p>
             </Card>
-            <Card className="!py-3 !px-4 !rounded-[12px] flex flex-col gap-y-2 font-sans text-[#F4F4F4F4] text-sm font-normal">
+            <Card className="py-3! px-4! rounded-[12px]! flex flex-col gap-y-2 font-sans text-[#F4F4F4F4] text-sm font-normal">
               <div className="flex gap-2">
                 <Image src={announcementImage} alt="news" />
                 <Image src={announcementImage} alt="news" />
@@ -451,13 +526,16 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                 getting married
               </p>
             </Card>
-            <Card className="!py-3 !px-4 !rounded-[12px] flex flex-col gap-y-2 font-sans text-[#F4F4F4F4] text-sm font-normal">
+            <Card className="py-3! px-4! rounded-[12px]! flex flex-col gap-y-2 font-sans text-[#F4F4F4F4] text-sm font-normal">
               <p className="text-[#B9B9B9] text-xs ">
                 Bitcoin & equities move in tandem again and the CEO of Trazen is
                 getting married
               </p>
             </Card>
-            <Button className="!py-3 !px-4 !rounded-[12px] flex justify-between items-center font-sans text-[#F4F4F4F4] text-sm font-normal border border-[#303030]">
+            <Button
+              onClick={() => router.replace("https://blog.trazen.xyz")}
+              className="py-3! px-4! rounded-[12px]! flex justify-between items-center font-sans text-[#F4F4F4F4] text-sm font-normal border border-[#303030]"
+            >
               <p className="text-[#B9B9B9] text-xs ">See More</p>
               <ArrowRight weight="Outline" size={20} color="#F4F4F4F4" />
             </Button>
@@ -467,25 +545,34 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
               Other Projects
             </h5>
             <ul className="flex flex-col gap-3.5">
-              {tempProjectsList.map((project) => (
-                <ProjectCard
-                  className="w-full !h-max md:!py-2.5 md:!px-4 !block !mt-0"
-                  key={project.name}
-                >
-                  <div className="w-full flex gap-4 justify-between">
-                    <Avatar className="w-7 h-max rounded-full">
-                      <AvatarImage src={project.logo} />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <button className="w-full flex items-center gap-5 justify-between hover:cursor-pointer">
-                      <span className="text-sm text-[#f4f4f4]">
-                        {project.name}
-                      </span>
-                      <ChevronRightIcon className="h-3 w-3 text-[#ddd]-600" />
+              {otherProjects.length > 0 ? (
+                otherProjects.map((project: ProjectDetail) => (
+                  <ProjectCard
+                    className="w-full h-max! md:py-2.5! md:px-4! block! mt-0!"
+                    key={project.uuid}
+                  >
+                    <button
+                      onClick={() => router.push(`/dashboard/${project.uuid}`)}
+                      className="w-full flex items-center gap-5 justify-between hover:cursor-pointer"
+                    >
+                      <div className="w-full flex gap-4 justify-between">
+                        <Avatar className="w-7 h-7 rounded-full">
+                          <AvatarImage src={project.avatar} />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm text-[#f4f4f4]">
+                          {project.name}
+                        </span>
+                        <ChevronRightIcon className="h-3 w-3 text-[#ddd]-600" />
+                      </div>
                     </button>
-                  </div>
-                </ProjectCard>
-              ))}
+                  </ProjectCard>
+                ))
+              ) : (
+                <p className="text-center text-[#9f9f9f] text-sm py-3">
+                  No other projects available
+                </p>
+              )}
             </ul>
           </div>
         </div>

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -16,6 +16,8 @@ import { useForm, Controller } from "react-hook-form";
 import { toast } from "react-toastify";
 import { ClipLoader } from "react-spinners";
 import { Switch } from "../ui/switch";
+import { Descendant, Node } from "slate";
+import RichTextEditor from "../richTextEditor";
 
 type BountyPostProps = {
   projectId: string;
@@ -23,6 +25,7 @@ type BountyPostProps = {
 
 function BountyPost({ projectId }: BountyPostProps) {
   const dispatch = useAppDispatch();
+  const editorRef = useRef<any>(null);
   const { loading, data, error } = useAppSelector(
     (state: RootState) => state.bounties
   );
@@ -72,18 +75,31 @@ function BountyPost({ projectId }: BountyPostProps) {
         <Controller
           name="title"
           control={control}
-          render={({ field }) => (
-            <Input
-              id="title"
-              className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
-              {...field}
-              placeholder="Enter bounty title"
-            />
+          rules={{
+            validate: (value) => {
+              const wordCount = value?.trim().split(/\s+/).length || 0;
+              return wordCount <= 10 || "Title must not exceed 10 words";
+            },
+          }}
+          render={({ field, fieldState }) => (
+            <div className="w-full">
+              <Input
+                id="title"
+                placeholder="Enter event title"
+                className="border-[#434343] text-xs! text-[#f4f4f4] font-light h-11 focus-visible:border-[#434343]! focus-visible:ring-[0]!"
+                {...field}
+              />
+              {fieldState.error && (
+                <p className="text-red-500 text-xs mt-1">
+                  {fieldState.error.message}
+                </p>
+              )}
+            </div>
           )}
         />
       </div>
 
-      <div className="flex flex-col gap-2 mt-4 max-w-full">
+      {/* <div className="flex flex-col gap-2 mt-4 max-w-full">
         <Label
           htmlFor="description"
           className="text-[#f4f4f4f2] font-normal sm:text-[16px] text-[14px] w-max"
@@ -93,22 +109,86 @@ function BountyPost({ projectId }: BountyPostProps) {
         <Controller
           name="description"
           control={control}
-          render={({ field }) => (
-            <Textarea
-              {...field}
-              className="border-[#434343] !text-xs text-[#f4f4f4] font-light h-11 focus-visible:!border-[#434343] focus-visible:!ring-[0]"
-              placeholder="Enter bounty description"
-            />
-          )}
+          rules={{
+            validate: (value) => {
+              // Convert Slate nodes or plain text into a string
+              const textContent = Array.isArray(value)
+                ? value.map((node) => Node.string(node)).join(" ")
+                : typeof value === "string"
+                  ? value
+                  : "";
+
+              const wordCount = textContent
+                .trim()
+                .split(/\s+/)
+                .filter(Boolean).length;
+
+              if (wordCount === 0) return "Content required";
+              if (wordCount > 160)
+                return "Description must not exceed 160 words";
+
+              return true;
+            },
+          }}
+          render={({ field, fieldState }) => {
+            const safeValue: Descendant[] = Array.isArray(field.value)
+              ? field.value
+              : [
+                  {
+                    type: "paragraph",
+                    children: [
+                      {
+                        text:
+                          typeof field.value === "string" ? field.value : "",
+                      },
+                    ],
+                  },
+                ];
+
+            // Get current word count for live display
+            const textContent = Array.isArray(safeValue)
+              ? safeValue.map((node) => Node.string(node)).join(" ")
+              : "";
+            const wordCount = textContent
+              .trim()
+              .split(/\s+/)
+              .filter(Boolean).length;
+
+            return (
+              <div className="w-full">
+                <RichTextEditor
+                  description={safeValue}
+                  setDescription={(val) => field.onChange(val)}
+                  editorRef={editorRef}
+                />
+
+                {/* Word counter and error message 
+                <div className="flex justify-between mt-1 text-xs">
+                  <span
+                    className={`${
+                      wordCount > 160 ? "text-red-500" : "text-gray-400"
+                    }`}
+                  >
+                    {wordCount} / 160 words
+                  </span>
+                  {fieldState.error && (
+                    <span className="text-red-500">
+                      {fieldState.error.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+            );
+          }}
         />
-      </div>
+      </div> */}
 
       <div className="flex flex-col gap-2 mt-4">
         <Label
           htmlFor="duration"
           className="sm:text-[16px] text-[14px] text-[#f4f4f4f2] font-normal w-max "
         >
-          Duration
+          Due When
         </Label>
         <Controller
           name="duration"
@@ -183,7 +263,7 @@ function BountyPost({ projectId }: BountyPostProps) {
         />
       </div>
 
-      <div className="mt-4 flex flex-col gap-2 max-w-full">
+      {/* <div className="mt-4 flex flex-col gap-2 max-w-full">
         <Controller
           name="status"
           control={control}
@@ -220,7 +300,7 @@ function BountyPost({ projectId }: BountyPostProps) {
             </div>
           )}
         />
-      </div>
+      </div> */}
 
       <div className="flex items-center gap-2 px-3 py-2 my-2.5 rounded-md">
         <Controller

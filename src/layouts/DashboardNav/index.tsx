@@ -34,7 +34,7 @@ const DashboardNav = ({ pioneer = false, editProject = false }) => {
       className={` sticky top-0 z-10  lg:bg-[#161616] md:bg-[#0B0B0B]/50 backdrop-blur-md lg:backdrop-blur-none px-5 py-[18px] flex items-center justify-between lg:border-b lg:border-b-[#303030] w-full ${pioneer ? "max-sm:w-screen" : ""}`}
     >
       {/* desktop view */}
-      <Link href="/" className="hidden lg:flex">
+      <Link href="/home" className="hidden lg:flex">
         <Image src={logo} alt="logo" width={120} />
       </Link>
 
@@ -52,12 +52,12 @@ const DashboardNav = ({ pioneer = false, editProject = false }) => {
             <Button
               // disabled
               onClick={() => router.push("/dashboard")}
-              className="flex gap-x-2.5! rounded-full font-sans bg-[#430B68] py-3! px-8!"
+              className="flex gap-x-2.5! rounded-full font-sans bg-[#430B68] hover:bg-[#430B68] py-3! px-8!"
             >
               Dashboard
             </Button>
           ) : (
-            <Button className="flex gap-x-2.5! rounded-full font-sans bg-[#430B68] py-3! px-8!">
+            <Button className="flex gap-x-2.5! rounded-full font-sans bg-[#430B68] hover:bg-[#430B68] py-3! px-8!">
               Create Project <ArrowRight />
             </Button>
           )}

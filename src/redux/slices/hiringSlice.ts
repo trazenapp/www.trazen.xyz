@@ -117,7 +117,7 @@ export const fetchPublicHiring = createAsyncThunk(
 export const fetchPrivateHiring = createAsyncThunk(
   "hiring/fetchPrivateHiring",
   async (
-    { status, page, limit }: { status: string; page: number; limit: number },
+    { project_uuid, status, page, limit }: { project_uuid: string; status: string; page: number; limit: number },
     { getState, rejectWithValue }
   ) => {
     try {
@@ -125,7 +125,7 @@ export const fetchPrivateHiring = createAsyncThunk(
       const token = (state as RootState).register?.token ?? null;
 
       const response = await axiosInstance.get(
-        `/v1/hire/public?status=${status}&page=${page}&limit=${limit}`,
+        `/v1/hire/private/${project_uuid}?status=${status}&page=${page}&limit=${limit}`,
         {
           headers: {
             "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY ?? "",

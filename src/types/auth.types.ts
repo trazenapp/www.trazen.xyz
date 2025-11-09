@@ -107,8 +107,14 @@ export interface SignUpResponse {
   token: string;
 }
 
+export interface Loading {
+    email: boolean,
+    google: boolean,
+    wallet: boolean,
+}
+
 export interface SignInState {
-  loading: boolean;
+  loading: Loading;
   error: string | null;
   data: SignInData;
   isAuthenticated: boolean;

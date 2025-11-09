@@ -1,7 +1,11 @@
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import Card from "@/src/components/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
 import { ArrowUpRight } from "lucide-react";
 import {
   AreaChart,
@@ -22,9 +26,7 @@ import {
 import { TooltipProps } from "recharts";
 import { FollowersData } from "@/src/types/dashboard.types";
 import { useAppDispatch, useAppSelector } from "@/src/redux/store";
-import {
-  fetchProjectOverview,
-} from "@/src/redux/slices/dashboardSlice";
+import { fetchProjectOverview } from "@/src/redux/slices/dashboardSlice";
 import { RootState } from "@/src/redux/store";
 
 type CustomTooltipProps = TooltipProps<number, string> & {
@@ -62,18 +64,18 @@ function FollowersChart({ followersData }: FollowersChartProps) {
   const chartData = followersData?.chart || [];
 
   const monthsOfTheYear = [
-    "January",
-    "February",
-    "March",
-    "April",
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
     "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sept",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
 
   const availableYears = [...new Set(chartData.map((c) => c.year))];
@@ -114,6 +116,12 @@ function FollowersChart({ followersData }: FollowersChartProps) {
     getProjectOverview();
   }, [dispatch, selectedProject, selectedMonth, selectedYear]);
 
+  useEffect(() => {
+    if (projects.length > 0 && !selectedProject) {
+      setSelectedProject(projects[0].uuid);
+    }
+  }, [projects, selectedProject]);
+
   // 🔹 Use followers from Redux if available, otherwise fallback to props
   const chartToUse = followers?.chart || chartData;
 
@@ -126,10 +134,13 @@ function FollowersChart({ followersData }: FollowersChartProps) {
       }));
   }, [chartToUse, selectedYear]);
 
-  const totalFollowers = filteredData.reduce((sum: number, d: { followers: number }) => sum + d.followers, 0);
+  const totalFollowers = filteredData.reduce(
+    (sum: number, d: { followers: number }) => sum + d.followers,
+    0
+  );
 
   return (
-    <Card className="rounded-xl md:!p-6 hidden md:flex flex-col h-150">
+    <Card className="rounded-xl md:p-6! flex flex-col h-150">
       {/* Header Controls */}
       <div className="w-full flex justify-between flex-wrap gap-4">
         {/* ✅ Project Selector */}
@@ -138,21 +149,23 @@ function FollowersChart({ followersData }: FollowersChartProps) {
           onValueChange={setSelectedProject}
           disabled={projects.length <= 1}
         >
-          <SelectTrigger className="font-sans w-max !h-max md:!py-2.5 md:!px-4 gap-4 border-[#434343] text-[#f4f4f4] rounded-[10px]">
+          <SelectTrigger className="font-sans w-max h-max! md:py-2.5! md:px-4! gap-4 border-[#434343] text-[#f4f4f4] rounded-[10px]">
             <Avatar className="w-7 h-max rounded-full">
               <AvatarImage src={selectedProjectData?.avatar} />
-              <AvatarFallback>PR</AvatarFallback>
+              <AvatarFallback>
+                {selectedProjectData?.name?.slice(0, 2).toUpperCase() || "PR"}
+              </AvatarFallback>
             </Avatar>
-            <SelectValue
-              placeholder={selectedProjectData?.name || "Select project"}
-            />
+            <SelectValue>
+              {selectedProjectData?.name || "Select project"}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent className="font-sans bg-[#161616] border-[#303030]">
             <SelectGroup>
               {projects.map((project) => (
                 <SelectItem
                   key={project.uuid}
-                  className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
+                  className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-white"
                   value={project.uuid}
                 >
                   {project.name}
@@ -173,7 +186,7 @@ function FollowersChart({ followersData }: FollowersChartProps) {
                 {monthsOfTheYear.map((month) => (
                   <SelectItem
                     key={month}
-                    className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-[#fff]"
+                    className="text-[#bcbcbc] text-[12px] focus:bg-[#303030] focus:text-white"
                     value={month}
                   >
                     {month}
@@ -234,6 +247,8 @@ function FollowersChart({ followersData }: FollowersChartProps) {
               axisLine={false}
               tickLine={false}
               dataKey="followers"
+              ticks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]}
+              allowDecimals={false}
             />
             <Tooltip
               content={<CustomTooltip />}

@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { authMiddleware } from "./middleware/authMiddleware";
 import { combineReducers } from "redux";
 import authReducer from "@/src/redux/slices/authSlice";
 import dashboardSidebarReducer from "@/src/redux/slices/dashboardSidebarSlice";
@@ -82,8 +83,8 @@ export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+    serializableCheck: false,
+  }).concat(authMiddleware),
 });
 
 export const persistor = persistStore(store);

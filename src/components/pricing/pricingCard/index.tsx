@@ -25,7 +25,7 @@ const PricingCard = ({
 
   return (
     <Card
-      className={`!rounded-2xl !p-6 font-sans ${isActive === true ? "bg-[#272727]" : "opacity-30 !bg-[#430B68]"}`}
+      className={`rounded-2xl! p-6! font-sans ${isActive === true ? "bg-[#272727]" : "opacity-30 bg-[#430B68]!"}`}
     >
       <div className="flex flex-col gap-y-3.5 mb-5">
         <h5 className="text-2xl font-medium">{title}</h5>
@@ -35,7 +35,7 @@ const PricingCard = ({
         $0<span className="text-xl font-normal">/month</span>
       </h1>
       <div className="flex flex-col gap-y-2.5 mb-5">
-        <Card className="!p-4 rounded-[12px] flex items-center gap-x-2.5">
+        <Card className="p-4! rounded-[12px] flex items-center gap-x-2.5">
           {isActive ? (
             <IoIosCheckmarkCircle size={20} />
           ) : (
@@ -45,7 +45,7 @@ const PricingCard = ({
             Instant access to all features
           </p>
         </Card>
-        <Card className="!p-4 rounded-[12px] flex items-center gap-x-2.5">
+        <Card className="p-4! rounded-[12px] flex items-center gap-x-2.5">
           {isActive ? (
             <IoIosCheckmarkCircle size={20} />
           ) : (

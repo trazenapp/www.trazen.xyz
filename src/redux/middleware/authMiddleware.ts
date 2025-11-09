@@ -36,7 +36,7 @@ export const authMiddleware: Middleware =
       action.type === "sign-up/fulfilled" ||
       action.type === "sign-in-with-wallet/fulfilled"
     ) {
-      Router.replace("/dashboard");
+      window.location.replace("/home");
     }
 
     // ✅ If user logout → redirect
@@ -45,7 +45,7 @@ export const authMiddleware: Middleware =
       action.type === "register/logout" ||
       action.type === "logout/fulfilled"
     ) {
-      Router.replace("/sign-in");
+      window.location.replace("/sign-in");
     }
 
     return result;

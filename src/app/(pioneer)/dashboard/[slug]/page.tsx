@@ -551,7 +551,10 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
                     className="w-full h-max! md:py-2.5! md:px-4! block! mt-0!"
                     key={project.uuid}
                   >
-                    <button onClick={() => router.push(`/dashboard/${project.uuid}`)} className="w-full flex items-center gap-5 justify-between hover:cursor-pointer">
+                    <button
+                      onClick={() => router.push(`/dashboard/${project.uuid}`)}
+                      className="w-full flex items-center gap-5 justify-between hover:cursor-pointer"
+                    >
                       <div className="w-full flex gap-4 justify-between">
                         <Avatar className="w-7 h-7 rounded-full">
                           <AvatarImage src={project.avatar} />

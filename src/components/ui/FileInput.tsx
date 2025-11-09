@@ -12,7 +12,12 @@ interface FileInputProps {
 }
 
 const FileInput = ({ value, onChange }: FileInputProps) => {
-  const { token } = useAppSelector((state) => state.register);
+  const token =
+    useAppSelector((state) => state.login.token) ||
+    useAppSelector((state) => state.login.currentUser?.token) ||
+    typeof window !== "undefined"
+      ? localStorage.getItem("token")
+      : null;
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [isUploaded, setIsUploaded] = useState(false);
@@ -36,7 +41,10 @@ const FileInput = ({ value, onChange }: FileInputProps) => {
       const formData = new FormData();
       formData.append("file", selectedFile);
       const res = await axiosInstance.post(baseUrl, formData, {
-        headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "multipart/form-data",
+          // Authorization: `Bearer ${token}`,
+        },
       });
 
       // if (!res.ok) throw new Error("Upload failed");

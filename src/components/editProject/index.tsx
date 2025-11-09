@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -34,6 +34,9 @@ import { RootState } from "@/src/redux/store";
 import { useAppDispatch, useAppSelector } from "@/src/redux/store";
 import { useForm, Controller } from "react-hook-form";
 import { ClipLoader } from "react-spinners";
+import { Descendant, Node } from "slate";
+import RichTextEditor from "../richTextEditor";
+import { ReactEditor } from "slate-react";
 
 interface EditProjectProps {
   projectDetail: ProjectDetail;
@@ -47,6 +50,7 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
 
   const [open, setOpen] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
+    const editorRef = useRef<ReactEditor | null>(null);
 
   const chainValues = chainOptions.map((option) => option.value);
 
@@ -183,14 +187,40 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
               <Controller
                 name="description"
                 control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
-                  <Textarea
-                    id="description"
-                    className="border-[#434343] rounded-[8px] py-[19px] px-4"
-                    {...field}
-                  />
-                )}
+                rules={{
+                  validate: (value) =>
+                    (Array.isArray(value) &&
+                      value.some(
+                        (node) => Node.string(node).trim().length > 0
+                      )) ||
+                    (typeof value === "string" && value.trim().length > 0) ||
+                    "Content required",
+                }}
+                render={({ field }) => {
+                  const safeValue: Descendant[] = Array.isArray(field.value)
+                    ? field.value
+                    : [
+                        {
+                          type: "paragraph",
+                          children: [
+                            {
+                              text:
+                                typeof field.value === "string"
+                                  ? field.value
+                                  : "",
+                            },
+                          ],
+                        },
+                      ];
+
+                  return (
+                    <RichTextEditor
+                      description={safeValue}
+                      setDescription={(val) => field.onChange(val)}
+                      editorRef={editorRef}
+                    />
+                  );
+                }}
               />
               {errors.description && (
                 <p className="text-red-500 text-sm">
@@ -393,7 +423,8 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
           <DialogHeader>
             <DialogTitle>Pending Review</DialogTitle>
             <DialogDescription>
-              Your project has been be held for review and pending approval or rejection of the edit.
+              Your project has been be held for review and pending approval or
+              rejection of the edit.
             </DialogDescription>
           </DialogHeader>
 

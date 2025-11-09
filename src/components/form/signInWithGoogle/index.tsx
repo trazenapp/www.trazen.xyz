@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React from "react";
 import Image from "next/image";
 import { Button } from "@/src/components/ui/button";
@@ -31,11 +31,11 @@ const SignInWithGoogle = ({ onClick }: SignInWithGoogleProps) => {
         type="button"
         variant="outline"
         onClick={signinWithGoogle}
-        disabled={loading}
+        disabled={loading.google}
         className="bg-transparent border-[#303030] rounded-full w-full flex justify-center items-center gap-x-2.5 hover:bg-transparent text-[#F4F4F4F4] hover:text-[#F4F4F4F4] font-sans text-base md:text-xl font-medium"
       >
         <Image src={google} alt="google" width={24} />
-        {loading ? (
+        {loading.google ? (
           <ClipLoader color="#F4F4F4F4" size={20} />
         ) : (
           "Continue with Google"

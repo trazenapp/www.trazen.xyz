@@ -146,9 +146,9 @@ const SignInForm = () => {
       <Button
         type="submit"
         className="bg-[#430B68] hover:bg-[#430B68] rounded-full font-semibold"
-        disabled={loading}
+        disabled={loading.email}
       >
-        {loading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Login"}
+        {loading.email ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Login"}
       </Button>
       <p className="text-center font-light text-base">
         Don’t have an account?{" "}

@@ -1,5 +1,7 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
+import { useAppSelector } from "@/src/redux/store";
+import { useRouter } from "next/navigation";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import { store, persistor } from "@/src/redux/store";
@@ -8,11 +10,30 @@ interface ReduxProviderProps {
   children: React.ReactNode;
 }
 
+const InnerAuthChecker = ({ children }: ReduxProviderProps) => {
+  const router = useRouter();
+  const login = useAppSelector((state) => state.login);
+  const register = useAppSelector((state) => state.register);
+
+  useEffect(() => {
+    const token =
+      login?.token ||
+      register?.token ||
+      login?.currentUser?.token ||
+      localStorage.getItem("token");
+
+    if (!token) router.replace("/sign-in");
+  }, [login, register]);
+
+  return children;
+};
+
+
 export default function ReduxProvider({ children }: ReduxProviderProps) {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        {children}
+        <InnerAuthChecker>{children}</InnerAuthChecker>
       </PersistGate>
     </Provider>
   );

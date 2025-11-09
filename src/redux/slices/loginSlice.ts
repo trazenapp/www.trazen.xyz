@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axiosInstance from "@/src/utils/axios";
 import { getMessaging, getToken } from "firebase/messaging";
@@ -18,7 +18,11 @@ const formData: SignInData = {
 
 const initialState: SignInState = {
   user: null,
-  loading: false,
+  loading: {
+    email: false,
+    google: false,
+    wallet: false,
+  },
   error: null,
   isAuthenticated: false,
   data: formData,
@@ -104,7 +108,25 @@ export const fetchGoogleUser = createAsyncThunk(
           },
         }
       );
-      return response.data;
+      const { user, token } = response.data.data;
+
+      // ✅ Save token in localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("token", token);
+      }
+
+      // ✅ Persist session server-side in cookies
+      await fetch("/api/auth/set-token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      });
+
+      // ✅ Add session to state (multi-user session system)
+      dispatch(addSession({ user, token }));
+
+      // ✅ Return correct format expected by extraReducers
+      return { user, token };
     } catch (err: any) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to fetch google user"
@@ -175,7 +197,11 @@ const loginSlice = createSlice({
       state.data = action.payload;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
-      state.loading = action.payload;
+      state.loading = {
+        email: action.payload,
+        google: action.payload,
+        wallet: action.payload
+      };
     },
     resetForm: (state) => {
       state.data = formData;
@@ -224,58 +250,58 @@ const loginSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(signIn.pending, (state) => {
-        state.loading = true;
+        state.loading.email = true;
         state.error = null;
       })
       .addCase(signIn.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.email = false;
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.error = null;
         state.token = action.payload.token;
       })
       .addCase(signIn.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.email = false;
         state.error = action.payload as string;
         state.isAuthenticated = false;
       })
       .addCase(signInWithWallet.pending, (state) => {
-        state.loading = true;
+        state.loading.wallet = true;
         state.error = null;
       })
       .addCase(signInWithWallet.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.wallet = false;
         state.user = action.payload.user;
         state.isAuthenticated = true;
         state.error = null;
         state.token = action.payload.token;
       })
       .addCase(signInWithWallet.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.wallet = false;
         state.error = action.payload as string;
         state.isAuthenticated = false;
       })
 
       .addCase(continueWithGoogle.pending, (state) => {
-        state.loading = true;
+        state.loading.google = true;
         state.error = null;
       })
       .addCase(continueWithGoogle.fulfilled, (state, action) => {
-        state.loading = false;
+        state.loading.google = false;
       })
       .addCase(continueWithGoogle.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.google = false;
         state.error = action.payload as string;
       })
 
       .addCase(fetchGoogleUser.pending, (state) => {
-        state.loading = true;
+        state.loading.google = true;
         state.error = null;
       })
       .addCase(
         fetchGoogleUser.fulfilled,
         (state, action: PayloadAction<{ user: User; token: string }>) => {
-          state.loading = false;
+          state.loading.google = false;
           state.user = action.payload.user;
           state.isAuthenticated = true;
           state.error = null;
@@ -283,7 +309,7 @@ const loginSlice = createSlice({
         }
       )
       .addCase(fetchGoogleUser.rejected, (state, action) => {
-        state.loading = false;
+        state.loading.google = false;
         state.error = action.payload as string;
       });
   },
@@ -302,3 +328,7 @@ export const {
 } = loginSlice.actions;
 
 export default loginSlice.reducer;
+function dispatch(arg0: { payload: Session; type: "signIn/addSession"; }) {
+  throw new Error("Function not implemented.");
+}
+

@@ -321,10 +321,10 @@ const FeedsCard = ({
         <div className="overflow-hidden rounded-[12px] w-full">
           <FeedsMedia media={post?.medias} maxVisible={4} />
         </div>
-        {isBookmarked && isPrivate && (
+        {!(isBookmarked || isPrivate) && (
           <>
             <div
-              className="flex justify-between gap-x-2.5 overflow-x-scroll md:overflow-x-hidden border"
+              className="flex justify-between gap-x-2.5 overflow-x-scroll md:overflow-x-hidden"
               style={{ scrollbarWidth: "none" }}
             >
               <Button

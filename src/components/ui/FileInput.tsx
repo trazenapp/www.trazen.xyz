@@ -35,13 +35,13 @@ const FileInput = ({ value, onChange }: FileInputProps) => {
       setUploading(true);
       const formData = new FormData();
       formData.append("file", selectedFile);
-        const res = await axiosInstance.post(baseUrl, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+      const res = await axiosInstance.post(baseUrl, formData, {
+        headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}` },
+      });
 
       // if (!res.ok) throw new Error("Upload failed");
 
-      const data =  res.data.data;
+      const data = res.data.data;
       setIsUploaded(true);
       const fileUrl = data.path as string;
       // console.log(fileUrl);

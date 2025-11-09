@@ -28,7 +28,7 @@ import InputFile from "@/src/components/ui/inputFile";
 import InputList from "@/src/components/ui/InputList";
 import { ProjectDetail } from "@/src/types/project.types";
 import { editProject } from "@/src/redux/slices/projectSlice";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { FaCheck } from "react-icons/fa6";
 import { RootState } from "@/src/redux/store";
 import { useAppDispatch, useAppSelector } from "@/src/redux/store";
@@ -45,14 +45,18 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
     (state: RootState) => state.project
   );
 
-  const chains = chainOptions.map((item) => item.value);
-  const projectChains = chains.some((chain) =>
-    projectDetail.categories.includes(chain)
+  const [open, setOpen] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
+
+  const chainValues = chainOptions.map((option) => option.value);
+
+  const projectChains = projectDetail.categories.filter((category) =>
+    chainValues.includes(category)
   );
 
-  const niches = nicheOptions.map((item) => item.value);
-  const projectNiche = niches.some((niche) =>
-    projectDetail.categories.includes(niche)
+  const nichesValues = nicheOptions.map((item) => item.value);
+  const projectNiche = projectDetail.categories.filter((niche) =>
+    nichesValues.includes(niche)
   );
 
   const editProjectData = {
@@ -66,7 +70,7 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
     chains: projectChains,
     niche: projectNiche,
   };
-  console.log(editProjectData);
+  console.log(editProjectData, projectDetail);
 
   const {
     control,
@@ -102,21 +106,33 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
         })
       ).unwrap();
 
-      toast.success("Project updated successfully!", { theme: "dark" });
+      toast.success((t) => <div>Project updated successfully!</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
+      });
+      setOpen(false);
+      setSuccessOpen(true);
     } catch (error: any) {
       console.log(error);
-      toast(<div>{error}</div>, {
-        theme: "dark",
-        type: "error",
+      toast.error((t) => <div>{error}</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
     }
   };
 
   return (
     <div className="w-1/2">
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button className="w-full font-sans bg-black hover:bg-white hover:text-black text-white rounded-full py-3 mb-4 max-sm:text-[13px] max-sm:font-semibold">
+          <Button
+            className="w-full font-sans bg-black hover:bg-white hover:text-black text-white rounded-full py-3 mb-4 max-sm:text-[13px] max-sm:font-semibold"
+            onClick={() => setOpen(true)}
+          >
             Edit Project
           </Button>
         </DialogTrigger>
@@ -370,6 +386,20 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
               )}
             </Button>
           </form>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={successOpen} onOpenChange={setSuccessOpen}>
+        <DialogContent className=" font-sans bg-[#161616] border-[#303030] rounded-2xl py-8 px-7 sm:max-w-[425px] lg:max-w-[480px]! max-h-[90vh]! max-sm:max-h-[95vh]! overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Pending Review</DialogTitle>
+            <DialogDescription>
+              Your project has been be held for review and pending approval or rejection of the edit.
+            </DialogDescription>
+          </DialogHeader>
+
+          <DialogFooter>
+            <Button onClick={() => setSuccessOpen(false)}>Close</Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

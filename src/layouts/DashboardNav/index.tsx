@@ -52,12 +52,12 @@ const DashboardNav = ({ pioneer = false, editProject = false }) => {
             <Button
               // disabled
               onClick={() => router.push("/dashboard")}
-              className="flex gap-x-2.5! rounded-full font-sans bg-[#430B68] py-3! px-8!"
+              className="flex gap-x-2.5! rounded-full font-sans bg-[#430B68] hover:bg-[#430B68] py-3! px-8!"
             >
               Dashboard
             </Button>
           ) : (
-            <Button className="flex gap-x-2.5! rounded-full font-sans bg-[#430B68] py-3! px-8!">
+            <Button className="flex gap-x-2.5! rounded-full font-sans bg-[#430B68] hover:bg-[#430B68] py-3! px-8!">
               Create Project <ArrowRight />
             </Button>
           )}

@@ -20,7 +20,7 @@ const PricingPlan = () => {
     dispatch(setSteps(steps + 1))
   }
   return (
-    <Card className="w-11/12 md:w-9/12 mx-auto border-0 md:border md:border-[#303030] py-10 !px-8 bg-transparent md:bg-[#161616] flex flex-col items-center justify-center">
+    <Card className="w-11/12 md:w-9/12 mx-auto border-0 md:border md:border-[#303030] py-10 px-8! bg-transparent md:bg-[#161616] flex flex-col items-center justify-center">
       <div className="mb-8 w-full md:w-8/12">
         <FormHeading
           title="Account subscription"

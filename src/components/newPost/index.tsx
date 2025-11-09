@@ -1,7 +1,21 @@
-import React, { useState } from "react"
+import React, { useState } from "react";
 import { FormType } from "@/src/types/post.types";
-import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogHeader } from "@/src/components/ui/dialog";
-import { SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectLabel, SelectItem, Select } from "@/src/components/ui/select";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+} from "@/src/components/ui/dialog";
+import {
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectLabel,
+  SelectItem,
+  Select,
+} from "@/src/components/ui/select";
 import { Button } from "@/src/components/ui/button";
 import { PlusIcon } from "lucide-react";
 import { LuFilePenLine } from "react-icons/lu";
@@ -9,12 +23,10 @@ import BountyPost from "@/src/components/bountyPost";
 import EventsPost from "@/src/components/eventsPost";
 import { FeedPostsMain } from "@/src/components/feedPost";
 import HiringPost from "@/src/components/hiringPost";
-import {
-  ProjectDetail,
-} from "@/src/types/project.types";
+import { ProjectDetail } from "@/src/types/project.types";
 
 interface NewPostProps {
-  projectDetail: ProjectDetail
+  projectDetail: ProjectDetail;
 }
 
 const NewPost = ({ projectDetail }: NewPostProps) => {
@@ -29,10 +41,10 @@ const NewPost = ({ projectDetail }: NewPostProps) => {
           </Button>
         </DialogTrigger>
         <DialogContent
-          className=" font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[50vw] lg:max-w-[65vw] md:max-w-[85vw] max-md:!max-w-[95vw]  md:max-h-[95vh] max-h-[98vh] min-h-[45vh] overflow-auto"
+          className=" font-sans gap-3 bg-[#161616] border-[#303030] rounded-2xl p-0 xl:w-[50vw] lg:max-w-[65vw] md:max-w-[85vw] max-md:max-w-[95vw]!  md:max-h-[95vh] max-h-[98vh] min-h-[45vh] overflow-auto"
           style={{ scrollbarWidth: "none" }}
         >
-          <DialogHeader className="py-4 sm:px-7 p-4 border-b-[1px] border-b-[#383838] !h-auto">
+          <DialogHeader className="py-4 sm:px-7 p-4 border-b border-b-[#383838] h-auto!">
             <DialogTitle className="flex items-center justify-between font-medium text-[20px] text-[#f4f4f4] ">
               <p className="max-sm:text-[16px]">New post</p>
               <Button

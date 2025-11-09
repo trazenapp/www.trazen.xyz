@@ -193,7 +193,7 @@ const FeedsCard = ({
                 is_approved={project?.is_approved}
               />
             )}
-            {post?.isFollowing && !isPrivate ? (
+            {isPrivate || post?.isFollowing ? (
               <BsPatchCheckFill color="#430B68" className="mt-1" />
             ) : (
               <Button
@@ -201,7 +201,7 @@ const FeedsCard = ({
                 onClick={() =>
                   post?.project_uuid && handleFollowPost(post?.project_uuid)
                 }
-                className="py-1! px-2.5! border border-[#DDDDDD]! text-[#DDDDDD]! rounded-full text-[10px]"
+                className="py-1! px-2.5! text-[#DDDDDD]! rounded-full text-[10px]"
               >
                 <CiCirclePlus />
               </Button>
@@ -321,48 +321,52 @@ const FeedsCard = ({
         <div className="overflow-hidden rounded-[12px] w-full">
           <FeedsMedia media={post?.medias} maxVisible={4} />
         </div>
-        <div
-          className="flex justify-between gap-x-2.5 overflow-x-scroll md:overflow-x-hidden"
-          style={{ scrollbarWidth: "none" }}
-        >
-          <Button
-            onClick={() => handleVote("UPVOTE", post?.uuid || "")}
-            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${voteStatus === "UPVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
-          >
-            <PiArrowFatUp />
-            {upVoteCount}
-            {upVoteCount === 1 ? (
-              <span className="hidden md:flex"> Upvote</span>
-            ) : (
-              <span className="hidden md:flex"> Upvotes</span>
-            )}
-          </Button>
-          <Button
-            onClick={() => handleVote("DOWNVOTE", post?.uuid || "")}
-            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${voteStatus === "DOWNVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
-          >
-            <PiArrowFatDown />
-            {downVoteCount}
-            {downVoteCount === 1 ? (
-              <span className="hidden md:flex"> Downvote</span>
-            ) : (
-              <span className="hidden md:flex"> Downvotes</span>
-            )}
-          </Button>
-          <Button
-            onClick={() => router.push(`/home/${post?.uuid || ""}`)}
-            className="flex-1 h-fit! py-1.5! px-6! rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]"
-          >
-            <IoChatbubbleOutline />
-            {post?.commentCount}
-            {post?.commentCount === 1 ? (
-              <span className="hidden md:flex"> Comment</span>
-            ) : (
-              <span className="hidden md:flex"> Comments</span>
-            )}
-          </Button>
-        </div>
-        {isBookmarked === false && <FeedsComment post={post} />}
+        {(isBookmarked && isPrivate) && (
+          <>
+            <div
+              className="flex justify-between gap-x-2.5 overflow-x-scroll md:overflow-x-hidden border"
+              style={{ scrollbarWidth: "none" }}
+            >
+              <Button
+                onClick={() => handleVote("UPVOTE", post?.uuid || "")}
+                className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${voteStatus === "UPVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
+              >
+                <PiArrowFatUp />
+                {upVoteCount}
+                {upVoteCount === 1 ? (
+                  <span className="hidden md:flex"> Upvote</span>
+                ) : (
+                  <span className="hidden md:flex"> Upvotes</span>
+                )}
+              </Button>
+              <Button
+                onClick={() => handleVote("DOWNVOTE", post?.uuid || "")}
+                className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${voteStatus === "DOWNVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
+              >
+                <PiArrowFatDown />
+                {downVoteCount}
+                {downVoteCount === 1 ? (
+                  <span className="hidden md:flex"> Downvote</span>
+                ) : (
+                  <span className="hidden md:flex"> Downvotes</span>
+                )}
+              </Button>
+              <Button
+                onClick={() => router.push(`/home/${post?.uuid || ""}`)}
+                className="flex-1 h-fit! py-1.5! px-6! rounded-full border border-[#303030] flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]"
+              >
+                <IoChatbubbleOutline />
+                {post?.commentCount}
+                {post?.commentCount === 1 ? (
+                  <span className="hidden md:flex"> Comment</span>
+                ) : (
+                  <span className="hidden md:flex"> Comments</span>
+                )}
+              </Button>
+            </div>
+            <FeedsComment post={post} />
+          </>
+        )}
       </Card>
     </>
   );

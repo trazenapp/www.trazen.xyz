@@ -1,10 +1,12 @@
 import { useState } from "react";
 import axiosInstance from "@/src/utils/axios";
+import { useAppSelector } from "../redux/store";
 
 export const useFileUpload = () => {
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState<string | string[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { token } = useAppSelector((state) => state.login);
 
   const baseUrl = `${process.env.NEXT_PUBLIC_FILE_URL}/api/storage`;
 
@@ -17,7 +19,7 @@ export const useFileUpload = () => {
         const formData = new FormData();
         formData.append("file", file);
         const res = await axiosInstance.post(baseUrl, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: { "Content-Type": "multipart/form-data", Authorization: `Bearer ${token}`, },
         });
         return res.data.data.path;
       });

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, useImperativeHandle, forwardRef, useEffect } from "react";
 import {
   createEditor,
   Descendant,
@@ -11,7 +11,7 @@ import {
   Node,
 } from "slate";
 import { Slate, Editable, withReact, ReactEditor } from "slate-react";
-import { withHistory } from "slate-history";
+import { } from "slate-history";
 import { Button } from "@/src/components/ui/button";
 import { Italic } from "lucide-react";
 import { Underline } from "lucide-react";
@@ -41,13 +41,21 @@ declare module "slate" {
 type RichTextEditorProps = {
   description: Descendant[];
   setDescription: (value: Descendant[]) => void;
+  editorRef?: React.MutableRefObject<ReactEditor | null>;
 };
 
 export default function RichTextEditor({
   description,
   setDescription,
+  editorRef,
 }: RichTextEditorProps) {
-  const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+  const editor = useMemo(() => withReact(createEditor()), []);
+
+  useEffect(() => {
+    if (editorRef) {
+      editorRef.current = editor as ReactEditor;
+    }
+  }, [editor, editorRef]);
 
   const renderElement = useCallback((props: any) => {
     switch (props.element.type) {

@@ -6,15 +6,13 @@ import { Textarea } from "@/src/components/ui/textarea";
 import { Label } from "@/src/components/ui/label";
 import { MdDoneAll } from "react-icons/md";
 import { Button } from "@/src/components/ui/button";
-import {
-  Smile,
-  ImageIcon,
-  X,
-} from "lucide-react";
+import { Smile, ImageIcon, X } from "lucide-react";
 import { Switch } from "@/src/components/ui/switch";
-import Picker, { Theme } from "emoji-picker-react";
+import Picker, { Theme, EmojiStyle } from "emoji-picker-react";
 import { useFileUpload } from "@/src/utils/uploadPostMedia";
 import { RootState, useAppDispatch, useAppSelector } from "@/src/redux/store";
+import RichTextEditor from "@/src/components/richTextEditor";
+import { Descendant, Node, Transforms } from "slate";
 import {
   createPost,
   saveDraft,
@@ -23,8 +21,9 @@ import {
 } from "@/src/redux/slices/postSlice";
 import { Post } from "@/src/types/post.types";
 import { useForm, Controller } from "react-hook-form";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { ClipLoader } from "react-spinners";
+import { ReactEditor } from "slate-react";
 
 interface FeedsPostMainProps {
   projectId: string;
@@ -35,6 +34,7 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
   const router = useRouter();
   const [localPreviews, setLocalPreviews] = useState<string[]>([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
   const { loading, data, error } = useAppSelector(
     (state: RootState) => state.post
   );
@@ -46,12 +46,18 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
     setValue,
     resetField,
   } = useForm<Post>({
-    defaultValues: data,
+    defaultValues: {
+      ...data,
+      content: Array.isArray(data?.content)
+        ? data.content
+        : [{ type: "paragraph", children: [{ text: data?.content || "" }] }],
+    },
   });
   const values = watch();
 
   const { result, uploading, uploadFiles, reset } = useFileUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editorRef = useRef<ReactEditor | null>(null);
 
   const onSaveDraft = () => {
     dispatch(saveDraft({ type: "feed", data: values }));
@@ -69,10 +75,25 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
     }
   };
 
+  useEffect(() => {
+    if (!showEmojiPicker) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (pickerRef.current && target && !pickerRef.current.contains(target)) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [showEmojiPicker]);
+
   const handleEmojiClick = (emojiData: any) => {
-    const currentText = values.content || "";
-    setValue("content", currentText + emojiData.emoji);
-    setShowEmojiPicker(false);
+    const editor = editorRef.current;
+    if (editor) {
+      ReactEditor.focus(editor);
+      Transforms.insertText(editor, emojiData.emoji);
+    }
+    // setShowEmojiPicker(false);
   };
 
   useEffect(() => {
@@ -121,19 +142,25 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
   }, [showPicker]);
 
   const onSubmit = async (data: Post) => {
+    console.log("Submitting post data:", data);
     try {
       dispatch(setLoading(true));
+      const contentAsHtml = Array.isArray(data.content)
+        ? data.content.map((node: any) => Node.string(node)).join("\n")
+        : data.content || "";
       const payload = {
         project_uuid: projectId,
-        is_published: true,
-        content: data.content,
+        is_published: data.is_published,
+        content: contentAsHtml,
         medias: data.medias,
       };
       dispatch(publishPost({ type: "feed", data: payload }));
       await dispatch(createPost(payload as any)).unwrap();
-      toast(<div>Post published successfully</div>, {
-        theme: "dark",
-        type: "success",
+      toast.success((t) => <div>Post published successfully</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
       dispatch(setLoading(false));
       resetField("content");
@@ -142,9 +169,11 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
       resetField("project_uuid");
     } catch (err: any) {
       dispatch(setLoading(false));
-      toast(<div>{err.message || "Failed to publish post"}</div>, {
-        theme: "dark",
-        type: "error",
+      toast.error((t) => <div>{err.message || "Failed to publish post"}</div>, {
+        style: {
+          background: "#161616",
+          color: "#fff",
+        },
       });
     }
   };
@@ -155,17 +184,39 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
         <Controller
           name="content"
           control={control}
-          rules={{ required: true }}
-          render={({ field }) => (
-            <Textarea
-              className="max-w-full border-gray-300 rounded-md focus-visible:ring-0"
-              placeholder="Share your thoughts..."
-              {...field}
-            />
-          )}
+          rules={{
+            validate: (value) =>
+              (Array.isArray(value) &&
+                value.some((node) => Node.string(node).trim().length > 0)) ||
+              (typeof value === "string" && value.trim().length > 0) ||
+              "Content required",
+          }}
+          render={({ field }) => {
+            const safeValue: Descendant[] = Array.isArray(field.value)
+              ? field.value
+              : [
+                  {
+                    type: "paragraph",
+                    children: [
+                      {
+                        text:
+                          typeof field.value === "string" ? field.value : "",
+                      },
+                    ],
+                  },
+                ];
+
+            return (
+              <RichTextEditor
+                description={safeValue}
+                setDescription={(val) => field.onChange(val)}
+                editorRef={editorRef}
+              />
+            );
+          }}
         />
       </div>
-      <div className="w-full max-sm:w-max flex flex-col gap-4">
+      <div className="w-full flex flex-col gap-4">
         {(localPreviews.length > 0 ||
           (values.medias && values.medias.length > 0)) && (
           <div className="grid grid-cols-2 gap-2 mt-2">
@@ -198,12 +249,14 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
         )}
 
         <div className="sm:flex-1 flex sm:flex-row flex-col items-start gap-7 sm:items-center sm:justify-between">
-          <div className="w-full flex justify-between items-center">
-            <div className="flex items-center gap-x-4">
-              {!uploading && (
+          <div className="w-full flex flex-col md:flex-row justify-between md:items-center">
+            <div className="flex flex-col md:flex-row gap-x-5 w-full">
+              <div className="flex">
+                <div className="flex justify-start items-center gap-x-4">
+                  {/* {!uploading && (
                 <Label
                   htmlFor="imgInput"
-                  className="bg-transparent !p-0 hover:bg-transparent"
+                  className="bg-transparent p-0! hover:bg-transparent"
                 >
                   <Input
                     ref={fileInputRef}
@@ -218,84 +271,70 @@ export const FeedPostsMain = ({ projectId }: FeedsPostMainProps) => {
                     style={{ width: 20, height: 20, color: "#a6a6a6" }}
                   />
                 </Label>
-              )}
-              {uploading && <ClipLoader color="#F4F4F4F4" size={10} />}
-              <Button
-                type="button"
-                onClick={() => setShowEmojiPicker((prev) => !prev)}
-                className="bg-transparent !p-0 hover:bg-transparent"
-              >
-                <Smile style={{ width: 20, height: 20, color: "#a6a6a6" }} />
-              </Button>
-              {showEmojiPicker && (
-                <div className="absolute z-50 top-10 left-0">
-                  <Picker theme={Theme.DARK} onEmojiClick={handleEmojiClick} />
-                </div>
-              )}
-            </div>
-            <div className="flex gap-x-5">
-              <div className="flex items-center gap-2 px-3 py-2 rounded-md">
-                <Controller
-                  name="is_published"
-                  control={control}
-                  defaultValue={false}
-                  render={({ field }) => (
-                    <>
-                      <Switch
-                        checked={field.value}
-                        onCheckedChange={(checked) => field.onChange(checked)}
+              )} */}
+                  {uploading && <ClipLoader color="#F4F4F4F4" size={10} />}
+                  <Button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowEmojiPicker((prev) => !prev);
+                    }}
+                    className="bg-transparent p-0! hover:bg-transparent"
+                  >
+                    <Smile
+                      style={{ width: 20, height: 20, color: "#a6a6a6" }}
+                    />
+                  </Button>
+                  {showEmojiPicker && (
+                    <div
+                      ref={pickerRef}
+                      onClick={(e) => e.stopPropagation()}
+                      className="absolute z-50 top-10 left-0"
+                    >
+                      <Picker
+                        theme={Theme.DARK}
+                        onEmojiClick={handleEmojiClick}
+                        emojiStyle={EmojiStyle.GOOGLE}
+                        lazyLoadEmojis={true}
+                        width={320}
+                        height={400}
                       />
-                      <Label className="text-sm text-gray-400">
-                        {field.value ? "Publish post" : "Save as draft"}
-                      </Label>
-                    </>
+                    </div>
                   )}
-                />
+                </div>
+                <div className="flex items-center gap-2 px-3 py-2 rounded-md">
+                  <Controller
+                    name="is_published"
+                    control={control}
+                    defaultValue={false}
+                    render={({ field }) => (
+                      <>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={(checked) => field.onChange(checked)}
+                        />
+                        <Label className="text-sm text-gray-400">
+                          {field.value ? "Publish post" : "Save as draft"}
+                        </Label>
+                      </>
+                    )}
+                  />
+                </div>
+                <Button className="bg-transparent p-0! hover:bg-transparent">
+                  <MdDoneAll
+                    style={{ width: 20, height: 20, color: "#a6a6a6" }}
+                  />
+                  <p className="text-[#a6a6a6] max-sm:text-[13px]">
+                    Mark as alpha
+                  </p>
+                </Button>
               </div>
-              <Button className="bg-transparent !p-0 hover:bg-transparent">
-                <MdDoneAll
-                  style={{ width: 20, height: 20, color: "#a6a6a6" }}
-                />
-                <p className="text-[#a6a6a6] max-sm:text-[13px]">
-                  Mark as announcement
-                </p>
-              </Button>
-              <Button className="bg-[#430B68] rounded-full w-[111px] text-sm py-2.5">
+              <Button className="bg-[#430B68] rounded-full w-full md:w-[111px] text-sm py-2.5">
                 {loading ? <ClipLoader color="#F4F4F4F4" size={20} /> : "Post"}
               </Button>
             </div>
           </div>
         </div>
-
-        {/* {showPicker &&
-          createPortal(
-            <div
-              ref={pickerRef}
-              style={{
-                position: "fixed",
-                top: coords.top,
-                left: coords.left,
-                width: PICKER_WIDTH,
-                height: PICKER_HEIGHT,
-                zIndex: 2147483647,
-                pointerEvents: "auto",
-              }}
-              className="rounded-2xl border border-neutral-700 shadow-xl"
-            >
-              <Picker
-                theme={Theme.DARK}
-                width={PICKER_WIDTH}
-                height={PICKER_HEIGHT}
-                searchDisabled
-                skinTonesDisabled
-                previewConfig={{ showPreview: false }}
-                onEmojiClick={(emojiData: EmojiClickData, _ev) => {
-                  // onSelect(emojiData.emoji);
-                }}
-              />
-            </div>,
-            document.body
-          )} */}
       </div>
     </form>
   );

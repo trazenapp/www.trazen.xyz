@@ -25,7 +25,7 @@ const initialState: PostState = {
     project_uuid: "",
     content: "",
     medias: [],
-    is_published: false,
+    is_published: true,
   },
   pagination: {
     total: 0,
@@ -70,13 +70,13 @@ export const fetchPublicPosts = createAsyncThunk<
 
 export const fetchPrivatePosts = createAsyncThunk<
   { privatePosts: PostItem[]; pagination: PostPagination },
-  { page: number; limit: number }
+  { project_uuid: string, page: number; limit: number }
 >(
   "post/fetchPrivatePosts",
-  async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
+  async ({ project_uuid, page = 1, limit = 10 }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
-        `/v1/post/private?status=status&page=${page}&limit=${limit}`
+        `/v1/post/private/${project_uuid}?status=status&page=${page}&limit=${limit}`
       );
       const data = response.data?.data;
 

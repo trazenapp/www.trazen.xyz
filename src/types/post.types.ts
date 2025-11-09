@@ -1,10 +1,11 @@
 import { ProjectDetail } from "./project.types";
 import { UserProfile } from "./user.types";
+import { Descendant } from 'slate';
 export type FormType = "feed" | "events" | "hiring" | "bounties";
 
 export interface Post {
   project_uuid: string;
-  content: string;
+  content?: string | Descendant[];
   medias: string[];
   is_published: boolean;
 }

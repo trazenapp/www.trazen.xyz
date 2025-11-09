@@ -4,7 +4,11 @@ import Image from "next/image";
 import defaultProfile from "@/public/default-profile.svg";
 import cancel from "@/public/cancel.svg";
 import { Button } from "@/src/components/ui/button";
-import { options, OptionType, ChainAndNicheOptions } from "@/src/constants/options";
+import {
+  options,
+  OptionType,
+  ChainAndNicheOptions,
+} from "@/src/constants/options";
 import { useAppDispatch, useAppSelector, RootState } from "@/src/redux/store";
 import {
   ProfileData,
@@ -155,10 +159,10 @@ function AccountManagementTab() {
       setProfileImage(null);
     } catch (err: any) {
       console.log(err);
-        toast(<div>{err}</div>, {
-          theme: "dark",
-          type: "error",
-        });
+      toast(<div>{err}</div>, {
+        theme: "dark",
+        type: "error",
+      });
     }
   };
 
@@ -170,7 +174,11 @@ function AccountManagementTab() {
     <div className="p-2.5 flex items-center gap-2 bg-[#383838] text-[#BCBCBC] rounded-sm text-sm">
       <span>{tag.label}</span>
       {tag.removable && (
-        <button title="Remove tag" type="button" onClick={() => onRemove(tag.id, isSecondRow)}>
+        <button
+          title="Remove tag"
+          type="button"
+          onClick={() => onRemove(tag.id, isSecondRow)}
+        >
           <Image src={cancel} alt="cancel" className="cursor-pointer" />
         </button>
       )}

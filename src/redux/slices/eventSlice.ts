@@ -99,7 +99,7 @@ export const getEvents = createAsyncThunk(
 export const getEventsPrivate = createAsyncThunk(
   "events/getEventsPrivate",
   async (
-    { page, limit }: { page: number; limit: number },
+    { project_uuid, page, limit }: { project_uuid: string; page: number; limit: number },
     { getState, rejectWithValue }
   ) => {
     try {
@@ -107,7 +107,7 @@ export const getEventsPrivate = createAsyncThunk(
       const token = (state as RootState).register?.token ?? null;
 
       const res = await axiosInstance.get(
-        `/v1/event/private?page=${page}&limit=${limit}`,
+        `/v1/event/private/${project_uuid}?page=${page}&limit=${limit}`,
         {
           headers: {
             "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY ?? "",

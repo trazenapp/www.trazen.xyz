@@ -26,6 +26,7 @@ import { ArrowRight } from "lucide-react";
 import { Login, Profile } from "iconsax-reactjs";
 import SwitchAccount from "@/src/components/SwitchAccount";
 import { Badge } from "@/src/components/ui/badge";
+import ProfilePhoto from "@/src/components/profilePhoto";
 
 const DashboardSidebar = ({ pioneer = false }) => {
   const dispatch = useAppDispatch();
@@ -43,9 +44,7 @@ const DashboardSidebar = ({ pioneer = false }) => {
     dispatch(fetchProfile());
   }, [dispatch]);
 
-  const avatarUrl = profile?.avatar
-    ? profile?.avatar
-    : "https://github.com/shadcn.png";
+  // const avatarUrl = profile?.avatar;
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -86,7 +85,8 @@ const DashboardSidebar = ({ pioneer = false }) => {
             {/* <div className="w-10 h-10 rounded-full flex justify-center items-center overflow-hidden">
               <Image src={avatarUrl} alt="profile photo" width={40} height={40} />
             </div> */}
-            <AvatarProfile avatar={avatarUrl} title={profile?.username} />
+            {/* <AvatarProfile avatar={avatarUrl} title={profile?.username} /> */}
+            <ProfilePhoto width="40px" height="40px" avatarUrl={profile?.avatar as string} />
             <div className="font-sans w-8/12">
               <div className="text-white text-left text-sm md:text-base font-bold w-full">
                 {profile?.username}

@@ -60,11 +60,10 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
   const dispatch = useAppDispatch();
   const { shareContent } = useShare();
 
+  const [voteStatus, setVoteStatus] = useState(postDetails?.voteStatus);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [upVoteCount, setUpVoteCount] = useState(postDetails?.upvoteCount);
-  const [downVoteCount, setDownVoteCount] = useState(
-    postDetails?.downvoteCount
-  );
+    const [upVoteCount, setUpVoteCount] = useState(postDetails?.upvoteCount);
+    const [downVoteCount, setDownVoteCount] = useState(postDetails?.downvoteCount);
   const [reportPostModal, setReportPostModal] = useState(false);
 
   useEffect(() => {
@@ -81,28 +80,77 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
 
   // vote post
   const handleVote = async (
-    voteType: "UPVOTE" | "DOWNVOTE",
-    post_uuid: string
-  ) => {
-    if (!post_uuid) {
-      console.log("No post_uuid in state");
-      return;
+  voteType: "UPVOTE" | "DOWNVOTE",
+  post_uuid: string
+) => {
+  if (!post_uuid) return;
+
+  // ✅ Backup original values to revert on error
+  const prevUp = upVoteCount || 0;
+  const prevDown = downVoteCount || 0;
+  const prevStatus = voteStatus;
+
+  let newUp = prevUp;
+  let newDown = prevDown;
+  let newStatus = prevStatus;
+
+  // ✅ LOCAL optimistic update
+  if (voteType === "UPVOTE") {
+    if (prevStatus === "UPVOTE") {
+      newUp -= 1;
+      newStatus = null;
+    } else {
+      newUp += 1;
+      if (prevStatus === "DOWNVOTE") newDown -= 1;
+      newStatus = "UPVOTE";
+    }
+  }
+
+  if (voteType === "DOWNVOTE") {
+    if (prevStatus === "DOWNVOTE") {
+      newDown -= 1;
+      newStatus = null;
+    } else {
+      newDown += 1;
+      if (prevStatus === "UPVOTE") newUp -= 1;
+      newStatus = "DOWNVOTE";
+    }
+  }
+
+  // ✅ Update UI immediately
+  setUpVoteCount(newUp);
+  setDownVoteCount(newDown);
+  setVoteStatus(newStatus);
+
+  try {
+    const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
+
+    const serverUp = res?.upvoteCount;
+    const serverDown = res?.downvoteCount;
+    const serverStatus = res?.voteStatus;
+
+    // ✅ Only update if server data is consistent
+    if (typeof serverUp === "number") setUpVoteCount(serverUp);
+    if (typeof serverDown === "number") setDownVoteCount(serverDown);
+
+    if (
+      serverStatus === "UPVOTE" ||
+      serverStatus === "DOWNVOTE" ||
+      serverStatus === null
+    ) {
+      setVoteStatus(serverStatus);
     }
 
-    try {
-      const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
-      if (voteType === "UPVOTE") {
-        console.log(res?.upvoteCount);
-        setUpVoteCount(res?.upvoteCount);
-      } else if (voteType === "DOWNVOTE") {
-        console.log(res?.downvoteCount);
-        setDownVoteCount(res?.downvoteCount);
-      }
-      console.log("Vote response:", res);
-    } catch (error) {
-      console.error("Vote error:", error);
-    }
-  };
+  } catch (err) {
+    console.error("Vote error:", err);
+
+    // ❌ revert to previous state on API error
+    setUpVoteCount(prevUp);
+    setDownVoteCount(prevDown);
+    setVoteStatus(prevStatus);
+  }
+};
+
 
   // bookmark post
   const handleBookmark = async (post_uuid: string) => {

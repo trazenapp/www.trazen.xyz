@@ -31,14 +31,7 @@ const AvatarProfile = ({
 
   return (
     <>
-      <div className="w-10 h-10 rounded-full flex justify-center items-center overflow-hidden relative">
-        <Image
-          src={avatar as string || "https://github.com/shadcn.png"}
-          alt="profile photo"
-          fill
-          className="object-cover"
-        />
-      </div>
+      <ProfilePhoto avatarUrl={avatar as string} />
       <div>
         <p className="flex gap-x-1 items-center">
           <span className="font-medium text-sm md:text-base">{name}</span>

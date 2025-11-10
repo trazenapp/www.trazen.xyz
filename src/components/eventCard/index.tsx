@@ -48,8 +48,8 @@ const EventCard = ({ event, isPrivate, project }: EventCardProps) => {
   const [reportEventModal, setReportEventModal] = useState(false);
 
   const dateString = event?.date_time?.toString();
-  const [datePart, timePartRaw] = dateString.split("T");
-  const timePart = timePartRaw.replace("Z", "").split(".")[0];
+  const [datePart, timePartRaw] = dateString?.split("T") ?? ["", ""];
+  const timePart = timePartRaw?.replace("Z", "").split(".")[0] ?? "";
   const timeAgoText = useTimeAgo(event?.date_time);
   const formatDate = useFormattedDate(datePart);
   const formatTime = useFormattedTime(timePart);

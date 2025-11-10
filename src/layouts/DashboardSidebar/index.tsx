@@ -5,7 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "@/public/trazen-logo-white.svg";
 import AvatarProfile from "@/src/components/avatarProfile";
-import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/src/components/ui/avatar";
 import { Separator } from "@/src/components/ui/separator";
 import {
   Collapsible,
@@ -32,7 +36,8 @@ const DashboardSidebar = ({ pioneer = false }) => {
   const { show } = useAppSelector((state: RootState) => state.dashboardSidebar);
   const { profile } = useAppSelector((state: RootState) => state.user);
   const unreadCount = useAppSelector(
-    (state) => state.notifications.notifications.filter((n) => !n.is_read).length
+    (state) =>
+      state.notifications.notifications.filter((n) => !n.is_read).length
   );
   useEffect(() => {
     dispatch(fetchProfile());
@@ -78,6 +83,9 @@ const DashboardSidebar = ({ pioneer = false }) => {
         </Link>
         <Collapsible className="mb-6 w-full bg-[#272727] lg:rounded-2xl rounded-full p-2.5 flex flex-col justify-between items-center gap-2.5">
           <CollapsibleTrigger className="flex items-center gap-2.5 w-full">
+            {/* <div className="w-10 h-10 rounded-full flex justify-center items-center overflow-hidden">
+              <Image src={avatarUrl} alt="profile photo" width={40} height={40} />
+            </div> */}
             <AvatarProfile avatar={avatarUrl} title={profile?.username} />
             <div className="font-sans w-8/12">
               <div className="text-white text-left text-sm md:text-base font-bold w-full">
@@ -97,7 +105,7 @@ const DashboardSidebar = ({ pioneer = false }) => {
           </CollapsibleContent>
         </Collapsible>
         <ul className="flex flex-col gap-y-3 w-full">
-          {userSidebarMenu.map((item) => (
+          {userSidebarMenu.map((item) =>
             item.label === "Notifications" ? (
               <li key={item.label} className="w-full">
                 <Link
@@ -134,7 +142,7 @@ const DashboardSidebar = ({ pioneer = false }) => {
                 </Link>
               </li>
             )
-          ))}
+          )}
         </ul>
         <div className="absolute bottom-1/12 left-0 w-full px-4 lg:hidden">
           {profile?.role === "PIONEER" ? (

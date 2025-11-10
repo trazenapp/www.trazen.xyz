@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { MdFilterList } from "react-icons/md";
@@ -15,10 +15,31 @@ import {
 import Overview from "@/src/layouts/Overview";
 import { Projects } from "@/src/components/projects";
 import { PlusIcon } from "@heroicons/react/24/solid";
+import { useAppDispatch, useAppSelector, RootState } from "@/src/redux/store";
+import { fetchProfile } from "@/src/redux/slices/userSlice";
 
 const Dashboard = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const { show } = useAppSelector((state: RootState) => state.dashboardSidebar);
+  const { profile, loading } = useAppSelector((state: RootState) => state.user);
   const [tabValue, setTabValue] = useState("overview");
+
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
+
+  useEffect(() => {
+  if (loading) return;
+
+  if (!profile) return;
+
+  if (profile?.role === "USER") {
+    router.back();
+  }
+}, [profile, loading, router]);
+
 
   return (
     <div className="xl:w-[81%] lg:w-[80%] ml-auto font-[Geist] relative">

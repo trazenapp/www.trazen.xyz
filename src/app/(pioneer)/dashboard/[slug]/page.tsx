@@ -19,6 +19,7 @@ import BountyCard from "@/src/components/bountyCard";
 import HiringCard from "@/src/components/hiringCard";
 import { FaArrowLeft, FaSquareXTwitter } from "react-icons/fa6";
 import { BsPatchCheckFill } from "react-icons/bs";
+import { CgFileDocument } from "react-icons/cg";
 import { HiOutlineCube } from "react-icons/hi";
 import Image from "next/image";
 import Card from "@/src/components/card";
@@ -43,6 +44,9 @@ import {
 } from "@/src/redux/slices/projectSlice";
 import FeedsCard from "@/src/components/feedsCard";
 import { ProjectDetail } from "@/src/types/project.types";
+import { chainOptions, nicheOptions } from "@/src/constants/options";
+import { RxDashboard } from "react-icons/rx";
+import { IoPeopleOutline } from "react-icons/io5";
 
 const MemoizedFeedsCard = React.memo(FeedsCard);
 const MemoizedEventCard = React.memo(EventCard);
@@ -154,6 +158,20 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
   const otherProjects =
     projects?.filter((project: ProjectDetail) => project.uuid !== slug) || [];
 
+  const niches = projectDetail?.categories
+    ?.map((c: any) => c.toLowerCase().replace(/\s+/g, "-"))
+    .join(", ");
+
+  const chainValues = chainOptions.map((option) => option.value);
+  const projectChains = projectDetail?.categories.filter((category) =>
+    chainValues.includes(category)
+  );
+
+  const nichesValues = nicheOptions.map((item) => item.value);
+  const projectNiche = projectDetail?.categories.filter((niche) =>
+    nichesValues.includes(niche)
+  );
+
   useEffect(() => {
     fetchInitialData();
   }, [dispatch, slug]);
@@ -264,79 +282,95 @@ const Profile = ({ params }: { params: Promise<{ slug: string }> }) => {
             <Button onClick={router.back} className="border-0 bg-transparent">
               <FaArrowLeft />
             </Button>
-            <div className="flex gap-x-2.5">
-              <p className="text-[#f4f4f4] text-xl font-medium flex items-center gap-x-2">
-                Project Details
-              </p>
-            </div>
           </div>
           <div className="flex flex-col gap-y-6">
-            <div className="flex flex-col md:flex-row md:items-center gap-x-5">
-              <Avatar className="lg:w-[120px] lg:h-[120px] sm:w-[100px] sm:h-[100px] w-20 h-20 ">
-                <AvatarImage src={projectDetail?.avatar} className="" />
-                <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
-                  CN
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 font-sans">
-                <p className="text-[#f4f4f4] sm:text-[28px] text-[20px] font-medium flex items-center gap-x-2 mb-4">
-                  {projectDetail?.name}{" "}
-                  {projectDetail?.is_approved && (
-                    <BsPatchCheckFill size={24} color="#B348F9" />
-                  )}
-                </p>
-                <p className="sm:text-base text-[12px] font-normal text-[#BCBCBC]">
-                  {projectDetail?.description}
-                </p>
+            <div className="flex gap-x-5">
+              <div className="">
+                <div className="w-[120px] h-[120px] rounded-full flex justify-center items-center overflow-hidden relative">
+                  <Image
+                    src={
+                      (projectDetail?.avatar as string) ||
+                      "https://github.com/shadcn.png"
+                    }
+                    alt="profile photo"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="flex justify-center items-center gap-x-4 mt-4">
+                  <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
+                    <Link
+                      href={projectDetail?.social as string}
+                      target="blank"
+                      className="text-[#1768FF] font-normal"
+                    >
+                      <FaSquareXTwitter
+                        color="#7f7f7f"
+                        className="text-[1.04rem]"
+                      />
+                    </Link>
+                  </p>
+                  <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
+                    <Link
+                      href={projectDetail?.whitepaper as string}
+                      target="blank"
+                      className="text-[#1768FF] font-normal"
+                    >
+                      <CgFileDocument
+                        color="#7f7f7f"
+                        className="text-[1.04rem]"
+                      />
+                    </Link>
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 items-center gap-x-4 font-sans">
-              {/* <div className="flex flex-row items-center gap-x-1.5">
-                <IoPeopleOutline color="#7f7f7f" className="text-[1.04rem]" />
-                <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
-                  <span>19.3K</span>
-                  <span className="text-[#7f7f7f] font-normal">Followers</span>
-                </p>
-              </div> */}
-              <div className="flex flex-row items-center gap-x-1.5">
-                <FaSquareXTwitter color="#7f7f7f" className="text-[1.04rem]" />
-                <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
-                  <Link
-                    href={projectDetail?.social as string}
-                    target="blank"
-                    className="text-[#1768FF] font-normal"
-                  >
-                    {projectDetail?.social}
-                  </Link>
-                </p>
+              <div className="flex flex-col md:flex-row md:items-center gap-x-5">
+                <div className="flex-1 font-sans">
+                  <p className="text-[#f4f4f4] text-xl font-medium flex items-center gap-x-2 mb-4">
+                    {projectDetail?.name}{" "}
+                    {projectDetail?.is_approved && (
+                      <BsPatchCheckFill size={24} color="#B348F9" />
+                    )}
+                  </p>
+                  <p className="sm:text-sm text-[12px] font-normal text-[#BCBCBC]">
+                    {projectDetail?.description}
+                  </p>
+                  <div className="flex flex-col md:flex-row gap-y-4 items-center gap-x-4 font-sans">
+                    <div className="flex flex-row items-center gap-x-1.5">
+                      <IoPeopleOutline
+                        color="#7f7f7f"
+                        className="text-[1.04rem]"
+                      />
+                      <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
+                        <span>{projectDetail?.total_followers}</span>
+                        <span className="text-[#7f7f7f] font-normal">
+                          Followers
+                        </span>
+                      </p>
+                    </div>
+                    <div className="flex flex-row items-center gap-x-1.5">
+                      <HiOutlineCube color="#7f7f7f" className="text-xl" />
+                      <p className="text-[#f4f4f4] font-medium text-xs flex flex-row gap-x-1">
+                        <span className="text-[#BCBCBC] font-normal w-full flex ">
+                          {projectChains?.map((c: any) => (
+                            <React.Fragment key={c}>{`${c} . `}</React.Fragment>
+                          ))}
+                        </span>
+                      </p>
+                    </div>
+                    <div className="flex flex-row items-center gap-x-1.5">
+                      <RxDashboard color="#7f7f7f" className="text-[1.04rem]" />
+                      <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
+                        <span className="text-[#BCBCBC] font-normal w-full flex ">
+                          {projectNiche?.map((c: any) => (
+                            <React.Fragment key={c}>{`${c} . `}</React.Fragment>
+                          ))}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex flex-row items-center gap-x-1.5">
-                <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
-                  <Link
-                    href={projectDetail?.whitepaper as string}
-                    target="blank"
-                    className="text-[#1768FF] font-normal"
-                  >
-                    {projectDetail?.whitepaper}
-                  </Link>
-                </p>
-              </div>
-              <div className="flex flex-row items-center gap-x-1.5">
-                <HiOutlineCube color="#7f7f7f" className="text-xl" />
-                <p className="text-[#f4f4f4] font-medium text-xs flex flex-row gap-x-1">
-                  <span className="text-[#BCBCBC] font-normal w-full flex ">
-                    {projectDetail?.categories?.map((c: any) => (
-                      <React.Fragment key={c}>{`${c} . `}</React.Fragment>
-                    ))}
-                  </span>
-                </p>
-              </div>
-              {/* <div className="flex flex-row items-center gap-x-1.5">
-                <RxDashboard color="#7f7f7f" className="text-[1.04rem]" />
-                <p className="text-[#f4f4f4] font-medium text-xs flex gap-x-1">
-                  <span className="text-[#BCBCBC] font-normal">NFTs</span>
-                </p>
-              </div> */}
             </div>
             <div className="w-full flex gap-5">
               <NewPost projectDetail={projectDetail} />

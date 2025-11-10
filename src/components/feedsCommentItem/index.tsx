@@ -117,7 +117,7 @@ const FeedsCommentItem = ({
         <div className="flex items-center gap-x-2.5">
           <Avatar className="w-6 h-6">
             <AvatarImage
-              src={comment?.user?.avatar || "https://github.com/shadcn.png"}
+              src={comment?.user?.avatar as string}
               className=""
             />
             <AvatarFallback className="bg-[#B348F9] text-[#f4f4f4]">
@@ -158,7 +158,7 @@ const FeedsCommentItem = ({
           <div className={`flex flex-col gap-x-2.5  ${childComments.length > 0 &&
               level < 2 && "my-3"}`}>
             <div
-              className={`flex justify-end gap-x-2.5 overflow-x-scroll md:overflow-x-hidden ${childComments.length > 0 &&
+              className={`flex justify-end gap-x-2.5 overflow-x-scroll md:overflow-x-hidden mb-4 ${childComments.length > 0 &&
               level < 2 && "mb-4"}`}
               style={{ scrollbarWidth: "none" }}
             >

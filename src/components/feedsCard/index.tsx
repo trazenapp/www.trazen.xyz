@@ -68,7 +68,9 @@ const FeedsCard = ({
   const { shareContent } = useShare();
   const { loading } = useAppSelector((state: RootState) => state.post);
 
-  const [voteStatus, setVoteStatus] = useState(post?.voteStatus);
+  const [voteStatus, setVoteStatus] = useState<"UPVOTE" | "DOWNVOTE" | null>(
+    post?.voteStatus ?? null
+  );
   const [isFollowing, setIsFollowing] = useState(false);
   const [upVoteCount, setUpVoteCount] = useState(post?.upvoteCount);
   const [downVoteCount, setDownVoteCount] = useState(post?.downvoteCount);
@@ -93,55 +95,40 @@ const FeedsCard = ({
     voteType: "UPVOTE" | "DOWNVOTE",
     post_uuid: string
   ) => {
-    if (!post_uuid) {
-      console.warn("No post_uuid in state");
-      return;
+    const prevUp = upVoteCount ?? 0;
+    const prevDown = downVoteCount ?? 0;
+    const prevStatus = voteStatus ?? null;
+
+    let newStatus: "UPVOTE" | "DOWNVOTE" | null = voteType;
+    if (prevStatus === voteType) {
+      newStatus = null;
     }
 
-    let prevUpvotes = upVoteCount || 0;
-    let prevDownvotes = downVoteCount || 0;
-    const prevStatus = voteStatus;
-
-    let newUpvotes = prevUpvotes;
-    let newDownvotes = prevDownvotes;
-    let newStatus = prevStatus;
+    let calculatedUp = prevUp;
+    let calculatedDown = prevDown;
 
     if (voteType === "UPVOTE") {
-      if (prevStatus === "UPVOTE") {
-        newUpvotes -= 1;
-        newStatus = null;
-      } else {
-        newUpvotes += 1;
-        if (prevStatus === "DOWNVOTE") newDownvotes -= 1;
-        newStatus = "UPVOTE";
-      }
-    } else if (voteType === "DOWNVOTE") {
+      calculatedUp = prevStatus === "UPVOTE" ? prevUp - 1 : prevUp + 1;
       if (prevStatus === "DOWNVOTE") {
-        newDownvotes -= 1;
-        newStatus = null;
-      } else {
-        newDownvotes += 1;
-        if (prevStatus === "UPVOTE") newUpvotes -= 1;
-        newStatus = "DOWNVOTE";
+        calculatedDown = prevDown - 1;
+      }
+    } else {
+      calculatedDown = prevStatus === "DOWNVOTE" ? prevDown - 1 : prevDown + 1;
+      if (prevStatus === "UPVOTE") {
+        calculatedUp = prevUp - 1;
       }
     }
 
-    setUpVoteCount(newUpvotes);
-    setDownVoteCount(newDownvotes);
     setVoteStatus(newStatus);
+    setUpVoteCount(calculatedUp);
+    setDownVoteCount(calculatedDown);
 
     try {
-      const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
-
-      setUpVoteCount(res?.upvoteCount ?? newUpvotes);
-      setDownVoteCount(res?.downvoteCount ?? newDownvotes);
-      setVoteStatus(res?.voteStatus ?? newStatus);
+      await dispatch(votePost({ voteType, post_uuid })).unwrap();
     } catch (error) {
-      console.error("Vote error:", error);
-
-      setUpVoteCount(prevUpvotes);
-      setDownVoteCount(prevDownvotes);
       setVoteStatus(prevStatus);
+      setUpVoteCount(prevUp);
+      setDownVoteCount(prevDown);
     }
   };
 

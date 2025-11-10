@@ -53,7 +53,6 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
     const editorRef = useRef<ReactEditor | null>(null);
 
   const chainValues = chainOptions.map((option) => option.value);
-
   const projectChains = projectDetail.categories.filter((category) =>
     chainValues.includes(category)
   );

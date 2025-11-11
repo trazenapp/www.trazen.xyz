@@ -19,7 +19,7 @@ const Navbar = () => {
           <Link
             href={item.href}
             key={item.label}
-            className="font-sans font-semibold text-sm hover:bg-gradient-to-b hover:from-[#BF66FA] hover:to-[#430b68] hover:bg-clip-text hover:text-transparent transition-all duration-300 ease-in-out"
+            className="font-sans font-semibold text-sm hover:bg-linear-to-b hover:from-[#BF66FA] hover:to-[#430b68] hover:bg-clip-text hover:text-transparent transition-all duration-300 ease-in-out"
           >
             {item.label}
           </Link>
@@ -28,13 +28,13 @@ const Navbar = () => {
       <div className="flex lg:gap-x-[60px] md:gap-x-7 items-center">
         <Link
           href="/sign-in"
-          className="font-sans font-semibold text-sm hover:bg-gradient-to-b hover:from-[#BF66FA] hover:to-[#430b68] hover:bg-clip-text hover:text-transparent transition-all duration-300 ease-in-out"
+          className="font-sans font-semibold text-sm hover:bg-linear-to-b hover:from-[#BF66FA] hover:to-[#430b68] hover:bg-clip-text hover:text-transparent transition-all duration-300 ease-in-out"
         >
           Login
         </Link>
         <Button
           onClick={() => router.push("/sign-up")}
-          className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#430b68]"
+          className="rounded-full bg-linear-to-b from-[#BF66FA] to-[#430b68]"
         >
           Get started
         </Button>

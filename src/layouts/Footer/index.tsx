@@ -6,7 +6,7 @@ import X from "@/public/x.svg";
 
 const Footer = () => {
   return (
-    <footer className="w-full px-5 md:px-[102px] py-10 md:py-[68px] flex flex-col justify-center items-center relative rounded-t-[24px] md:rounded-t-[32px] bg-[#161616] mt-[120px]">
+    <footer className="w-full px-5 md:px-[102px] py-10 md:py-[68px] flex flex-col justify-center items-center relative rounded-t-3xl md:rounded-t-4xl bg-[#161616] mt-[120px]">
       <div className="flex flex-col justify-center items-center w-full">
         <ul className="flex flex-col md:flex-row md:justify-between gap-y-6 md:gap-x-12 mb-12 w-8/12">
           {footerMenu.map((item) => (

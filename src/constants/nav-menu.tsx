@@ -12,6 +12,6 @@ export const footerMenu = [
   },
   { label: "Documentation", href: "https://blog.trazen.xyz" },
   // { label: "Pricing", href: "#" },
-  { label: "Privacy Policy", href: "/privacy" },
-  { label: "Terms and Conditions", href: "/terms" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
 ];

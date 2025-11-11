@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Heading from "@/src/components/heading";
-import Badge from "@/src/components/badge";
+import Badgee from "@/src/components/badge";
 import Card from "@/src/components/card";
 import { featureContent } from "@/src/constants/features";
 import { Button } from "@/src/components/ui/button";
@@ -47,7 +47,7 @@ const Features = () => {
       className="w-11/12 md:w-10/12 relative overflow-hidden lg:mt-[120px] mt-[65px] flex flex-col justify-center items-center"
     >
       <div className="w-full md:w-6/12 flex flex-col gap-y-6 mb-[60px]">
-        <Badge>Core features</Badge>
+        <Badgee>Core features</Badgee>
         <Heading
           className="text-center"
           subText="Everything you need to stay informed and connected in the fast-moving world of Web3"
@@ -69,13 +69,13 @@ const Features = () => {
                   {item.title}
                 </h4>
                 <p className="text-sm font-normal">{item.subtitle}</p>
-                <Link href={item.href} className="flex z-1000">
-                  <Button className="relative p-[1px]  backdrop-blur-3xl rounded-full bg-gradient-to-br from-[#c83be5] to-[#2C05334D] hover:from-[#9218e1] hover:to-[#BF66FA] transition w-full lg:w-fit">
+                {/* <Link href={item.href} className="flex z-1000">
+                  <Button className="relative p-px  backdrop-blur-3xl rounded-full bg-linear-to-br from-[#c83be5] to-[#2C05334D] hover:from-[#9218e1] hover:to-[#BF66FA] transition w-full lg:w-fit">
                     <div className="bg-[#161616] rounded-full px-6 py-4 text-white flex items-center justify-center gap-x-3.5 w-full ">
                       Learn more <ArrowRight />
                     </div>
                   </Button>
-                </Link>
+                </Link> */}
               </div>
               <div
                 className={`w-full lg:w-1/2 flex flex-col gap-y-6 md:gap-y-8 relative ${
@@ -83,7 +83,7 @@ const Features = () => {
                 }`}
               >
                 <div
-                  className={`w-[250px] md:w-[400px] h-[250px] md:h-[400px] rounded-full bg-radial/decreasing from-[#7212AF] from-15% to-transparent to-68% absolute bottom-[40%] md:-bottom-[1%] ${index === 1 ? "lg:-right-6 right-1/2 translate-x-1/2 lg:translate-x-0" : "lg:-left-6 left-1/2 -translate-x-1/2 lg:-translate-x-0"}`}
+                  className={`w-[250px] md:w-[400px] h-[250px] md:h-[400px] rounded-full bg-radial/decreasing from-[#7212AF] from-15% to-transparent to-68% absolute bottom-[40%] md:-bottom-[1%] ${index === 1 ? "lg:-right-6 right-1/2 translate-x-1/2 lg:translate-x-0" : "lg:-left-6 left-1/2 -translate-x-1/2 lg:translate-x-0"}`}
                 ></div>
 
                 <SpotlightCard className="custom-spotlight-card w-full h-full bg-[#1B1B1B] rounded-3xl flex flex-col justify-end items-center relative z-10 px-3 pt-10 md:p-0">

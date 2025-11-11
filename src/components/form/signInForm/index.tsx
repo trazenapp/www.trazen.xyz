@@ -95,7 +95,7 @@ const SignInForm = () => {
               type="email"
               id="email"
               placeholder="example@email.com"
-              className="border-[#434343] rounded-[8px] py-[19px] px-4"
+              className="border-[#434343] rounded-xl py-[19px] px-4"
               {...field}
             />
           )}
@@ -125,7 +125,7 @@ const SignInForm = () => {
                 type={passwordType}
                 id="password"
                 placeholder="Password"
-                className="border-[#434343] rounded-[8px] py-[19px] px-4 pr-14"
+                className="border-[#434343] rounded-xl py-[19px] px-4 pr-14"
                 {...field}
               />
             )}

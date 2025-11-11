@@ -7,7 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/src/components/ui/accordion";
-import Badge from "@/src/components/badge";
+import Badgee from "@/src/components/badge";
 import Heading from "@/src/components/heading";
 import { Faqs } from "@/src/constants/faq";
 import SpotlightCard from "@/src/components/SpotlightCard";
@@ -56,7 +56,7 @@ const Faq = () => {
       ></div>
       <div className="w-11/12 md:w-10/12 flex flex-col items-center justify-center mx-auto">
         <div className="w-full md:w-8/12 flex flex-col gap-y-6 mb-[60px]">
-          <Badge>FAQ</Badge>
+          <Badgee>FAQ</Badgee>
           <Heading className="text-center">Frequently Asked Questions</Heading>
         </div>
         <Accordion

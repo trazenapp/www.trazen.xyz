@@ -39,7 +39,7 @@ const Hero = () => {
 
   return (
     <header className="relative w-full flex flex-col justify-center items-center overflow-hidden md:py-16 py-6">
-      <div className="absolute top-0 w-[100%] h-[100%] -z-10 overflow-hidden ">
+      <div className="absolute top-0 w-full h-full -z-10 overflow-hidden ">
         <LightRays
           raysOrigin="top-center"
           raysColor="#9707da"
@@ -77,11 +77,11 @@ const Hero = () => {
         <div className="flex flex-col md:flex-row gap-y-6 md:gap-x-6 items-center ">
           <Button
           onClick={() => router.push("/sign-up")}
-          className="rounded-full bg-gradient-to-b from-[#BF66FA] to-[#430b68]"
+          className="rounded-full bg-linear-to-b from-[#BF66FA] to-[#430b68]"
         >
           Get started
         </Button>
-          <Button className="relative p-[1px] rounded-full bg-gradient-to-b from-[#BF66FA] to-[#430b68] hover:from-[#430b68] hover:to-[#BF66FA] transition">
+          <Button className="relative p-px rounded-full bg-linear-to-b from-[#BF66FA] to-[#430b68] hover:from-[#430b68] hover:to-[#BF66FA] transition">
             <div className="bg-[#0b0b0b] rounded-full px-6 py-4 text-white">
               <Link
                 href="https://trazen-1.gitbook.io/trazen/"

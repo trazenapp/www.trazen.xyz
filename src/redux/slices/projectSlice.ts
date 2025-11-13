@@ -9,6 +9,7 @@ import {
 
 const formData: AddProjectData = {
   name: "",
+  username: "",
   description: "",
   avatar: "",
   wallet_uuid: "",

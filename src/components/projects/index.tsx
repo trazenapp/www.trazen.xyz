@@ -70,11 +70,11 @@ export function Projects() {
               &#8942;
             </button>
             {activeProject === project.name && (
-              <Options className="rounded-sm border-none md:!px-2 md:!py-1.5 h-14 w-26 bg-[#272727] absolute top-8.5 right-2 text-[10px] text-[#ddd] flex flex-col gap-0.5 justify-center font-extralight " />
+              <Options className="rounded-sm border-none md:px-2! md:py-1.5! h-14 w-26 bg-[#272727] absolute top-8.5 right-2 text-[10px] text-[#ddd] flex flex-col gap-0.5 justify-center font-extralight " />
             )}
           </div>
           <Link
-            href={`/dashboard/${project.uuid}`}
+            href={`/dashboard/${project?.username}`}
             className="w-full flex items-center space-x-2 justify-between hover:cursor-pointer "
           >
             <span className="xl:text-[13px] md:text-[11px] text-[16px] text-[#f4f4f4] line-clamp-1">
@@ -148,7 +148,7 @@ export function ProjectsPartial() {
               )}
             </div>
             <Link
-              href={`/dashboard/${project.uuid}`}
+              href={`/dashboard/${project?.username}`}
               className="w-full flex items-center space-x-2 justify-between hover:cursor-pointer "
             >
               <span className="xl:text-[13px] md:text-[11px] text-[16px] text-[#f4f4f4] line-clamp-1">

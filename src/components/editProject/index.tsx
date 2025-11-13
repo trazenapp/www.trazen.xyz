@@ -64,6 +64,7 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
 
   const editProjectData = {
     name: projectDetail.name || "",
+    username: projectDetail.username || "",
     description: projectDetail.description || "",
     social: projectDetail.social || "",
     whitepaper: projectDetail.whitepaper || "",
@@ -90,6 +91,7 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
   const finalData = (formData: any) => {
     return {
       name: formData.name,
+      username: formData.username,
       description: formData.description,
       avatar: formData.avatar,
       social: formData.social,
@@ -140,7 +142,7 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
           </Button>
         </DialogTrigger>
         <DialogContent
-          className=" font-sans bg-[#161616] border-[#303030] rounded-2xl py-8 px-7 sm:max-w-[425px] lg:!max-w-[480px] !max-h-[90vh] max-sm:!max-h-[95vh] overflow-y-auto"
+          className=" font-sans bg-[#161616] border-[#303030] rounded-2xl py-8 px-7 sm:max-w-[425px] lg:max-w-[480px]! max-h-[90vh]! max-sm:max-h-[95vh]! overflow-y-auto"
           style={{ scrollbarWidth: "none" }}
         >
           <DialogHeader>
@@ -167,7 +169,7 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
                   <Input
                     type="text"
                     id="name"
-                    className="border-[#434343] rounded-[8px] py-[19px] px-4"
+                    className="border-[#434343] rounded-xl py-[19px] px-4"
                     {...field}
                   />
                 )}
@@ -175,6 +177,30 @@ const EditProject = ({ projectDetail }: EditProjectProps) => {
               {errors.name && (
                 <p className="text-red-500 text-sm">
                   {errors.name.message || "Please enter your Project Name"}
+                </p>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-y-2 w-full">
+              <Label htmlFor="name" className="font-medium text-sm">
+                Project username
+              </Label>
+              <Controller
+                name="username"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Input
+                    type="text"
+                    id="username"
+                    className="border-[#434343] rounded-[8px] py-[19px] px-4"
+                    {...field}
+                  />
+                )}
+              />
+              {errors.username && (
+                <p className="text-red-500 text-sm">
+                  {errors.username.message || "Please enter your Project Name"}
                 </p>
               )}
             </div>

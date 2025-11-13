@@ -123,6 +123,30 @@ const CreateFirstProjectForm = () => {
         </div>
 
         <div className="flex flex-col gap-y-2 w-full">
+          <Label htmlFor="name" className="font-medium text-sm">
+            Project username
+          </Label>
+          <Controller
+            name="username"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Input
+                type="text"
+                id="username"
+                className="border-[#434343] rounded-xl py-[19px] px-4"
+                {...field}
+              />
+            )}
+          />
+          {errors.username && (
+            <p className="text-red-500 text-sm">
+              {errors.username.message || "Please enter your Project Username"}
+            </p>
+          )}
+        </div>
+
+        <div className="flex flex-col gap-y-2 w-full">
           <Label htmlFor="description" className="font-medium text-sm">
             Project Description
           </Label>

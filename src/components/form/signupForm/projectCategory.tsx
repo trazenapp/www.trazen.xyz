@@ -40,6 +40,7 @@ const ProjectCategory = () => {
   const finalData = (formData: any) => {
     return {
       name: formData.name,
+      username: formData?.username,
       description: formData.description,
       avatar: formData.avatar,
       social: formData.social,
@@ -83,7 +84,7 @@ const ProjectCategory = () => {
         <FormHeading
           title="Project Category"
           subtitle="Select what applies to your project"
-          className="!text-left"
+          className="text-left!"
         />
       </div>
       <form

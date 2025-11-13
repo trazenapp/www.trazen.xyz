@@ -22,12 +22,19 @@ const InnerAuthChecker = ({ children }: ReduxProviderProps) => {
       login?.currentUser?.token ||
       localStorage.getItem("token");
 
-    if (!token) router.replace("/sign-in");
+      const publicRoutes = [
+      "/",
+      "/sign-in",
+      "/sign-up",
+    ];
+
+    const currentPath = window.location.pathname;
+
+    if (!token && !publicRoutes.includes(currentPath)) router.replace("/sign-in");
   }, [login, register]);
 
   return children;
 };
-
 
 export default function ReduxProvider({ children }: ReduxProviderProps) {
   return (

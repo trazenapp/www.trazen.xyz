@@ -23,31 +23,34 @@ export const verifyEmail = createAsyncThunk<
   ForgotPasswordResponse,
   VerifyEmailData,
   { state: RootState }
->("verify-email/verify", async (VerifyEmailData, { rejectWithValue, getState }) => {
-  try {
+>(
+  "verify-email/verify",
+  async (VerifyEmailData, { rejectWithValue, getState }) => {
+    try {
       const state = getState();
       const token = state.register.token || null;
 
       if (!token) return rejectWithValue("No token found");
 
-    const response = await axiosInstance.post<ForgotPasswordResponse>(
-      "/v1/auth/verify-email",
-      VerifyEmailData,
-      {
-        headers: {
-          "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
-          "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error: any) {
-    return rejectWithValue(
-      error.response?.data?.message || "Email Verification Failed"
-    );
+      const response = await axiosInstance.post<ForgotPasswordResponse>(
+        "/v1/auth/verify-email",
+        VerifyEmailData,
+        {
+          headers: {
+            "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
+            "x-api-secret": process.env.NEXT_PUBLIC_BASE_SECRET_KEY,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Email Verification Failed"
+      );
+    }
   }
-});
+);
 
 export const resendEmailVerification = createAsyncThunk<
   ForgotPasswordResponse,
@@ -56,7 +59,7 @@ export const resendEmailVerification = createAsyncThunk<
   try {
     const response = await axiosInstance.post<ForgotPasswordResponse>(
       "/v1/auth/resend-email-verification",
-      {email},
+      { email },
       {
         headers: {
           "x-api-public": process.env.NEXT_PUBLIC_BASE_PUBLIC_KEY,
@@ -66,7 +69,7 @@ export const resendEmailVerification = createAsyncThunk<
     );
     return response.data;
   } catch (error: any) {
-    console.log(error)
+    console.log(error);
     return rejectWithValue(
       error.response?.data?.message || "Email Verification Token Resend Failed"
     );
@@ -117,7 +120,8 @@ const verifyEmailSlice = createSlice({
       })
       .addCase(resendEmailVerification.rejected, (state, action) => {
         state.resendLoading = false;
-        state.error = action.payload as string ?? "Resend Verification Failed";
+        state.error =
+          (action.payload as string) ?? "Resend Verification Failed";
       });
   },
 });

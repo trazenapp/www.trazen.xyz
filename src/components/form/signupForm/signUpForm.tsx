@@ -107,13 +107,20 @@ const SignUpForm = () => {
           <Controller
             name="email"
             control={control}
-            rules={{ required: true }}
+            rules={{
+              required: "Email is required",
+              pattern: {
+                value:
+                  /^[A-Za-z0-9._%+-]+@(gmail|hotmail|outlook|yahoo|live)\.(com|net|org|co|io|ng|uk|me|gov|edu)$|^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+                message: "Please enter a valid email address",
+              },
+            }}
             render={({ field }) => (
               <Input
                 type="email"
                 id="email"
                 placeholder="example@email.com"
-                className="border-[#434343] rounded-[8px] py-[19px] px-4"
+                className="border-[#434343] rounded-xl py-[19px] px-4"
                 {...field}
               />
             )}
@@ -129,9 +136,6 @@ const SignUpForm = () => {
             <Label htmlFor="password" className="font-medium text-sm">
               Password
             </Label>
-            <Link href="/forgot-password" className="font-normal text-sm">
-              Forgot password?
-            </Link>
           </div>
           <div className="relative">
             <Controller
@@ -154,7 +158,7 @@ const SignUpForm = () => {
                   type={passwordType}
                   id="password"
                   placeholder="Password"
-                  className="border-[#434343] rounded-[8px] py-[19px] px-4 pr-14"
+                  className="border-[#434343] rounded-xl py-[19px] px-4 pr-14"
                   {...field}
                 />
               )}
@@ -192,7 +196,7 @@ const SignUpForm = () => {
                   type={passwordType}
                   id="cPassword"
                   placeholder="Password"
-                  className="border-[#434343] rounded-[8px] py-[19px] px-4 pr-14"
+                  className="border-[#434343] rounded-xl py-[19px] px-4 pr-14"
                   {...field}
                 />
               )}

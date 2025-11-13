@@ -38,18 +38,20 @@ export const project_pioneers = [
     image: img5
   },
   {
-    title: "Connect Your X (Twitter) and Auto-Sync Your Posts",
-    subtitle: "Save time and amplify reach. Seamlessly connect your X account to auto-post your updates across platforms—ensuring your message gets seen by both your existing audience and new Web3 users.",
-    image: img6
-  },
-  {
     title: "Build and Engage With Your Community",
     subtitle: "Web3 is about connection. Respond to comments, gain followers, and keep your community looped into what’s next. Turn casual observers into contributors and superfans.",
     image: img7
   },
   {
+    title: "Connect Your X (Twitter) and Auto-Sync Your Posts",
+    subtitle: "Save time and amplify reach. Seamlessly connect your X account to auto-post your updates across platforms—ensuring your message gets seen by both your existing audience and new Web3 users.",
+    image: img6,
+    badge: "Future Release",
+  },
+  {
     title: "Raise Funds Directly From Supporters",
     subtitle: "Enable seamless contributions and micro-support from your community. Whether you’re funding a new feature, launching a token, or building in public—let your supporters back you.",
-    image: img8
+    image: img8,
+    badge: "Future Release",
   },
 ]

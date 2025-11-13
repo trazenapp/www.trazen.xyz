@@ -117,7 +117,7 @@ const VerifyEmailForm = () => {
   return (
     <Card className="w-11/12 md:w-9/12 lg:w-5/12 mx-auto border-0 md:border md:border-[#303030] py-10 bg-transparent md:bg-[#161616] flex flex-col items-center justify-center">
       <div className="mb-8">
-        <FormHeading title="Connect Email" subtitle={emailSubtitle} />
+        <FormHeading title="Confirm Email" subtitle={emailSubtitle} />
       </div>
       <form
         className="font-sans text-[#F4F4F4F4] w-full mt-8 flex flex-col gap-y-8"
@@ -130,7 +130,7 @@ const VerifyEmailForm = () => {
             rules={{ required: true }}
             render={({ field }) => (
               <InputOTP maxLength={6} {...field}>
-                <InputOTPGroup className="w-full gap-x-4 *:border-0 *:bg-[#272727] *:md:w-[70px] *:md:h-[70px] *:w-[46px] *:h-[46px] *:md:rounded-[12px] *:rounded-[8px] *:data-[active=true]:border-[#430B68] *:data-[active=true]:ring-[#430B68]">
+                <InputOTPGroup className="w-full gap-x-4 *:border-0 *:bg-[#272727] *:md:w-[70px] *:md:h-[70px] *:w-[46px] *:h-[46px] *:md:rounded-[12px] *:rounded-xl *:data-[active=true]:border-[#430B68] *:data-[active=true]:ring-[#430B68]">
                   <InputOTPSlot index={0} />
                   <InputOTPSlot index={1} />
                   <InputOTPSlot index={2} />

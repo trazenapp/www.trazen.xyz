@@ -1,6 +1,6 @@
 "use client";
 
-import Badge from "@/src/components/badge";
+import Badgee from "@/src/components/badge";
 import Heading from "@/src/components/heading";
 import React from "react";
 import Image from "next/image";
@@ -41,9 +41,9 @@ const Newsletter = () => {
       className="w-11/12 md:w-10/12 mt-[120px] flex flex-col justify-center items-center relative"
       ref={scrollRef}
     >
-      <div className="border border-[#434343] md:!py-[66px] p-3.5 w-full md:w-9/12 rounded-4xl backdrop-blur bg-[#161616]/50 flex flex-col justify-center items-center relative z-10">
+      <div className="border border-[#434343] md:py-[66px]! p-3.5 w-full md:w-9/12 rounded-4xl backdrop-blur bg-[#161616]/50 flex flex-col justify-center items-center relative z-10">
         <div className="w-full lg:w-10/12 flex flex-col gap-y-6 mb-10">
-          <Badge>Our newsletter</Badge>
+          <Badgee>Our newsletter</Badgee>
           <Heading
             className="text-center"
             subText="Receive emails by subscribing to our weekly newsletter. Get the new and the buzz before anyone else."
@@ -52,7 +52,7 @@ const Newsletter = () => {
           </Heading>
         </div>
         <div>
-          <Button className="flex gap-x-1 md:gap-x-2.5 rounded-full bg-gradient-to-b from-[#BF66FA] to-[#430b68] !py-4 !px-4.5 w-max text-xs md:text-base">
+          <Button className="flex gap-x-1 md:gap-x-2.5 rounded-full bg-linear-to-b from-[#BF66FA] to-[#430b68] py-4! px-4.5! w-max text-xs md:text-base">
             <Link
               href="https://waitlist.trazen.xyz/"
               className="font-sans text-sm font-medium text-white text-center flex gap-2 w-max items-center"

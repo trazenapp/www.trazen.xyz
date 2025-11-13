@@ -2,10 +2,15 @@
 
 import React from "react";
 import Image from "next/image";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/src/components/ui/tabs";
 import { users_solutions, project_pioneers } from "@/src/constants/solutions";
 import Heading from "@/src/components/heading";
-import Badge from "@/src/components/badge";
+import Badgee from "@/src/components/badge";
 import Card from "@/src/components/card";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -13,6 +18,7 @@ import ScrollTrigger from "gsap/ScrollTrigger";
 import { useRef, useState } from "react";
 import SpotlightCard from "@/src/components/SpotlightCard";
 import TextType from "@/src/components/TextType";
+import { Badge } from "@/src/components/ui/badge";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -87,7 +93,7 @@ const Solutions = () => {
   return (
     <section className="w-11/12 md:w-10/12 mt-[120px] flex flex-col items-center justify-center relative">
       <div className="w-full md:w-8/12 flex flex-col gap-y-6 mb-[60px]">
-        <Badge>Solutions</Badge>
+        <Badgee>Solutions</Badgee>
         <Heading
           className="text-center"
           subText="Whether you're here to stay informed or to share what you're building, we’ve created an experience tailored to your needs"
@@ -99,7 +105,7 @@ const Solutions = () => {
             pauseDuration={1500}
             showCursor={true}
             cursorCharacter="|"
-            className="bg-gradient-to-r from-[#9218E1] to-[#BF66FA] text-transparent bg-clip-text"
+            className="bg-linear-to-r from-[#9218E1] to-[#BF66FA] text-transparent bg-clip-text"
             variableSpeed={false}
             onSentenceComplete={() => {}}
           />
@@ -119,7 +125,7 @@ const Solutions = () => {
             value="pioneers"
             onClick={() => setTabValue("pioneers")}
           >
-            Project pioneers
+            Project Owners
           </TabsTrigger>
         </TabsList>
         <TabsContent className="relative" value="users" ref={scrollRef}>
@@ -134,7 +140,7 @@ const Solutions = () => {
               >
                 <Card
                   key={index}
-                  className="p-4 md:!px-6 md:!py-6 flex flex-col gap-y-6 bg-transparent border-0"
+                  className="p-4 md:px-6! md:py-6! flex flex-col gap-y-6 bg-transparent border-0"
                 >
                   <div className="w-14 h-14 rounded-[10px] border border-[#434343] flex justify-center items-center font-sans text-white">
                     <Image src={item.image} alt={item.title} className="" />
@@ -161,10 +167,13 @@ const Solutions = () => {
               >
                 <Card
                   key={index}
-                  className="p-4 md:!px-6 md:!py-6 flex flex-col gap-y-6 bg-transparent border-0"
+                  className="p-4 md:px-6! md:py-6! flex flex-col gap-y-6 bg-transparent border-0"
                 >
-                  <div className="w-14 h-14 rounded-[10px] border border-[#434343] flex justify-center items-center font-sans text-white">
-                    <Image src={item.image} alt={item.title} className="" />
+                  <div className="flex justify-between items-start">
+                    <div className="w-14 h-14 rounded-[10px] border border-[#434343] flex justify-center items-center font-sans text-white">
+                      <Image src={item.image} alt={item.title} className="" />
+                    </div>
+                    {item.badge && <Badge className="text-xs md:text-sm font-sans bg-white text-[#161616]">{item.badge}</Badge>}
                   </div>
                   <h6 className="text-base font-semibold font-sans">
                     {item.title}

@@ -1,6 +1,7 @@
 import { UserProfile } from "@/src/types/user.types";
 export interface AddProjectData {
   name: string;
+  username: string;
   description: string;
   avatar: string;
   wallet_uuid?: string;

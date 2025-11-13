@@ -62,9 +62,13 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
 
   const [voteStatus, setVoteStatus] = useState(postDetails?.voteStatus);
   const [isFollowing, setIsFollowing] = useState(false);
-    const [upVoteCount, setUpVoteCount] = useState(postDetails?.upvoteCount);
-    const [downVoteCount, setDownVoteCount] = useState(postDetails?.downvoteCount);
+  const [upVoteCount, setUpVoteCount] = useState(postDetails?.upvoteCount);
+  const [downVoteCount, setDownVoteCount] = useState(
+    postDetails?.downvoteCount
+  );
   const [reportPostModal, setReportPostModal] = useState(false);
+
+  console.log(postDetails?.voteStatus, upVoteCount, downVoteCount);
 
   useEffect(() => {
     dispatch(fetchPostDetails({ post_uuid: slug }));
@@ -80,77 +84,45 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
 
   // vote post
   const handleVote = async (
-  voteType: "UPVOTE" | "DOWNVOTE",
-  post_uuid: string
-) => {
-  if (!post_uuid) return;
+    voteType: "UPVOTE" | "DOWNVOTE",
+    post_uuid: string
+  ) => {
+    const prevUp = upVoteCount ?? 0;
+    const prevDown = downVoteCount ?? 0;
+    const prevStatus = voteStatus ?? null;
 
-  // ✅ Backup original values to revert on error
-  const prevUp = upVoteCount || 0;
-  const prevDown = downVoteCount || 0;
-  const prevStatus = voteStatus;
-
-  let newUp = prevUp;
-  let newDown = prevDown;
-  let newStatus = prevStatus;
-
-  // ✅ LOCAL optimistic update
-  if (voteType === "UPVOTE") {
-    if (prevStatus === "UPVOTE") {
-      newUp -= 1;
+    let newStatus: "UPVOTE" | "DOWNVOTE" | null = voteType;
+    if (prevStatus === voteType) {
       newStatus = null;
+    }
+
+    let calculatedUp = prevUp;
+    let calculatedDown = prevDown;
+
+    if (voteType === "UPVOTE") {
+      calculatedUp = prevStatus === "UPVOTE" ? prevUp - 1 : prevUp + 1;
+      if (prevStatus === "DOWNVOTE") {
+        calculatedDown = prevDown - 1;
+      }
     } else {
-      newUp += 1;
-      if (prevStatus === "DOWNVOTE") newDown -= 1;
-      newStatus = "UPVOTE";
-    }
-  }
-
-  if (voteType === "DOWNVOTE") {
-    if (prevStatus === "DOWNVOTE") {
-      newDown -= 1;
-      newStatus = null;
-    } else {
-      newDown += 1;
-      if (prevStatus === "UPVOTE") newUp -= 1;
-      newStatus = "DOWNVOTE";
-    }
-  }
-
-  // ✅ Update UI immediately
-  setUpVoteCount(newUp);
-  setDownVoteCount(newDown);
-  setVoteStatus(newStatus);
-
-  try {
-    const res = await dispatch(votePost({ voteType, post_uuid })).unwrap();
-
-    const serverUp = res?.upvoteCount;
-    const serverDown = res?.downvoteCount;
-    const serverStatus = res?.voteStatus;
-
-    // ✅ Only update if server data is consistent
-    if (typeof serverUp === "number") setUpVoteCount(serverUp);
-    if (typeof serverDown === "number") setDownVoteCount(serverDown);
-
-    if (
-      serverStatus === "UPVOTE" ||
-      serverStatus === "DOWNVOTE" ||
-      serverStatus === null
-    ) {
-      setVoteStatus(serverStatus);
+      calculatedDown = prevStatus === "DOWNVOTE" ? prevDown - 1 : prevDown + 1;
+      if (prevStatus === "UPVOTE") {
+        calculatedUp = prevUp - 1;
+      }
     }
 
-  } catch (err) {
-    console.error("Vote error:", err);
+    setVoteStatus(newStatus);
+    setUpVoteCount(calculatedUp);
+    setDownVoteCount(calculatedDown);
 
-    // ❌ revert to previous state on API error
-    setUpVoteCount(prevUp);
-    setDownVoteCount(prevDown);
-    setVoteStatus(prevStatus);
-  }
-};
-
+    try {
+      await dispatch(votePost({ voteType, post_uuid })).unwrap();
+    } catch (error) {
+      setVoteStatus(prevStatus);
+      setUpVoteCount(prevUp);
+      setDownVoteCount(prevDown);
+    }
+  };
 
   // bookmark post
   const handleBookmark = async (post_uuid: string) => {
@@ -315,11 +287,11 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
         >
           <Button
             onClick={() => handleVote("UPVOTE", postDetails?.uuid || "")}
-            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${postDetails?.voteStatus === "UPVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
+            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${voteStatus === "UPVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
           >
             <PiArrowFatUp />
-            {postDetails?.upvoteCount}
-            {postDetails?.upvoteCount === 1 ? (
+            {upVoteCount}
+            {upVoteCount === 1 ? (
               <span className="hidden md:flex"> Upvote</span>
             ) : (
               <span className="hidden md:flex"> Upvotes</span>
@@ -327,11 +299,11 @@ const Page = ({ params }: { params: Promise<{ slug: string }> }) => {
           </Button>
           <Button
             onClick={() => handleVote("DOWNVOTE", postDetails?.uuid || "")}
-            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${postDetails?.voteStatus === "DOWNVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
+            className={`flex-1 h-fit! py-1.5! px-6! rounded-full ${voteStatus === "DOWNVOTE" ? "border border-[#430B68] bg-[#430B68]" : "border border-[#303030]"} flex gap-x-2.5 font-sans font-medium text-sm hover:bg-[#430B68]`}
           >
             <PiArrowFatDown />
-            {postDetails?.downvoteCount}
-            {postDetails?.downvoteCount === 1 ? (
+            {downVoteCount}
+            {downVoteCount === 1 ? (
               <span className="hidden md:flex"> Downvote</span>
             ) : (
               <span className="hidden md:flex"> Downvotes</span>

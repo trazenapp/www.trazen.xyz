@@ -21,6 +21,7 @@ export interface ProjectDetail {
   user: UserProfile | null;
   wallet_uuid: string | null;
   name: string;
+  username: string;
   description: string;
   social: string;
   whitepaper: string;

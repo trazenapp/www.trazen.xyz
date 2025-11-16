@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import ClientProvider from "@/src/utils/clientProvider";
+import UserJotLoader from "@/src/components/UserJotLoader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -53,10 +54,9 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${clashDisplay.className} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} ${clashDisplay.className} antialiased`}>
         <ClientProvider>{children}</ClientProvider>
+        <UserJotLoader />
       </body>
     </html>
   );
